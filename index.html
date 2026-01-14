@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="site-title">عرض البحث العلمي1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Tajawal', 'Inter', sans-serif; scroll-behavior: smooth; }
+        .star-rating { direction: ltr; display: inline-flex; }
+        .star-rating input { display: none; }
+        .star-rating label { font-size: 2.5rem; color: #d1d5db; cursor: pointer; transition: 0.2s; }
+        .star-rating input:checked ~ label, .star-rating label:hover, .star-rating label:hover ~ label { color: #f59e0b; }
+        .admin-panel { display: none; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-blue-600" id="nav-title">...</h1>
+            <div class="flex gap-3">
+                <button onclick="toggleLang()" class="text-sm font-semibold hover:text-blue-600 transition">English / عربي</button>
+                <button onclick="loginAdmin()" class="bg-gray-100 text-gray-600 px-3 py-1 rounded-md text-sm">🔒 المحرر</button>
+            </div>
+        </div>
+    </nav>
+
+    <div id="admin-tools" class="admin-panel bg-slate-800 text-white p-6">
+        <div class="container mx-auto">
+            <h2 class="text-xl font-bold mb-4 border-b border-slate-700 pb-2">🛠 لوحة التحكم (اللغة الحالية فقط)</h2>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs mb-1">عنوان الموقع:</label>
+                    <input type="text" id="edit-nav" class="w-full p-2 rounded text-black mb-3">
+                    <label class="block text-xs mb-1">عنوان البحث:</label>
+                    <input type="text" id="edit-title" class="w-full p-2 rounded text-black">
+                </div>
+                <div>
+                    <label class="block text-xs mb-1">الملخص:</label>
+                    <textarea id="edit-summary" class="w-full p-2 rounded text-black mb-3" rows="2"></textarea>
+                    <label class="block text-xs mb-1">المحتوى الكامل:</label>
+                    <textarea id="edit-content" class="w-full p-2 rounded text-black" rows="5"></textarea>
+                </div>
+            </div>
+            <div class="mt-4 flex gap-4">
+                <button onclick="saveChanges()" class="bg-green-500 px-6 py-2 rounded-lg font-bold">حفظ مؤقت</button>
+                <button onclick="exportJSON()" class="bg-blue-500 px-6 py-2 rounded-lg font-bold">تصدير ملف data.json الجديد 📥</button>
+                <button onclick="logout()" class="bg-red-500 px-4 py-2 rounded-lg">خروج</button>
+            </div>
+        </div>
+    </div>
+
+    <header class="py-16 bg-white border-b">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-4xl md:text-5xl font-extrabold mb-6" id="view-title">...</h2>
+            <p class="text-gray-500 max-w-2xl mx-auto text-lg leading-relaxed" id="view-summary">...</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+        <div class="max-w-4xl mx-auto">
+            <article id="view-content" class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100 leading-loose text-lg whitespace-pre-wrap">
+                ...
+            </article>
+
+            <section class="mt-20 bg-blue-600 rounded-3xl p-10 text-white shadow-xl">
+                <div class="max-w-xl mx-auto text-center">
+                    <h3 class="text-3xl font-bold mb-4" id="rate-head">ما رأيك في البحث؟</h3>
+                    <p class="mb-8 opacity-90" id="rate-sub">تقييمك يساعدني على التطوير</p>
+                    
+                    <form id="ratingForm" class="space-y-6">
+                        <div class="star-rating">
+                            <input type="radio" name="stars" id="star5" value="5"><label for="star5">★</label>
+                            <input type="radio" name="stars" id="star4" value="4"><label for="star4">★</label>
+                            <input type="radio" name="stars" id="star3" value="3"><label for="star3">★</label>
+                            <input type="radio" name="stars" id="star2" value="2"><label for="star2">★</label>
+                            <input type="radio" name="stars" id="star1" value="1"><label for="star1">★</label>
+                        </div>
+                        <textarea id="reason" class="w-full p-4 rounded-xl text-gray-900 outline-none focus:ring-4 focus:ring-blue-300" placeholder="..." rows="3"></textarea>
+                        <button type="button" onclick="sendRating()" class="bg-white text-blue-600 font-bold px-10 py-3 rounded-full hover:scale-105 transition transform" id="btn-send">إرسال التقييم</button>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        let db = {};
+        let lang = 'ar';
+
+        // تحميل البيانات
+        async function loadData() {
+            try {
+                const res = await fetch('data.json');
+                db = await res.json();
+                render();
+            } catch (e) { console.error("تأكد من وجود ملف data.json بجانب الصفحة"); }
+        }
+
+        function render() {
+            const d = db[lang];
+            const isAr = lang === 'ar';
+            document.documentElement.dir = isAr ? 'rtl' : 'ltr';
+            document.documentElement.lang = lang;
+
+            // تحديث الواجهة
+            document.getElementById('nav-title').innerText = d.navTitle;
+            document.getElementById('view-title').innerText = d.title;
+            document.getElementById('view-summary').innerText = d.summary;
+            document.getElementById('view-content').innerText = d.content;
+
+            // تحديث قسم التقييم
+            document.getElementById('rate-head').innerText = isAr ? "ما رأيك في البحث؟" : "What's your feedback?";
+            document.getElementById('rate-sub').innerText = isAr ? "تقييمك يساعدني على التطوير" : "Your rating helps me improve";
+            document.getElementById('reason').placeholder = isAr ? "سبب التقييم (اختياري)..." : "Reason for rating (Optional)...";
+            document.getElementById('btn-send').innerText = isAr ? "إرسال التقييم" : "Submit Rating";
+
+            // تعبئة لوحة التعديل
+            document.getElementById('edit-nav').value = d.navTitle;
+            document.getElementById('edit-title').value = d.title;
+            document.getElementById('edit-summary').value = d.summary;
+            document.getElementById('edit-content').value = d.content;
+        }
+
+        function toggleLang() { lang = lang === 'ar' ? 'en' : 'ar'; render(); }
+
+        function loginAdmin() {
+            if(prompt("كلمة المرور:") === "1234") {
+                document.getElementById('admin-tools').style.display = 'block';
+            }
+        }
+
+        function saveChanges() {
+            db[lang] = {
+                navTitle: document.getElementById('edit-nav').value,
+                title: document.getElementById('edit-title').value,
+                summary: document.getElementById('edit-summary').value,
+                content: document.getElementById('edit-content').value
+            };
+            render();
+            alert("تم الحفظ مؤقتاً في المتصفح!");
+        }
+
+        function exportJSON() {
+            const blob = new Blob([JSON.stringify(db, null, 2)], {type : 'application/json'});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'data.json';
+            a.click();
+        }
+
+        function logout() { document.getElementById('admin-tools').style.display = 'none'; }
+
+        function sendRating() {
+            const stars = document.querySelector('input[name="stars"]:checked')?.value;
+            if(!stars) return alert(lang === 'ar' ? "اختر النجوم أولاً!" : "Select stars first!");
+            alert(lang === 'ar' ? "شكراً لك! تم استلام تقييمك بنجاح." : "Thank you! Rating received.");
+            document.getElementById('ratingForm').reset();
+        }
+
+        window.onload = loadData;
+    </script>
+</body>
+</html>

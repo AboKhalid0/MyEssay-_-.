@@ -3,90 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="site-title">عرض البحث العلمي1</title>
+    <title>بحثي العلمي - منصة عارف</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Tajawal', 'Inter', sans-serif; scroll-behavior: smooth; }
+        body { font-family: 'Tajawal', sans-serif; }
+        /* تخصيص ألوان النجوم للوضع الداكن */
         .star-rating { direction: ltr; display: inline-flex; }
         .star-rating input { display: none; }
-        .star-rating label { font-size: 2.5rem; color: #d1d5db; cursor: pointer; transition: 0.2s; }
-        .star-rating input:checked ~ label, .star-rating label:hover, .star-rating label:hover ~ label { color: #f59e0b; }
+        /* لون النجمة غير المختارة (رمادي داكن) */
+        .star-rating label { font-size: 2.5rem; color: #4b5563; cursor: pointer; transition: 0.2s; }
+        /* لون النجمة المختارة (ذهبي) */
+        .star-rating input:checked ~ label, .star-rating label:hover, .star-rating label:hover ~ label { color: #fbbf24; }
+        /* إخفاء لوحة التحكم */
         .admin-panel { display: none; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gray-900 text-gray-300">
 
-    <nav class="bg-white shadow-sm sticky top-0 z-50">
+    <nav class="bg-gray-800 shadow-lg sticky top-0 z-50 border-b border-gray-700">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold text-blue-600" id="nav-title">...</h1>
+            <h1 class="text-xl font-bold text-white" id="nav-title">...</h1>
             <div class="flex gap-3">
-                <button onclick="toggleLang()" class="text-sm font-semibold hover:text-blue-600 transition">English / عربي</button>
-                <button onclick="loginAdmin()" class="bg-gray-100 text-gray-600 px-3 py-1 rounded-md text-sm">🔒 المحرر</button>
+                <button onclick="toggleLang()" class="text-sm font-semibold text-gray-400 hover:text-white transition">English / عربي</button>
+                <button onclick="loginAdmin()" class="bg-gray-700 text-gray-200 px-3 py-1 rounded-md text-sm hover:bg-gray-600 transition">🔒 المحرر</button>
             </div>
         </div>
     </nav>
 
-    <div id="admin-tools" class="admin-panel bg-slate-800 text-white p-6">
+    <div id="admin-tools" class="admin-panel bg-black text-gray-300 p-6 border-b border-gray-800">
         <div class="container mx-auto">
-            <h2 class="text-xl font-bold mb-4 border-b border-slate-700 pb-2">🛠 لوحة التحكم (اللغة الحالية فقط)</h2>
+            <h2 class="text-xl font-bold mb-4 text-white pb-2">🛠 لوحة التحكم (تعديل فوري)</h2>
             <div class="grid md:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-xs mb-1">عنوان الموقع:</label>
-                    <input type="text" id="edit-nav" class="w-full p-2 rounded text-black mb-3">
-                    <label class="block text-xs mb-1">عنوان البحث:</label>
-                    <input type="text" id="edit-title" class="w-full p-2 rounded text-black">
+                    <label class="block text-xs mb-1 text-gray-400">عنوان الموقع:</label>
+                    <input type="text" id="edit-nav" class="w-full p-2 rounded bg-gray-800 border border-gray-700 text-white focus:border-gray-500 outline-none mb-3">
+                    <label class="block text-xs mb-1 text-gray-400">عنوان البحث:</label>
+                    <input type="text" id="edit-title" class="w-full p-2 rounded bg-gray-800 border border-gray-700 text-white focus:border-gray-500 outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs mb-1">الملخص:</label>
-                    <textarea id="edit-summary" class="w-full p-2 rounded text-black mb-3" rows="2"></textarea>
-                    <label class="block text-xs mb-1">المحتوى الكامل:</label>
-                    <textarea id="edit-content" class="w-full p-2 rounded text-black" rows="5"></textarea>
+                    <label class="block text-xs mb-1 text-gray-400">الملخص:</label>
+                    <textarea id="edit-summary" class="w-full p-2 rounded bg-gray-800 border border-gray-700 text-white focus:border-gray-500 outline-none mb-3" rows="2"></textarea>
+                    <label class="block text-xs mb-1 text-gray-400">المحتوى الكامل:</label>
+                    <textarea id="edit-content" class="w-full p-2 rounded bg-gray-800 border border-gray-700 text-white focus:border-gray-500 outline-none" rows="5"></textarea>
                 </div>
             </div>
             <div class="mt-4 flex gap-4">
-                <button onclick="saveChanges()" class="bg-green-500 px-6 py-2 rounded-lg font-bold">حفظ مؤقت</button>
-                <button onclick="exportJSON()" class="bg-blue-500 px-6 py-2 rounded-lg font-bold">تصدير ملف data.json الجديد 📥</button>
-                <button onclick="logout()" class="bg-red-500 px-4 py-2 rounded-lg">خروج</button>
+                <button onclick="saveChanges()" class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-bold transition">حفظ مؤقت</button>
+                <button onclick="logout()" class="bg-red-900/50 hover:bg-red-900 text-red-200 px-4 py-2 rounded-lg transition">خروج</button>
             </div>
+            <p class="text-xs text-gray-500 mt-2">* ملاحظة: هذا حفظ مؤقت في المتصفح. لتحديث الموقع للجميع، انسخ الكود المعدل وضعه في ملف index.html على GitHub.</p>
         </div>
     </div>
 
-    <header class="py-16 bg-white border-b">
+    <header class="py-16 bg-gray-800 border-b border-gray-700">
         <div class="container mx-auto px-6 text-center">
-            <h2 class="text-4xl md:text-5xl font-extrabold mb-6" id="view-title">...</h2>
-            <p class="text-gray-500 max-w-2xl mx-auto text-lg leading-relaxed" id="view-summary">...</p>
+            <h2 class="text-4xl md:text-5xl font-extrabold mb-6 text-white" id="view-title">...</h2>
+            <p class="text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed" id="view-summary">...</p>
         </div>
     </header>
 
     <main class="container mx-auto px-6 py-12">
         <div class="max-w-4xl mx-auto">
-            <article id="view-content" class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100 leading-loose text-lg whitespace-pre-wrap">
+            <article id="view-content" class="bg-gray-800 p-8 md:p-12 rounded-2xl shadow-xl border border-gray-700 leading-loose text-lg whitespace-pre-wrap text-gray-300">
                 ...
             </article>
 
-
+            <section class="mt-20 bg-gray-700 rounded-3xl p-10 text-white shadow-2xl border border-gray-600">
+                <div class="max-w-xl mx-auto text-center">
+                    <h3 class="text-3xl font-bold mb-4" id="rate-head">...</h3>
+                    <p class="mb-8 opacity-75 text-gray-300" id="rate-sub">...</p>
+                    
+                    <form id="ratingForm" class="space-y-6">
+                        <div class="star-rating">
+                            <input type="radio" name="stars" id="star5" value="5"><label for="star5">★</label>
+                            <input type="radio" name="stars" id="star4" value="4"><label for="star4">★</label>
+                            <input type="radio" name="stars" id="star3" value="3"><label for="star3">★</label>
+                            <input type="radio" name="stars" id="star2" value="2"><label for="star2">★</label>
+                            <input type="radio" name="stars" id="star1" value="1"><label for="star1">★</label>
+                        </div>
+                        <textarea id="reason" class="w-full p-4 rounded-xl bg-gray-600 border border-gray-500 text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-gray-400" placeholder="..." rows="3"></textarea>
+                        <button type="button" onclick="sendRating()" class="bg-gray-200 text-gray-900 font-bold px-10 py-3 rounded-full hover:bg-white transition transform" id="btn-send">...</button>
+                    </form>
+                </div>
+            </section>
         </div>
     </main>
 
-    <script>
-        let db = {};
-        let lang = 'ar';
+    <footer class="py-8 text-center text-gray-500 bg-gray-900 border-t border-gray-800 mt-12">
+        <p>© 2026 - عارف للبحث العلمي</p>
+    </footer>
 
-        // تحميل البيانات
-        async function loadData() {
-            try {
-                const res = await fetch('data.json');
-                db = await res.json();
-                render();
-            } catch (e) { console.error("تأكد من وجود ملف data.json بجانب الصفحة"); }
-        }
+    <script>
+        // ---------------------------------------------------------
+        // منطقة البيانات (قم بتعديل بحثك هنا مباشرة)
+        // ---------------------------------------------------------
+        let content = {
+  "ar": {
+    "navTitle": "الأستاذ القدير يحيى",
+    "title": "Causes and effects of the Black Death",
+    "summary": "يتحدث البحث عن أسباب ونتائج الطاعون, خلال قراءتك للبحث بتكتشف العديد من الأحداث والأفكار الغريبة والعجيبة\nأرجوا منك بعد ما تخلص تكتب لي تقييمك والملاحظات الي لاحظتها\nوشكرًا ^_^",
+    "content": "لقد أثرت الأمراض المعدية في تحول البنية التحتية في العصور الوسطى؛ حيث أدت محدودية المعرفة الطبية إلى تأثيرات عميقة على الأفراد والسلطات والحكومات. ولم تقتصر آثار الأمراض عبر التاريخ على الطب فحسب، بل امتدت لتشمل السلطة السياسية، والحياة الاقتصادية، والاستقرار الاجتماعي. وقد لجأت المجتمعات إلى طرق تقليدية وغير علمية بسبب القصور في الفهم الطبي؛ وبناءً عليه، استندت الممارسات الطبية إلى المعرفة الموروثة وغياب المناهج التجريبية، وامتدت آثار ذلك لتشمل مقاربات أخرى مثل التنجيم نتيجة لنقص المعرفة الطبية. علاوة على ذلك، حافظت الهيئات التدريسية على هذا النوع من النهج الطبي، مما أدى إلى تأخير تطور الطب، والنتيجة كانت علاجات غير فعالة وحالة واسعة من عدم اليقين. مثّل تفشي \"الموت الأسود\" في القرن الرابع عشر نقطة حرجة في قصور الفهم الطبي، وكشف عن هشاشة قدرة السلطات على السيطرة على الأمراض ومواجهتها؛ حيث كافحت السلطات للسيطرة على الخوف الشعبي وإدارة تدابير فعالة لاحتواء انتشار المرض. ومع ذلك، فإن هذه الإخفاقات شجعت المجتمعات على إعادة النظر في الممارسات القائمة والبحث عن طرق بديلة للوقاية. ومع مرور الوقت، طورت تجربة الموت الأسود مقاربات جديدة في التخطيط الحضري، والنظافة الصحية، والإدارة العامة، مما وضع حجر الأساس لمفهوم جديد للصحة العامة والفكر الطبي. لم تكن النتائج فورية، بل ظهرت تدريجياً مع تعلم المجتمعات من الإخفاقات المتكررة، وهذه العوامل شجعت المجتمعات على تطوير وتنفيذ أساليب جديدة لتجنب فاشيات المستقبل. سيناقش هذا المقال أسباب وآثار الموت الأسود في القرن الرابع عشر.\n\nأولاً: نقص الفهم الطبي في العصور الوسطى\nكان أحد العوامل البارزة هو نقص الفهم الطبي في القرن الرابع عشر، حيث كانت الموارد المتاحة في علم الأوبئة في العصور الوسطى محدودة، وكان هناك ندرة شديدة في الإمدادات العلاجية. في ستينيات القرن الثاني الميلادي، أرسى \"جالينوس\" دعائم نظريته التي تتكون من الأخلاط الأربعة: الدم، والبلغم، والصفراء، والسوداء؛ ويرتبط كل سائل منها بأربعة عوامل: العناصر، والطبائع، والأعضاء المرتبطة به، والنمط الشخصي في حال اختلال التوازن. وعلاوة على ذلك، كان تشريح أجساد البشر مقيداً في تلك الحقبة، وكان الخيار الوحيد هو تشريح الحيوانات مثل القرود والأغنام؛ مما دفعه لتطوير منهجيته من خلال الجمع بين التشريح، والتجريب، والسفر، والمنطق. واعتماداً على نظرية جالينوس، تمكن الأطباء آنذاك من المساعدة في علاج بعض الأمراض، لكنها لم تكن شاملة بما يكفي وافتقرت إلى العمق العلمي. بالإضافة إلى ذلك، فإن السبب وراء عدم تشكيك أحد في أساليب جالينوس هو أن ذلك كان ممنوعاً ويعتبر \"هرطقة صريحة\" من قبل الهيئات التدريسية؛ حيث جُمد تعليم الطب بسبب \"قوة العرف\"، مما أدى بالرجال إلى قبول ما كان مقبولاً لأكثر من ألف عام دون تساؤل. ومن ناحية أخرى، ساد الاعتقاد بأن التنجيم يتحكم في صحة المرضى؛ فوفقاً لـ \"التعليم الطبي في القرن الرابع عشر\"، كان يُعتقد أن جميع أمراض الجسم، ومنشأها، وعلاجها، وظهور الأوبئة وتطورها، وفعالية الأدوية وقت الفصادة وتحضير الدواء، كانت كلها مرتبطة بطريقة ما بحركة الكواكب. ونتيجة لذلك، كانت التعليمات الجامعية صارمة وغير قابلة للتفاوض، حيث أُجبر الطلاب على الاستماع لتكرار السجلات من المخطوطات القديمة ودراسة التنجيم، مما منعهم من أي ممارسة طبية حقيقية. وإضافة لذلك، كانت إحدى أهم المشكلات هي انفصال الجراحة عن الطب، حيث كان العديد من الأطباء المدربين في الجامعات قساوسة منعتهم الكنيسة من سفك الدماء، مما أبعدهم عن أي تدخلات فيزيائية عملية.\n\nثانياً: إعادة تشكيل النسيج الاجتماعي والصحة المؤسسية\nأعاد الموت الأسود تشكيل النسيج الاجتماعي في العصور الوسطى، محولاً المقاربات تجاه الطب، وعلم الأمراض، والصحة العامة. بالإضافة إلى ذلك، فإن الاختناق الفكري ووفاة ما بين 25 إلى 50 مليون شخص أجبر الهيئات التدريسية والحكومات والأطباء على إعادة النظر في أسس المعرفة الطبية. وبناءً عليه، أدى فشل السلطات والطب في القرن الرابع عشر إلى كارثة غير مسبوقة في الصحة البدنية والنفسية والعلاقات الاجتماعية. وبالمقابل، دفع هذا الواقع الناس في القرن الرابع عشر وما بعده إلى البحث عن مقاربات مبتكرة لمكافحة الأمراض والأوبئة وإدارتها. أدت هذه العملية إلى تشكيل تدابير مكافحة الطاعون وظهور شكل جديد من الصحة العامة المؤسسية، والتي طُورت لأول مرة في مدن الشمال الإيطالي: البندقية، وجنوة، وميلانو، وفلورنسا؛ حيث تبنت هذه المناطق تلك التدابير بسبب مواقعها المكشوفة وتجاربها المتكررة مع الأوبئة الشديدة. ولم تبقَ هذه التدابير محصورة في إيطاليا، بل اعتمدتها لاحقاً فرنسا وإسبانيا وشمال أوروبا. ومع مرور الوقت، وُضعت الخطوط العريضة لأنظمة مكافحة الطاعون وأصبحت أكثر نضجاً وشمولية خلال القرنين الخامس عشر والسادس عشر. كان توسع النظام شاقاً لأنه ظل محلياً إلى حد كبير، ولذلك، وخلال القرنين السابع عشر والثامن عشر، حققت \"قفزة نوعية\" النظام وجعلته أكثر فعالية وأدت إلى نجاح كبير بدعم من الدولة الحديثة الناشئة، التي عززت هذه الجهود بالقوة البيروقراطية والعسكرية ومدتها على نطاق جغرافي أوسع. وعلاوة على ذلك، حدثت هذه التطورات حتى قبل وجود فهم طبي واضح للطاعون نفسه؛ حيث سارت السلطات خطوة بخطوة عبر التجربة والخطأ حتى نهاية القرن الثامن عشر، عندما تحققت إنجازات واكتشافات طبية كبرى، مما أدى إلى \"أول انتصار كبير في الحرب ضد الأمراض الوبائية\".\n\nثالثاً: دور النقل والبيولوجيا في نشر الوباء\nلعبت وسائل النقل دوراً هاماً في نشر الموت الأسود، بما أن المرض تسببه بكتيريا \"اليرسينيا الطاعونية\" التي تعيش في مجتمعات القوارض وتنتقل عبر البراغيث. تعيش هذه البكتيريا داخل البراغيث، وفي حالات معينة، يتشكل غشاء حيوي (Biofilm) في صمام مقدمة المعدة بالأمعاء المتوسطة للبرغوث، مما يسدها ويمنع البرغوث من التغذي ويبدأ في التضور جوعاً. تسبب هذه الحالة سلوكاً غير طبيعي، مما يدفع البرغوث لدغ الحيوانات والبشر بشكل متكرر، ونتيجة لذلك، يتم استرجاع الدم المصاب وقذفه في الجرح، مما يسمح لليرسينيا الطاعونية بالانتشار إلى عوائل جديدة. ومن المثير للاهتمام أن البراغيث لا يمكنها السفر لمسافات طويلة بمفردها، بينما يمكن للجرذان السفر لمسافات قصيرة فقط، ما لم توفر وسائل النقل وسيلة لحركة أوسع؛ فعلى سبيل المثال، يمكن للجرذان الاختباء في الشحنات، والحاويات، وأنظمة مياه الصرف الصحي. وبالمثل، عندما حملت السفن الجرذان وأفراد الطاقم المصابين، نقلت المرض من مكان لآخر، وفي بعض الحالات، أصابت الجرذان الطاقم أثناء الرحلة وقتلهم الطاعون قبل الوصول، محولةً الوعاء الناقل إلى \"سفينة أشباح\". وعلاوة على ذلك، لم تكن السفن والطواقم تخضع للتفتيش رغم الاعتراف الواسع بالمرض، ولم تُنفذ تدابير مضادة ممنهجة مثل الحجر الصحي لوقف انتشاره. وقبل كل شيء، سافرت الجرذان والبراغيث عبر أوروبا وآسيا عبر \"طريق الحرير\" الذي كانت تديره إمبراطورية المغول ويُستخدم لنقل البضائع، حيث وفر أمن هذا الطريق وسهولة الوصول إليه فرصاً للجرذان والبراغيث للسفر مختبئة داخل الشحنات.\n\nرابعاً: الإرث التاريخي والمقارنة بالعصر الحديث\nكان أحد النتائج الهامة طويلة المدى للموت الأسود هو التنظيم المتزايد للحركة وطرق النقل، ومراقبة الطرق والشحنات، وتطوير الحجر الصحي. وقبل كل شيء، لاحظت السلطات أن انتشار المرض يتبع حركة السفن وطرق التجارة. ومع ارتفاع المعرفة العامة بالأمراض، بدأوا في تنفيذ تدابير مكافحة الطاعون؛ فعلى سبيل المثال، \"حثت فلورنسا مواطنيها على تنظيف الشوارع، وأحرقت البندقية السفن المشبوهة\"، مما يظهر فهمهم لكيفية انتقال الأمراض وتصرفهم بطريقة وقائية. ومن ناحية أخرى، كانت إحدى طرق محاربة انتشار المرض هي استخدام \"التصاريح الصحية\" وتنظيم المنتجات، حيث كان يُفترض أن يحمل الجميع تصريحاً يفصل هوية حامله وحالته الصحية، مع حرق المنتجات الملوثة أو طردها خارج المدينة. طُبق أول شكل من أشكال الحجر الصحي من قبل المجالس الصحية الإيطالية، حيث كان يتعين حبس المواطنين المصابين في منازلهم أو إرسالهم إلى \"بيوت الطاعون\"، ونُفي بعضهم خارج المدينة. كان الحجر الصحي هو المؤسسة التي تدخلت من خلالها السلطات السياسية مباشرة في الحياة اليومية للمواطنين، واضعةً الأساس للحوكمة الصحية الحديثة. وبالمثل، في العصر الحديث، اعتمدت الدول على أنظمة صحة عامة أكثر تقدماً خلال جائحة كوفيد-19؛ حيث أثبتت قيود الحركة، والحجر الصحي، والعزل المنزلي والمستشفي، صلة النماذج الوقائية التي أُنشئت سابقاً خلال الأوبئة الماضية. وفي هذا الصدد، لعبت منظمة الصحة العالمية دوراً مركزياً من خلال نشر المعرفة العلمية وتقديم تعليمات واضحة للصحة العامة لكل من الحكومات والجمهور. وبالمقارنة مع القرن الرابع عشر، يمثل هذا تطوراً كبيراً يظهر الفرق في التنفيذ بناءً على الخبرة التي اكتسبتها البشرية من الماضي."
+  },
+  "en": {
+    "navTitle": "الأستاذ القدير يحيى",
+    "title": "Causes and effects of the Black Death",
+    "summary": "يتحدث البحث عن أسباب ونتائج الطاعون, خلال قراءتك للبحث بتكتشف العديد من الأحداث والأفكار الغريبة والعجيبة\nأرجوا منك بعد ما تخلص تكتب لي تقييمك والملاحظات الي لاحظتها\nوشكرًا ^_^",
+    "content": "\nInfectious diseases have influenced the transformation of medieval infrastructure. The limitations of medical knowledge have led to profound impacts on people, authorities, and governments. Effects of diseases in history have extended beyond medicine to political authority, economic life, and social stability. Societies have resorted to traditional and unscientific ways due to the deficiency of medical understanding. Therefore, medical practices were based on inherited knowledge and the absence of empirical methods which its effects extended to cover many other approaches such as astrology due to the lack of knowledge in medicine. Moreover, the teaching faculties have maintained this type of medical approach which delayed the development of medicine, resulting in ineffective treatments and widespread uncertainty. The outbreak of the Black Death in the 14th century represented a critical point in the deficiency of medical understanding and revealed the fragility in the ability of authorities to control and counter diseases. Authorities struggled to control and manage public fear and implement effective measures to contain the widespread of the disease. However, these failures have encouraged societies to reconsider existing practices and seek for alternative methods of diseases prevention. Over time, the experience of the Black Death developed new approaches to urban planning, sanitation, and general management, laying down the foundation for new concept of public health and medical thought. The outcomes were not immediate but emerged gradually as societies learned from repeated failures. These factors have encouraged societies to develop and implement new methods to avoid future outbreaks. This essay will discuss the causes and effects of Black Death in the 14th century.\n\nOne of the preeminent factors was the lack of medical understanding in the fourteenth century, whereas resources had finite availability in medieval epidemiology and there was a profound scarcity of therapeutic provisions (Nutton, 2013, p. 236). In the 160s AD, Galen instituted his theory; it consisted of four humors, which are blood, phlegm, yellow bile, and black bile. Each fluid had four factors: elements, qualities, associated organs, and personality type if imbalanced (Nutton, 2013). Moreover, in the 160s AD, dissection of human bodies was restricted, where the only option was to dissect animals such as monkeys and sheep. This led him to develop his methodology by combining dissection, experimentation, travel, and logic (Nutton, 2013, pp. 246–252). Furthermore, depending on Galen’s theory, doctors at that time managed to help cure some diseases, but it was not comprehensive enough and lacked scientific depth (Nutton, 2013). In addition, the reason why no one questioned Galen’s methods was that it was forbidden and considered “rank heresy” by the teaching faculties. The teaching of medicine was frozen because of the “force of custom”, which led men to accept unquestioningly what had been accepted for over a thousand years (Jamison, 1946, p. 612). On the other hand, it was believed that astrology controlled the health of patients, and according to Medical Education in the Fourteenth Century, “It was believed in the 14th century that all diseases in the body, their origin, their cure, the rise and progress of epidemics, the efficacy of drugs at the time of bloodletting and the preparation of medicine, all were in some way connected with the movement of planets” (Jamison, 1946, p. 614). As a result, university instructions were strict and non-negotiable; students were forced to listen to and repeat annals from ancient scrolls and study astrology, which prevented them from any practice of real medicine (Jamison, 1946, pp. 612–613). Additionally, one of the most significant problems was the separation of surgery from medicine, where many university-trained physicians were priests who were forbidden by the Church from the shedding of blood, which diverted them from any practical physical interventions (Jamison, 1946, pp. 612–615).\n________________________________________\nThe Black Death reconfigured the medieval social fabric, transforming approaches to medicine, pathology, and general health. In addition, intellectual suffocation and the deaths of 25–50 million people forced teaching faculties, governments, and physicians to reconsider the foundations of medical knowledge. Therefore, the failure of authorities and medicine in the fourteenth century led to an unprecedented catastrophe in physical health, mental health, and social relationships (Snowden, 2019). Correspondingly, this reality led people in the fourteenth century and beyond to seek innovative approaches to combat and manage disease and epidemics. This process led to the formation of anti-plague measures and the emergence of a new form of institutionalized public health, which was first developed in the northern Italian city-states of Venice, Genoa, Milan, and Florence. These regions adopted such measures due to their exposed locations and repeated experience with severe epidemics (Snowden, 2019, p. 69). In addition, these measures did not remain limited to Italy, as they were later adopted by France, Spain, and northern Europe. Over time, anti-plague systems were outlined and became more mature and encyclopedic during the fifteenth and sixteenth centuries. The expansion of the system was arduous because it remained largely local. Therefore, during the seventeenth and eighteenth centuries, a “quantum leap” made the system more effective and led to significant success through the support of the emerging early modern state, which reinforced these efforts with bureaucratic and military power and extended them on a larger geographical scale (Snowden, 2019, p. 69). Moreover, these developments occurred even before there was a clear medical understanding of the plague itself. Authorities proceeded step by step through trial and error until the end of the eighteenth century, when major medical achievements and discoveries were made. As a result, these efforts “led to the first major victory in the war against epidemic diseases” (Snowden, 2019, p. 69).\n________________________________________\nTransportation played a significant role in the dissemination of the Black Death, since the disease is “caused by the bacterium Yersinia pestis, which survives in rodent populations and is transmitted by fleas” (Barbieri et al., 2020). However, Yersinia pestis is a type of bacterium that lives inside fleas. In certain cases, a biofilm forms in the proventricular valve of the flea’s midgut, blocking it so that the flea can no longer feed and begins to starve. This condition causes abnormal behavior, leading the flea to bite animals and humans repeatedly. As a result, the infected blood is regurgitated into the wound, allowing Yersinia pestis to spread to new animal or human hosts (Barbieri et al., 2020). Interestingly, fleas cannot travel long distances on their own, whereas rats can travel only short distances unless transportation provides a means for wider movement. For instance, rats could hide in shipments, containers, wastewater systems, and other environments (Snowden, 2019, p. 43). Similarly, when ships carried rats and infected crew members, they transported the disease from one place to another (Snowden, 2019, p. 43). In some cases, rats infected the crew during the voyage, and the plague killed them before arrival, turning the vessel into a “ghost ship” (Snowden, 2019, p. 43). Furthermore, ships and crews were not inspected, even though the disease was widely recognized, and no systematic countermeasures such as quarantine were implemented to stop its spread (Snowden, 2019, p. 43). Above all, rats and fleas traveled across Europe and Asia via the Silk Road, which was maintained by the Mongol Empire and used for transporting goods and materials. The safety and accessibility of this route provided opportunities for rats and fleas to travel hidden within cargo (Yue et al., 2017).\n________________________________________\nOne of the significant long-term consequences of the Black Death was the growing regulation of movement, transportation routes, and the monitoring of roads, shipments, and the development of quarantine. Above all, the authorities noticed that the spread of the disease was followed by the movement of ships and trade routes (Snowden, 2019). Whereas, with the rise of public knowledge about diseases, they started to perform anti-plague measures (Kelly, 2006, p. 97). For instance, “Florence exhorted its citizens to clean the streets, and Venice burned suspect ships”; this shows how they understood how diseases transmit and acted in a protective way (Kelly, 2006, p. 97). On the other hand, one of the ways to fight the spread of the disease was the use of health passes and the regulation of products, where everyone was intended to carry one detailing the identity of the holder and the health condition. Infected products could be burned or thrown away from the city (Cipolla, 1976, pp. 28–29). The first form of quarantine was applied by the Italian health boards, where infected citizens had to be locked in their homes or sent to the “pesthouses”, and some of them were banished out of the city (Cipolla, 1976, pp. 28–29). Quarantine was the institution through which political authorities intervened directly in the daily lives of citizens, where it started laying the base for modern health governance (Cipolla, 1976, pp. 28–29). Likewise, in the modern era, countries relied on more advanced public health systems during COVID-19. Restrictions of movement, quarantine, home isolation, and hospital isolation proved the relevance of the previously created prevention models during former epidemics (World Health Organization, 2020). Regarding this, the World Health Organization played a central role by publicizing scientific knowledge and providing clear public health instructions to both governments and the general public (World Health Organization, 2020). Compared with the fourteenth century, this represents a significant development, showing the difference in implementation based on the experience that humanity gained from the past.\n\n"
+  }
+        };
+        // ---------------------------------------------------------
+
+        let currentLang = 'ar';
+
+        // محاولة استرجاع بيانات محفوظة مؤقتاً
+        const saved = localStorage.getItem('researchContentDark');
+        if(saved) content = JSON.parse(saved);
 
         function render() {
-            const d = db[lang];
-            const isAr = lang === 'ar';
+            const d = content[currentLang];
+            const isAr = currentLang === 'ar';
             document.documentElement.dir = isAr ? 'rtl' : 'ltr';
-            document.documentElement.lang = lang;
+            document.documentElement.lang = currentLang;
 
             // تحديث الواجهة
             document.getElementById('nav-title').innerText = d.navTitle;
@@ -95,55 +133,58 @@
             document.getElementById('view-content').innerText = d.content;
 
             // تحديث قسم التقييم
-            document.getElementById('rate-head').innerText = isAr ? "ما رأيك في البحث؟" : "What's your feedback?";
-            document.getElementById('rate-sub').innerText = isAr ? "تقييمك يساعدني على التطوير" : "Your rating helps me improve";
-            document.getElementById('reason').placeholder = isAr ? "سبب التقييم (اختياري)..." : "Reason for rating (Optional)...";
-            document.getElementById('btn-send').innerText = isAr ? "إرسال التقييم" : "Submit Rating";
+            document.getElementById('rate-head').innerText = d.rateHead;
+            document.getElementById('rate-sub').innerText = d.rateSub;
+            document.getElementById('reason').placeholder = d.ratePlaceholder;
+            document.getElementById('btn-send').innerText = d.rateBtn;
 
-            // تعبئة لوحة التعديل
+            // تعبئة لوحة المحرر
             document.getElementById('edit-nav').value = d.navTitle;
             document.getElementById('edit-title').value = d.title;
             document.getElementById('edit-summary').value = d.summary;
             document.getElementById('edit-content').value = d.content;
         }
 
-        function toggleLang() { lang = lang === 'ar' ? 'en' : 'ar'; render(); }
+        function toggleLang() { currentLang = currentLang === 'ar' ? 'en' : 'ar'; render(); }
 
         function loginAdmin() {
-            if(prompt("كلمة المرور:") === "1234") {
+            if(prompt("كلمة المرور (الافتراضية 1234):") === "1234") {
                 document.getElementById('admin-tools').style.display = 'block';
             }
         }
 
         function saveChanges() {
-            db[lang] = {
+            content[currentLang] = {
                 navTitle: document.getElementById('edit-nav').value,
                 title: document.getElementById('edit-title').value,
                 summary: document.getElementById('edit-summary').value,
-                content: document.getElementById('edit-content').value
+                content: document.getElementById('edit-content').value,
+                rateHead: content[currentLang].rateHead,
+                rateSub: content[currentLang].rateSub,
+                ratePlaceholder: content[currentLang].ratePlaceholder,
+                rateBtn: content[currentLang].rateBtn
             };
+            localStorage.setItem('researchContentDark', JSON.stringify(content));
             render();
-            alert("تم الحفظ مؤقتاً في المتصفح!");
-        }
-
-        function exportJSON() {
-            const blob = new Blob([JSON.stringify(db, null, 2)], {type : 'application/json'});
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'data.json';
-            a.click();
+            alert(currentLang === 'ar' ? "تم الحفظ المؤقت في متصفحك!" : "Saved temporarily in browser!");
         }
 
         function logout() { document.getElementById('admin-tools').style.display = 'none'; }
 
         function sendRating() {
             const stars = document.querySelector('input[name="stars"]:checked')?.value;
-            if(!stars) return alert(lang === 'ar' ? "اختر النجوم أولاً!" : "Select stars first!");
-            alert(lang === 'ar' ? "شكراً لك! تم استلام تقييمك بنجاح." : "Thank you! Rating received.");
+            const reason = document.getElementById('reason').value;
+            if(!stars) return alert(currentLang === 'ar' ? "يرجى اختيار النجوم!" : "Please select stars!");
+            
+            // هنا سيتم ربط الإيميل لاحقاً
+            console.log(`Rating: ${stars}, Reason: ${reason}`); 
+            
+            alert(currentLang === 'ar' ? "شكراً لتقييمك! (هذه محاكاة للإرسال)" : "Thanks for rating! (Simulation)");
             document.getElementById('ratingForm').reset();
         }
 
-        window.onload = loadData;
+        // تشغيل فوري عند فتح الصفحة
+        window.onload = render;
     </script>
 </body>
 </html>

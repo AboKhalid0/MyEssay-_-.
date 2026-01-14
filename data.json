@@ -1,0 +1,14 @@
+{
+  "ar": {
+    "navTitle": "منصة الأبحاث",
+    "title": "عنوان بحثك هنا (مثال: دراسة عن الفطريات)",
+    "summary": "هذا ملخص بسيط للبحث باللغة العربية يشرح الأهداف والنتائج.",
+    "content": "اكتب نص البحث الكامل هنا باللغة العربية..."
+  },
+  "en": {
+    "navTitle": "Research Portal",
+    "title": "Your Research Title (e.g., Mycology Study)",
+    "summary": "A brief summary of your research goals and findings in English.",
+    "content": "Write your full research content here in English..."
+  }
+}

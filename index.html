@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Essay | Dark Edition</title>
+    <title>الموت الأسود | The Black Death</title>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;700&family=Inter:wght@300;400;700&family=Merriweather:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -15,47 +15,60 @@
             --max-width: 800px;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; transition: all 0.3s ease; }
+        * { box-sizing: border-box; margin: 0; padding: 0; transition: background 0.3s ease; }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-primary);
-            font-family: 'IBM Plex Sans Arabic', 'Inter', sans-serif;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
             line-height: 1.8;
-            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        /* Language Switcher Button */
+        /* Progress Bar */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            z-index: 100;
+            width: 100%;
+            height: 4px;
+            background: transparent;
+        }
+        .progress-bar {
+            height: 4px;
+            background: var(--accent-color);
+            width: 0%;
+        }
+
         .lang-switch-container {
             width: 100%;
             max-width: var(--max-width);
             display: flex;
             justify-content: flex-end;
-            margin-bottom: 20px;
+            padding: 20px;
+            position: sticky;
+            top: 4px;
+            z-index: 10;
         }
 
         #langBtn {
             background: var(--card-bg);
             border: 1px solid var(--accent-color);
             color: var(--accent-color);
-            padding: 8px 16px;
+            padding: 8px 20px;
             border-radius: 20px;
             cursor: pointer;
             font-weight: bold;
             font-family: 'Inter', sans-serif;
-        }
-
-        #langBtn:hover {
-            background: var(--accent-color);
-            color: var(--bg-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
         .container {
             max-width: var(--max-width);
-            width: 100%;
+            width: 90%;
+            margin-bottom: 50px;
         }
 
         header {
@@ -69,6 +82,7 @@
             font-size: 2.2rem;
             color: #ffffff;
             margin-bottom: 15px;
+            line-height: 1.3;
         }
 
         .meta {
@@ -82,15 +96,15 @@
             padding: 40px;
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            font-size: 1.2rem;
+            font-size: 1.15rem;
+            text-align: justify;
         }
 
-        /* Language-specific styles */
+        /* English Mode specific font & direction */
         body.en-mode {
             font-family: 'Inter', sans-serif;
             direction: ltr;
         }
-        
         body.en-mode article {
             font-family: 'Merriweather', serif;
         }
@@ -104,38 +118,36 @@
         }
 
         @media (max-width: 600px) {
-            article { padding: 20px; font-size: 1.1rem; }
-            h1 { font-size: 1.7rem; }
+            article { padding: 25px; font-size: 1.05rem; }
+            h1 { font-size: 1.6rem; }
         }
 
         footer {
             text-align: center;
-            margin-top: 50px;
             color: var(--text-secondary);
             font-size: 0.8rem;
-            padding-bottom: 40px;
+            padding: 40px 0;
         }
     </style>
 </head>
 <body>
 
+    <div class="progress-container"><div class="progress-bar" id="myBar"></div></div>
+
     <div class="lang-switch-container">
-        <button id="langBtn" onclick="toggleLanguage()">English</button>
+        <button id="langBtn" onclick="toggleLanguage()">English Version</button>
     </div>
 
     <div class="container">
         <header id="header-content">
-            <div class="meta">يناير ٢٠٢٦ • بحث أكاديمي</div>
-            <h1 id="main-title">عنوان المقال الخاص بك هنا</h1>
+            <div class="meta" id="meta-date">يناير ٢٠٢٦ • بحث أكاديمي</div>
+            <h1 id="main-title">الموت الأسود: من الركود الفكري إلى ولادة الصحة العامة الحديثة</h1>
             <div class="accent-bar"></div>
-            <p class="meta">تمت الكتابة بواسطة: اسمك</p>
+            <p class="meta" id="meta-author">تمت الكتابة بواسطة: طالب جامعي</p>
         </header>
 
         <article id="essay-body">
-            هذا هو المكان الذي ستضع فيه مقالك باللغة العربية. التصميم غامق ومريح للعين، والخط المستخدم واضح جداً للقراءة الطويلة.
-            <br><br>
-            عندما يضغط أصدقاؤك على زر التبديل في الأعلى، سيتغير النص فوراً إلى النسخة الإنجليزية مع تغيير اتجاه الصفحة ليناسب اللغة.
-        </article>
+            </article>
 
         <footer>
             &copy; 2026 • Designed for Reading
@@ -145,50 +157,59 @@
     <script>
         const content = {
             ar: {
-                title: "عنوان المقال الخاص بك هنا",
-                body: "هذا هو المكان الذي ستضع فيه مقالك باللغة العربية. التصميم غامق ومريح للعين، والخط المستخدم واضح جداً للقراءة الطويلة.<br><br>عندما يضغط أصدقاؤك على زر التبديل في الأعلى، سيتغير النص فوراً إلى النسخة الإنجليزية مع تغيير اتجاه الصفحة ليناسب اللغة.",
+                title: "الموت الأسود: من الركود الفكري إلى ولادة الصحة العامة الحديثة",
+                body: `لا يمكن إنكار حقيقة أن الأمراض المعدية قد أثرت في تحول البنية التحتية للعصور الوسطى؛ حيث أدت محدودية المعرفة الطبية إلى تأثيرات عميقة على الأفراد والسلطات والحكومات. سيناقش هذا المقال أسباب وآثار الموت الأسود في القرن الرابع عشر.<br><br>
+                       <strong>أولاً: قصور المعرفة الطبية والقيود المؤسسية</strong><br>كان أحد العوامل البارزة هو نقص الفهم الطبي في القرن الرابع عشر، حيث كانت الموارد المتاحة في علم الأوبئة في العصور الوسطى محدودة... واعتماداً على نظرية جالينوس، تمكن الأطباء آنذاك من المساعدة في علاج بعض الأمراض، لكنها لم تكن شاملة بما يكفي.<br><br>
+                       <strong>ثانياً: التحول نحو الصحة العامة المؤسسية</strong><br>أعاد الموت الأسود تشكيل النسيج الاجتماعي في العصور الوسطى، محولاً المقاربات تجاه الطب وعلم الأمراض. أدى الاختناق الفكري ووفاة ما بين 25 إلى 50 مليون شخص إلى إجبار الحكومات والأطباء على إعادة النظر في أسس المعرفة الطبية.<br><br>
+                       <strong>ثالثاً: ميكانيكا انتقال العدوى ودور النقل</strong><br>لعبت وسائل النقل دوراً حاسماً في نشر الموت الأسود، بما أن المرض تسببه بكتيريا "اليرسينيا الطاعونية" التي تعيش في مجتمعات القوارض وتنتقل عبر البراغيث.<br><br>
+                       <strong>رابعاً: الإرث التنظيمي والمقارنة بالعصر الحديث</strong><br>كان أحد أهم النتائج طويلة المدى للموت الأسود هو تزايد تنظيم الحركة ومراقبة طرق التجارة وتطوير نظام الحجر الصحي. وضع هذا النظام الأساس للحوكمة الصحية الحديثة.<br><br>
+                       <strong>الخاتمة</strong><br>ختاماً، مثّل الموت الأسود محفزاً محورياً لتطور المجتمعات؛ حيث أجبر العالم على الانتقال من الركود الفكري إلى العمل الإداري التطبيقي.`,
                 meta: "يناير ٢٠٢٦ • بحث أكاديمي",
-                author: "تمت الكتابة بواسطة: اسمك",
-                btn: "English"
+                author: "تمت الكتابة بواسطة: طالب جامعي",
+                btn: "English Version"
             },
             en: {
-                title: "The Title of Your Essay Here",
-                body: "This is where you will place your English essay. The dark design is eye-friendly, and the font is optimized for long-form reading.<br><br>When your friends click the button at the top, the layout will switch directions and update the text content seamlessly.",
+                title: "The Black Death: From Intellectual Stagnation to Modern Public Health",
+                body: `There is no denying the fact that Infectious diseases have influenced the transformation of medieval infrastructure. The limitations of medical knowledge have led to profound impacts on people, authorities, and governments... This essay will discuss the causes and effects of Black Death in the 14th century.<br><br>
+                       <strong>I. Lack of Medical Understanding</strong><br>One of the preeminent factors was the lack of medical understanding in the fourteenth century, whereas resources had finite availability in medieval epidemiology and there was a profound scarcity of therapeutic provisions (Nutton, 2013).<br><br>
+                       <strong>II. Shift to Institutionalized Health</strong><br>The Black Death reconfigured the medieval social fabric, transforming approaches to medicine, pathology, and general health. The failure of authorities led to an unprecedented catastrophe in physical and mental health (Snowden, 2019).<br><br>
+                       <strong>III. Mechanics of Transmission</strong><br>Transportation played a significant role in the dissemination of the Black Death, caused by the bacterium Yersinia pestis. Ships and the Silk Road provided opportunities for rats and fleas to travel hidden within cargo.<br><br>
+                       <strong>IV. Regulatory Legacy</strong><br>One of the significant long-term consequences was the growing regulation of movement and the development of quarantine. This laid the base for modern health governance, proving relevant during COVID-19.<br><br>
+                       <strong>Conclusion</strong><br>To conclude, the Black Death served as a pivotal catalyst for the development of societies; it forced a shift from intellectual stagnation to practical, administrative action.`,
                 meta: "January 2026 • Academic Research",
-                author: "Written by: Your Name",
-                btn: "العربية"
+                author: "Written by: University Student",
+                btn: "النسخة العربية"
             }
         };
 
         let currentLang = 'ar';
 
-        function toggleLanguage() {
-            const body = document.body;
-            const title = document.getElementById('main-title');
-            const article = document.getElementById('essay-body');
-            const btn = document.getElementById('langBtn');
-            const metaTags = document.querySelectorAll('.meta');
-
-            if (currentLang === 'ar') {
-                currentLang = 'en';
-                body.classList.add('en-mode');
-                body.setAttribute('dir', 'ltr');
-                title.innerText = content.en.title;
-                article.innerHTML = content.en.body;
-                metaTags[0].innerText = content.en.meta;
-                metaTags[1].innerText = content.en.author;
-                btn.innerText = content.en.btn;
-            } else {
-                currentLang = 'ar';
-                body.classList.remove('en-mode');
-                body.setAttribute('dir', 'rtl');
-                title.innerText = content.ar.title;
-                article.innerHTML = content.ar.body;
-                metaTags[0].innerText = content.ar.meta;
-                metaTags[1].innerText = content.ar.author;
-                btn.innerText = content.ar.btn;
-            }
+        function updateContent() {
+            document.getElementById('main-title').innerText = content[currentLang].title;
+            document.getElementById('essay-body').innerHTML = content[currentLang].body;
+            document.getElementById('meta-date').innerText = content[currentLang].meta;
+            document.getElementById('meta-author').innerText = content[currentLang].author;
+            document.getElementById('langBtn').innerText = content[currentLang].btn;
         }
+
+        function toggleLanguage() {
+            currentLang = (currentLang === 'ar') ? 'en' : 'ar';
+            document.body.className = (currentLang === 'en') ? 'en-mode' : '';
+            document.body.setAttribute('dir', (currentLang === 'en') ? 'ltr' : 'rtl');
+            updateContent();
+            window.scrollTo(0,0);
+        }
+
+        // Initialize
+        updateContent();
+
+        // Scroll Progress Logic
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("myBar").style.width = scrolled + "%";
+        };
     </script>
 </body>
 </html>

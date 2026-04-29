@@ -4,342 +4,567 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>كارُوتا المُعَلَّقات</title>
-
-<!-- Firebase v9 compat (works as global scripts, no bundler needed) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Noto+Naskh+Arabic:wght@400;500;700&display=swap');
 
 :root {
-  --bg: #0f0e1a;
-  --surface: #1a1830;
-  --surface2: #231f3a;
-  --accent: #7f77dd;
-  --accent-light: #afa9ec;
-  --gold: #e8c97a;
-  --gold-dim: #9a8240;
-  --text: #e8e6f8;
-  --text-dim: #8884aa;
-  --green: #1d9e75;
-  --red: #e24b4a;
-  --r: 10px;
+  --paper:    #f7eed8;
+  --paper2:   #ede0c4;
+  --paper3:   #dfd0ad;
+  --ink:      #1a1208;
+  --ink-dim:  #6b5230;
+  --green:    #2d5a27;
+  --green2:   #3d7a34;
+  --red:      #8b1a1a;
+  --red2:     #b52222;
+  --gold:     #c8962a;
+  --gold2:    #e8c97a;
+  --shadow:   rgba(26,18,8,0.28);
+  --bg:       #1e1205;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin:0; padding:0; }
 
 body {
-  font-family: 'Cairo', sans-serif;
+  font-family: 'Noto Naskh Arabic', 'Amiri', serif;
   background: var(--bg);
-  color: var(--text);
+  color: var(--ink);
   min-height: 100vh;
 }
 
-/* bg stars */
+/* tatami grid bg */
 body::before {
-  content: '';
-  position: fixed; inset: 0; z-index: 0;
-  background-image:
-    radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.15) 0%, transparent 100%),
-    radial-gradient(1px 1px at 80% 10%, rgba(255,255,255,0.1) 0%, transparent 100%),
-    radial-gradient(1px 1px at 55% 70%, rgba(255,255,255,0.12) 0%, transparent 100%),
-    radial-gradient(1px 1px at 10% 80%, rgba(255,255,255,0.08) 0%, transparent 100%),
-    radial-gradient(1px 1px at 90% 60%, rgba(255,255,255,0.1) 0%, transparent 100%);
-  pointer-events: none;
+  content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:
+    repeating-linear-gradient(0deg,   transparent, transparent 59px, rgba(200,150,42,.06) 59px, rgba(200,150,42,.06) 60px),
+    repeating-linear-gradient(90deg,  transparent, transparent 59px, rgba(200,150,42,.06) 59px, rgba(200,150,42,.06) 60px),
+    #1e1205;
 }
 
-#app { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 1.5rem 1rem; }
+#app { position:relative; z-index:1; max-width:920px; margin:0 auto; padding:1.5rem 1rem; }
 
-.screen { display: none; }
-.screen.active { display: block; }
+.screen { display:none; }
+.screen.active { display:block; }
 
-/* ── SETUP NOTICE ── */
-#setup-notice {
-  background: #2a1f0a;
-  border: 1px solid var(--gold-dim);
-  border-radius: var(--r);
-  padding: 1.25rem 1.5rem;
-  margin-bottom: 1.5rem;
-  font-size: 13px;
-  line-height: 1.8;
-  direction: ltr;
-  color: #d4b96a;
+/* ─── SCROLL CARD ─── */
+.scroll {
+  background: var(--paper);
+  border: 3px solid var(--green);
+  border-radius: 2px;
+  padding: 1.4rem 1.5rem;
+  margin-bottom: 1.25rem;
+  position: relative;
+  box-shadow: 0 5px 20px var(--shadow), inset 0 0 50px rgba(200,150,42,.08);
 }
-#setup-notice strong { color: var(--gold); display: block; margin-bottom: 0.5rem; font-size: 14px; }
-#setup-notice code { background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 12px; }
-#setup-notice a { color: var(--accent-light); }
+.scroll::before, .scroll::after {
+  content:''; position:absolute; left:0; right:0; height:5px;
+  background: var(--green);
+}
+.scroll::before { top:5px; }
+.scroll::after  { bottom:5px; }
 
-/* ── HOME ── */
-.home-hero { text-align: center; padding: 2.5rem 1rem 2rem; }
-.hero-title { font-family: 'Amiri', serif; font-size: 38px; color: var(--gold); line-height: 1.4; margin-bottom: 0.25rem; }
-.hero-sub { font-size: 13px; color: var(--text-dim); letter-spacing: 2px; direction: ltr; margin-bottom: 0.75rem; }
-.hero-verse { font-family: 'Amiri', serif; font-size: 18px; color: var(--accent-light); margin: 1.5rem 0; line-height: 2; opacity: 0.8; }
-
-.btn-group { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem; }
-
+/* ─── BUTTONS ─── */
 .btn {
-  padding: 10px 22px; border-radius: var(--r);
-  border: 1px solid rgba(127,119,221,0.3);
-  background: rgba(127,119,221,0.08);
-  color: var(--text); cursor: pointer; font-size: 14px;
-  font-family: 'Cairo', sans-serif; font-weight: 500;
-  transition: all 0.2s;
+  padding:10px 22px;
+  border: 2px solid var(--green);
+  background: var(--paper);
+  color: var(--ink);
+  cursor:pointer; font-size:14px;
+  font-family:'Noto Naskh Arabic',serif; font-weight:500;
+  border-radius:2px;
+  transition: all .15s;
+  box-shadow: 3px 3px 0 var(--green);
 }
-.btn:hover { background: rgba(127,119,221,0.2); border-color: var(--accent); }
-.btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
-.btn.primary:hover { background: #9088e8; }
-.btn.gold { background: var(--gold); color: #1a1400; border-color: var(--gold); font-weight: 700; }
-.btn.gold:hover { background: #f0d88a; }
-.btn:disabled { opacity: 0.4; cursor: default; }
+.btn:hover  { background:var(--paper2); transform:translate(-1px,-1px); box-shadow:4px 4px 0 var(--green); }
+.btn:active { transform:translate(1px,1px); box-shadow:1px 1px 0 var(--green); }
+.btn.primary { background:var(--green); color:var(--paper); box-shadow:3px 3px 0 #1a3a14; }
+.btn.primary:hover { background:var(--green2); }
+.btn.danger  { background:var(--red); color:var(--paper); border-color:#5a0808; box-shadow:3px 3px 0 #5a0808; }
+.btn.danger:hover  { background:var(--red2); }
+.btn:disabled { opacity:.45; cursor:default; transform:none; }
+.btn-row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.btn-group { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:1.5rem; }
 
-/* ── CARDS ── */
-.card {
-  background: var(--surface);
-  border: 1px solid rgba(127,119,221,0.15);
-  border-radius: var(--r);
-  padding: 1.25rem 1.5rem;
-  margin-bottom: 1rem;
-}
-
-label { font-size: 12px; color: var(--text-dim); display: block; margin-bottom: 6px; letter-spacing: 0.5px; }
+/* ─── INPUTS ─── */
+label { font-size:12px; color:var(--ink-dim); display:block; margin-bottom:5px; }
 input[type=text] {
-  width: 100%; padding: 10px 14px;
-  background: var(--surface2); border: 1px solid rgba(127,119,221,0.2);
-  border-radius: 8px; color: var(--text);
-  font-family: 'Cairo', sans-serif; font-size: 14px;
-  outline: none; transition: border-color 0.2s;
+  width:100%; padding:9px 13px;
+  background:var(--paper2); border:1.5px solid var(--gold);
+  border-radius:2px; color:var(--ink);
+  font-family:'Noto Naskh Arabic',serif; font-size:14px;
+  outline:none; transition:border-color .2s;
 }
-input[type=text]:focus { border-color: var(--accent); }
+input[type=text]:focus { border-color:var(--green); }
 
-.room-code-display {
-  font-family: 'Cairo', sans-serif; font-size: 42px; font-weight: 700;
-  letter-spacing: 12px; color: var(--gold); text-align: center;
-  padding: 1rem; background: rgba(232,201,122,0.07);
-  border-radius: 8px; margin: 1rem 0; direction: ltr;
+/* ─── HOME ─── */
+.home-hero { text-align:center; padding:2rem 1rem 1.5rem; }
+.hero-frame {
+  display:inline-block;
+  background:var(--paper);
+  border:3px solid var(--green);
+  padding:2rem 3rem;
+  position:relative;
+  box-shadow:0 8px 30px var(--shadow);
+}
+.hero-frame::before, .hero-frame::after {
+  content:''; position:absolute; left:0; right:0; height:5px; background:var(--green);
+}
+.hero-frame::before { top:5px; }
+.hero-frame::after  { bottom:5px; }
+/* corner ornaments */
+.hero-frame .corner {
+  position:absolute; width:18px; height:18px;
+  border:3px solid var(--red); border-radius:50%;
+  background:var(--paper);
+}
+.hero-frame .corner.tl { top:2px; left:2px; }
+.hero-frame .corner.tr { top:2px; right:2px; }
+.hero-frame .corner.bl { bottom:2px; left:2px; }
+.hero-frame .corner.br { bottom:2px; right:2px; }
+
+.hero-seal {
+  width:60px; height:60px; border-radius:50%;
+  background:var(--red); color:var(--paper);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Amiri',serif; font-size:22px; font-weight:700;
+  margin:0 auto 0.75rem;
+  box-shadow:0 3px 12px rgba(139,26,26,.5);
+  border:3px solid #5a0808;
+}
+.hero-title {
+  font-family:'Amiri',serif; font-size:44px;
+  color:var(--red); line-height:1.3;
+}
+.hero-sub {
+  font-size:10px; color:var(--ink-dim);
+  letter-spacing:3px; direction:ltr; margin-top:.5rem;
 }
 
-/* ── PLAYERS ── */
-.player-list { display: flex; flex-direction: column; gap: 8px; margin: 1rem 0; }
+/* ─── LOBBY ─── */
+.room-code-box {
+  font-size:46px; font-weight:700; letter-spacing:14px;
+  color:var(--red); text-align:center;
+  padding:1rem; background:var(--paper2);
+  border:1.5px solid var(--gold); border-radius:2px;
+  margin:1rem 0; direction:ltr;
+}
+.player-list { display:flex; flex-direction:column; gap:8px; margin:1rem 0; }
 .player-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 14px; background: var(--surface2);
-  border-radius: 8px; font-size: 14px;
+  display:flex; align-items:center; gap:10px;
+  padding:9px 13px; background:var(--paper2);
+  border:1px solid var(--paper3); border-radius:2px;
+  font-size:14px; color:var(--ink);
 }
-.dot { width: 9px; height: 9px; border-radius: 50%; }
-.dot.online { background: var(--green); }
-.dot.wait { background: var(--gold); animation: pulse 1.2s infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-.badge { font-size: 10px; color: var(--text-dim); margin-right: auto; }
+.dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+.dot.on  { background:#2d7a2a; }
+.dot.off { background:var(--gold); animation:pulse 1.2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:.35} }
+.host-tag { font-size:10px; color:var(--ink-dim); margin-right:auto; }
+.wait-msg { text-align:center; padding:1.5rem; color:var(--ink-dim); font-size:14px; }
+.wait-msg span { animation:blink 1.4s infinite; }
+.wait-msg span:nth-child(2){animation-delay:.2s}
+.wait-msg span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:0}40%{opacity:1}}
 
-/* ── GAME ── */
-.game-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 8px; }
-.scores { display: flex; gap: 8px; flex-wrap: wrap; }
-.score-chip {
-  background: var(--surface); border: 1px solid rgba(127,119,221,0.2);
-  border-radius: 8px; padding: 5px 14px; font-size: 13px;
+/* ─── AUDIO UPLOAD ─── */
+.audio-panel {
+  background:var(--paper2); border:1.5px solid var(--gold);
+  border-radius:2px; padding:1rem 1.25rem; margin-top:1rem;
+  direction:ltr;
 }
-.score-chip.me { border-color: var(--accent); }
-.score-chip span { font-weight: 700; color: var(--accent-light); }
-.round-badge {
-  padding: 5px 14px; border-radius: 8px;
-  background: rgba(232,201,122,0.1); color: var(--gold); font-size: 13px; font-weight: 500;
+.audio-panel h3 { font-size:13px; color:var(--ink); margin-bottom:.25rem; }
+.audio-panel p  { font-size:11px; color:var(--ink-dim); margin-bottom:.75rem; line-height:1.6; }
+.audio-slot {
+  display:flex; align-items:center; gap:10px;
+  padding:7px 10px; margin-bottom:6px;
+  background:var(--paper); border:1px solid var(--paper3); border-radius:2px;
+}
+.slot-num {
+  width:26px; height:26px; border-radius:50%;
+  background:var(--red); color:var(--paper);
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; font-weight:700; flex-shrink:0;
+  font-family:'Amiri',serif;
+}
+.slot-name { font-size:12px; color:var(--ink-dim); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.slot-name.ok { color:#2d7a2a; font-weight:600; }
+input[type=file] { display:none; }
+.upload-lbl {
+  padding:4px 10px; font-size:11px;
+  border:1px solid var(--green); background:var(--paper);
+  color:var(--green); border-radius:2px; cursor:pointer;
+  font-family:'Noto Naskh Arabic',serif; flex-shrink:0;
+}
+.upload-lbl:hover { background:var(--paper2); }
+
+/* ─── INTRO SCREEN ─── */
+#screen-intro { text-align:center; }
+.intro-box {
+  background:var(--paper); border:3px solid var(--green);
+  padding:3rem 2rem; position:relative;
+  box-shadow:0 8px 32px var(--shadow);
+}
+.intro-box::before, .intro-box::after {
+  content:''; position:absolute; left:0; right:0; height:5px; background:var(--green);
+}
+.intro-box::before { top:5px; }
+.intro-box::after  { bottom:5px; }
+.intro-num { font-family:'Amiri',serif; font-size:64px; color:var(--red); line-height:1; }
+.intro-label { font-family:'Amiri',serif; font-size:22px; color:var(--ink); margin:.5rem 0 2rem; line-height:1.7; }
+.intro-label small { font-size:14px; color:var(--ink-dim); }
+.wave { display:flex; align-items:flex-end; justify-content:center; gap:5px; height:54px; margin:1rem auto; }
+.wave span {
+  width:6px; background:var(--green); border-radius:3px; min-height:6px;
+  animation:wav 1.1s ease-in-out infinite;
+}
+.wave span:nth-child(1){height:18px;animation-delay:0s}
+.wave span:nth-child(2){height:34px;animation-delay:.1s}
+.wave span:nth-child(3){height:54px;animation-delay:.2s}
+.wave span:nth-child(4){height:28px;animation-delay:.3s}
+.wave span:nth-child(5){height:46px;animation-delay:.4s}
+.wave span:nth-child(6){height:22px;animation-delay:.5s}
+.wave span:nth-child(7){height:38px;animation-delay:.6s}
+@keyframes wav{0%,100%{transform:scaleY(.3)}50%{transform:scaleY(1)}}
+.wave.still span { animation-play-state:paused; transform:scaleY(.3); }
+.intro-status { font-size:15px; color:var(--ink-dim); margin-top:1rem; line-height:1.9; }
+.countdown { font-family:'Amiri',serif; font-size:72px; color:var(--red); line-height:1; margin:1rem 0; display:none; }
+
+/* ─── GAME HEADER ─── */
+.game-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; flex-wrap:wrap; gap:8px; }
+.scores { display:flex; gap:8px; flex-wrap:wrap; }
+.chip {
+  background:var(--paper); border:1.5px solid var(--gold);
+  border-radius:2px; padding:5px 12px; font-size:13px; color:var(--ink);
+}
+.chip.me { border-color:var(--red); color:var(--red); font-weight:700; }
+.chip span { font-weight:700; }
+.round-tag {
+  padding:5px 14px; border-radius:2px;
+  background:var(--paper); border:1.5px solid var(--green);
+  color:var(--green); font-size:13px; font-weight:600;
 }
 
-/* reader */
-.reader-card {
-  background: linear-gradient(135deg, #1e1a40 0%, #2a244d 100%);
-  border: 1px solid rgba(127,119,221,0.3);
-  border-radius: var(--r); padding: 1.75rem; margin-bottom: 1.5rem; text-align: center;
-  position: relative; overflow: hidden;
+/* ─── YOMIFUDA (reading card) ─── */
+.yomifuda {
+  display:flex;
+  background:var(--paper);
+  border:3px solid var(--green);
+  border-radius:2px;
+  margin-bottom:1.5rem;
+  position:relative;
+  box-shadow:0 6px 24px var(--shadow);
+  overflow:hidden;
+  min-height:130px;
 }
-.reader-card::before {
-  content: ''; position: absolute; inset: 0;
-  background: radial-gradient(ellipse at top, rgba(127,119,221,0.08) 0%, transparent 70%);
-  pointer-events: none;
+.yomifuda::before, .yomifuda::after {
+  content:''; position:absolute; top:0; bottom:0; width:5px; background:var(--green);
 }
-.reader-label { font-size: 11px; color: var(--accent-light); letter-spacing: 2px; margin-bottom: 1rem; direction: ltr; opacity: 0.7; }
-.reader-verse { font-family: 'Amiri', serif; font-size: 24px; line-height: 2; color: var(--text); }
-.reader-poet { font-size: 13px; color: var(--gold-dim); margin-top: 0.75rem; }
-.timer-wrap { margin-top: 1.25rem; height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
-.timer-bar { height: 100%; background: var(--accent); border-radius: 2px; transition: width 1s linear; }
-.timer-bar.urgent { background: var(--red); }
+.yomifuda::before { left:5px; }
+.yomifuda::after  { right:5px; }
+.yomi-left {
+  width:50px; flex-shrink:0; background:var(--red);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:.75rem 0; margin:0 5px;
+}
+.yomi-lbl {
+  font-size:9px; color:rgba(247,238,216,.65);
+  writing-mode:vertical-rl; letter-spacing:2px; text-transform:uppercase; direction:ltr;
+}
+.yomi-right {
+  flex:1; padding:1.25rem 1.5rem 1.25rem .75rem;
+  display:flex; flex-direction:column; align-items:flex-end;
+}
+.yomi-verse {
+  font-family:'Amiri',serif; font-size:27px; line-height:2.1;
+  color:var(--ink); text-align:right; width:100%;
+}
+.yomi-poet {
+  font-size:12px; color:var(--ink-dim); margin-top:.5rem;
+  border-top:1px solid var(--paper3); padding-top:.4rem;
+  width:100%; text-align:left; direction:ltr;
+}
+.reading-now {
+  display:none; align-items:center; gap:8px;
+  font-size:11px; color:var(--red); margin-bottom:.5rem; direction:ltr;
+}
+.reading-now.show { display:flex; }
+.rdot { width:7px; height:7px; border-radius:50%; background:var(--red); animation:pulse 0.7s infinite; }
 
-/* playing cards */
-.cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+/* ─── TORIFUDA (playing cards) ─── */
+.cards-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(145px,1fr));
+  gap:12px;
+}
 .kcard {
-  background: var(--surface); border: 1px solid rgba(127,119,221,0.15);
-  border-radius: var(--r); padding: 12px; cursor: pointer; text-align: center;
-  transition: all 0.18s; min-height: 95px;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background:var(--paper);
+  border:3px solid var(--green);
+  border-radius:2px;
+  cursor:pointer;
+  aspect-ratio:2/3;
+  display:flex; flex-direction:column;
+  position:relative; overflow:hidden;
+  box-shadow:3px 4px 10px var(--shadow);
+  transition:all .18s;
 }
-.kcard:hover:not(.matched):not(.wrong) { border-color: var(--accent); transform: translateY(-3px); background: var(--surface2); }
-.kcard.matched { background: rgba(29,158,117,0.12); border-color: rgba(29,158,117,0.4); cursor: default; transform: none; opacity: 0.55; }
-.kcard.wrong { border-color: var(--red); background: rgba(226,75,74,0.1); animation: shake 0.35s; }
-.kcard-verse { font-family: 'Amiri', serif; font-size: 14px; line-height: 1.8; color: var(--text); }
-.kcard-poet { font-size: 10px; color: var(--text-dim); margin-top: 6px; }
-.kcard-winner { font-size: 10px; color: var(--green); margin-top: 4px; font-weight: 700; }
+/* inner green stripe lines — mimicking real karuta borders */
+.kcard::before, .kcard::after {
+  content:''; position:absolute; left:0; right:0; height:4px;
+  background:var(--green); z-index:2;
+}
+.kcard::before { top:5px; }
+.kcard::after  { bottom:5px; }
 
-@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+.kcard:hover:not(.matched):not(.wrong) {
+  transform:translateY(-6px) rotate(-1.5deg);
+  box-shadow:5px 10px 20px var(--shadow);
+  border-color:var(--red);
+}
+.kcard:hover:not(.matched):not(.wrong)::before,
+.kcard:hover:not(.matched):not(.wrong)::after { background:var(--red); }
 
-/* result */
-.result-screen { text-align: center; padding: 2.5rem 1rem; }
-.result-title { font-family: 'Amiri', serif; font-size: 32px; color: var(--gold); margin-bottom: 0.5rem; }
-.result-sub { font-size: 14px; color: var(--text-dim); margin-bottom: 2rem; direction: ltr; }
-.podium { display: flex; justify-content: center; align-items: flex-end; gap: 20px; margin: 2rem 0; }
-.podium-item { text-align: center; }
-.podium-bar { width: 80px; border-radius: 6px 6px 0 0; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; }
-.podium-name { font-size: 12px; color: var(--text-dim); margin-top: 8px; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kcard.matched {
+  background:#d8ead4; border-color:#2d7a2a; opacity:.6; cursor:default; transform:none;
+}
+.kcard.matched::before, .kcard.matched::after { background:#2d7a2a; }
+.kcard.wrong { border-color:var(--red); animation:shake .35s; }
 
-/* toast */
+.kcard-body {
+  flex:1; display:flex; align-items:center; justify-content:center;
+  padding:16px 10px; z-index:1; position:relative;
+}
+/* decorative paper texture dots */
+.kcard-body::before {
+  content:''; position:absolute; inset:0; z-index:0;
+  background-image:radial-gradient(circle, rgba(180,140,80,.12) 1px, transparent 1px);
+  background-size:14px 14px;
+}
+.kcard-verse {
+  font-family:'Amiri',serif; font-size:15px; line-height:2;
+  color:var(--ink); text-align:center; position:relative; z-index:1;
+}
+/* red seal stamp on matched */
+.kcard.matched .kcard-body::after {
+  content:'ص'; position:absolute; font-size:52px;
+  color:rgba(139,26,26,.12); font-family:'Amiri',serif; font-weight:900;
+  top:50%; left:50%; transform:translate(-50%,-50%) rotate(-20deg);
+  z-index:1;
+}
+.kcard-footer {
+  padding:5px 8px; background:rgba(200,150,42,.12);
+  border-top:1px solid var(--paper3);
+  text-align:center; z-index:2; position:relative;
+}
+.kcard-poet   { font-size:9px; color:var(--ink-dim); }
+.kcard-winner { font-size:9px; color:#2d7a2a; font-weight:700; display:block; }
+
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+
+/* ─── RESULT ─── */
+.result-scroll {
+  background:var(--paper); border:3px solid var(--green);
+  padding:2.5rem 2rem; position:relative; text-align:center;
+  box-shadow:0 6px 24px var(--shadow); margin-bottom:1.5rem;
+}
+.result-scroll::before, .result-scroll::after {
+  content:''; position:absolute; left:0; right:0; height:5px; background:var(--green);
+}
+.result-scroll::before { top:5px; }
+.result-scroll::after  { bottom:5px; }
+.result-title { font-family:'Amiri',serif; font-size:36px; color:var(--red); margin-bottom:.5rem; }
+.result-sub   { font-size:14px; color:var(--ink-dim); direction:ltr; margin-bottom:2rem; }
+.podium { display:flex; justify-content:center; align-items:flex-end; gap:18px; margin:1.5rem 0; }
+.podium-item { text-align:center; }
+.podium-bar {
+  width:72px; border-radius:2px 2px 0 0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; font-weight:700; color:var(--paper);
+}
+.podium-name { font-size:11px; color:var(--ink-dim); margin-top:6px; max-width:72px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+/* ─── TOAST ─── */
 .toast {
-  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-  background: var(--surface2); border: 1px solid rgba(127,119,221,0.3);
-  color: var(--text); padding: 10px 22px; border-radius: 30px; font-size: 14px;
-  z-index: 999; opacity: 0; transition: opacity 0.3s; pointer-events: none;
-  direction: ltr; white-space: nowrap;
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+  background:var(--ink); color:var(--paper);
+  padding:10px 24px; border-radius:2px; font-size:14px;
+  z-index:9999; opacity:0; transition:opacity .3s; pointer-events:none;
+  direction:ltr; white-space:nowrap; border:1.5px solid var(--gold);
+  box-shadow:0 4px 16px rgba(0,0,0,.5);
 }
-.toast.show { opacity: 1; }
+.toast.show { opacity:1; }
 
+/* ─── INFO BOX ─── */
 .info-box {
-  background: var(--surface2); border-radius: var(--r); padding: 1rem 1.25rem;
-  font-size: 13px; color: var(--text-dim); line-height: 1.9; direction: ltr;
-  border: 1px solid rgba(127,119,221,0.1);
+  background:var(--paper2); border:1.5px solid var(--gold);
+  border-radius:2px; padding:1rem 1.25rem;
+  font-size:13px; color:var(--ink-dim); line-height:2;
+  direction:ltr; margin-top:1rem;
 }
-.info-box strong { color: var(--text); }
+.info-box strong { color:var(--ink); }
 
-.divider { height: 1px; background: rgba(127,119,221,0.1); margin: 1rem 0; }
-
-.waiting-anim { text-align: center; padding: 2rem; color: var(--text-dim); font-size: 14px; }
-.waiting-dots span { animation: blink 1.4s infinite; }
-.waiting-dots span:nth-child(2) { animation-delay: 0.2s; }
-.waiting-dots span:nth-child(3) { animation-delay: 0.4s; }
-@keyframes blink { 0%,80%,100%{opacity:0} 40%{opacity:1} }
-
-.share-row { display: flex; gap: 8px; direction: ltr; margin-top: 0.5rem; }
-.share-row input { flex: 1; font-size: 12px; }
-
-/* turn indicator */
-.my-turn-flash {
-  text-align: center; padding: 0.5rem; margin-bottom: 1rem;
-  background: rgba(232,201,122,0.1); border: 1px solid rgba(232,201,122,0.3);
-  border-radius: 8px; color: var(--gold); font-size: 13px; font-weight: 700;
-  animation: glow 1s ease-in-out infinite alternate;
-}
-@keyframes glow { from{box-shadow: 0 0 4px rgba(232,201,122,0.2)} to{box-shadow: 0 0 12px rgba(232,201,122,0.4)} }
+.share-row { display:flex; gap:8px; direction:ltr; margin-top:.5rem; }
+.share-row input { flex:1; font-size:12px; }
 </style>
 </head>
 <body>
-
 <div id="app">
 
-  <!-- SETUP NOTICE — users fill in their Firebase config -->
-  <div id="setup-notice">
-    <strong>⚙️ One-time Firebase setup required</strong>
-    1. Go to <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> → Create a project (free)<br>
-    2. Click <strong>Realtime Database</strong> → Create database → choose <em>test mode</em><br>
-    3. Go to Project Settings → <strong>Your apps</strong> → Add web app → copy the config<br>
-    4. Replace the <code>FIREBASE_CONFIG</code> object near the top of this HTML file with your config<br>
-    5. That's it — real multiplayer works instantly on GitHub Pages!
-  </div>
-
-  <!-- HOME -->
-  <div id="screen-home" class="screen active">
-    <div class="home-hero">
-      <div class="hero-verse">قِفَا نَبْكِ مِن ذِكرى حَبيبٍ وَمَنزِلِ</div>
+<!-- ══════════ HOME ══════════ -->
+<div id="screen-home" class="screen active">
+  <div class="home-hero">
+    <div class="hero-frame">
+      <div class="corner tl"></div><div class="corner tr"></div>
+      <div class="corner bl"></div><div class="corner br"></div>
+      <div class="hero-seal">م</div>
       <h1 class="hero-title">كارُوتا المُعَلَّقات</h1>
-      <p class="hero-sub">ARABIC KARUTA — THE SEVEN HANGING ODES</p>
-      <div class="btn-group">
-        <button class="btn gold" onclick="openCreate()">إنشاء غرفة — Create Room</button>
-        <button class="btn primary" onclick="openJoin()">انضمام — Join Room</button>
-        <button class="btn" onclick="playSolo()">منفرداً — Play Solo</button>
-      </div>
+      <p class="hero-sub">ARABIC KARUTA · THE SEVEN HANGING ODES</p>
     </div>
-
-    <div id="join-panel" style="display:none; margin-bottom:1rem;">
-      <div class="card">
-        <label>Room Code — رمز الغرفة</label>
-        <div class="share-row">
-          <input id="join-code" type="text" placeholder="AMRQ" maxlength="4" style="text-transform:uppercase;letter-spacing:6px;font-size:20px;text-align:center;" />
-          <button class="btn primary" onclick="joinRoom()">Join →</button>
-        </div>
-        <div style="margin-top:1rem;">
-          <label>Your name — اسمك</label>
-          <input id="join-name" type="text" placeholder="اسمك" />
-        </div>
-      </div>
-    </div>
-
-    <div class="info-box">
-      <strong>How to play:</strong> A verse from one of the Seven Muallaqat (المعلقات) is read.
-      Players race to tap the card showing the <em>continuation</em> of that verse.
-      First to grab it wins the card — most cards wins the game!
-      <br><br>
-      Poets: امرؤ القيس · طرفة · زهير · لبيد · عنترة · الحارث · عمرو بن كلثوم
+    <div class="btn-group">
+      <button class="btn danger"   onclick="openCreate()">إنشاء غرفة — Create Room</button>
+      <button class="btn primary"  onclick="openJoin()">انضمام — Join Room</button>
+      <button class="btn"          onclick="playSolo()">منفرداً — Solo</button>
     </div>
   </div>
 
-  <!-- LOBBY -->
-  <div id="screen-lobby" class="screen">
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
-        <strong>Room Code — رمز الغرفة</strong>
-        <button class="btn" style="font-size:12px;padding:6px 12px;" onclick="copyInvite()">📋 Copy invite link</button>
+  <div id="join-panel" style="display:none;margin-bottom:1rem;">
+    <div class="scroll">
+      <label>Room Code — رمز الغرفة</label>
+      <div class="share-row">
+        <input id="join-code" type="text" placeholder="AMRQ" maxlength="4"
+          style="text-transform:uppercase;letter-spacing:8px;font-size:20px;text-align:center;"/>
+        <button class="btn primary" onclick="joinRoom()">دخول ←</button>
       </div>
-      <div class="room-code-display" id="room-code-show">----</div>
-      <p style="font-size:11px;color:var(--text-dim);text-align:center;direction:ltr;">Share code or link with up to 6 friends</p>
-    </div>
-
-    <div class="card">
-      <strong style="font-size:14px;">Players — اللاعبون</strong>
-      <div class="player-list" id="player-list"></div>
-      <div id="lobby-waiting" class="waiting-anim" style="display:none;">
-        Waiting for players<span class="waiting-dots"><span>.</span><span>.</span><span>.</span></span>
+      <div style="margin-top:.75rem;">
+        <label>Your name — اسمك</label>
+        <input id="join-name" type="text" placeholder="اسمك"/>
       </div>
-    </div>
-
-    <div style="display:flex;gap:10px;flex-wrap:wrap;">
-      <button class="btn gold" id="start-btn" onclick="hostStartGame()">▶ Start Game</button>
-      <button class="btn" onclick="leaveLobby()">← Back</button>
-    </div>
-    <p id="host-hint" style="font-size:12px;color:var(--text-dim);margin-top:0.75rem;direction:ltr;"></p>
-  </div>
-
-  <!-- GAME -->
-  <div id="screen-game" class="screen">
-    <div class="game-header">
-      <div class="scores" id="scores-display"></div>
-      <div class="round-badge" id="round-display">Round 1/28</div>
-    </div>
-    <div id="my-turn-banner" class="my-turn-flash" style="display:none;">⚡ Your turn — دورك!</div>
-    <div class="reader-card">
-      <div class="reader-label">READ THIS VERSE — البيت المقروء</div>
-      <div class="reader-verse" id="reader-verse">...</div>
-      <div class="reader-poet" id="reader-poet"></div>
-      <div class="timer-wrap"><div class="timer-bar" id="timer-bar" style="width:100%"></div></div>
-    </div>
-    <div class="cards-grid" id="cards-grid"></div>
-    <div style="margin-top:1rem;display:flex;gap:10px;">
-      <button class="btn" id="skip-btn" onclick="hostSkip()" style="display:none;">Skip →</button>
-      <button class="btn" onclick="leaveGame()">Leave game</button>
     </div>
   </div>
 
-  <!-- RESULT -->
-  <div id="screen-result" class="screen result-screen">
+  <!-- ── AUDIO UPLOAD (host only) ── -->
+  <div class="audio-panel">
+    <h3>🎙 Upload your 4 voice recordings (host only)</h3>
+    <p>Each file is an intro poem (15–30 sec). One plays before each game, cycling through all 4. MP3 / WAV / M4A supported. Files stay in your browser — nothing is uploaded to a server.</p>
+    <div class="audio-slot">
+      <div class="slot-num">١</div>
+      <span class="slot-name" id="sn0">القصيدة الأولى — not loaded</span>
+      <label class="upload-lbl" for="f0">Upload</label>
+      <input type="file" id="f0" accept="audio/*" onchange="loadAudio(0,this)"/>
+    </div>
+    <div class="audio-slot">
+      <div class="slot-num">٢</div>
+      <span class="slot-name" id="sn1">القصيدة الثانية — not loaded</span>
+      <label class="upload-lbl" for="f1">Upload</label>
+      <input type="file" id="f1" accept="audio/*" onchange="loadAudio(1,this)"/>
+    </div>
+    <div class="audio-slot">
+      <div class="slot-num">٣</div>
+      <span class="slot-name" id="sn2">القصيدة الثالثة — not loaded</span>
+      <label class="upload-lbl" for="f2">Upload</label>
+      <input type="file" id="f2" accept="audio/*" onchange="loadAudio(2,this)"/>
+    </div>
+    <div class="audio-slot">
+      <div class="slot-num">٤</div>
+      <span class="slot-name" id="sn3">القصيدة الرابعة — not loaded</span>
+      <label class="upload-lbl" for="f3">Upload</label>
+      <input type="file" id="f3" accept="audio/*" onchange="loadAudio(3,this)"/>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <strong>How to play:</strong> The host's voice reads an opening poem. Then each verse from the
+    Muallaqat is shown — race to slap the card that shows the <em>continuation</em> of that verse.
+    No time limit. Most cards wins!<br><br>
+    الشعراء: امرؤ القيس · طرفة · زهير · لبيد · عنترة · الحارث · عمرو بن كلثوم
+  </div>
+</div>
+
+<!-- ══════════ LOBBY ══════════ -->
+<div id="screen-lobby" class="screen">
+  <div class="scroll">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;">
+      <strong>رمز الغرفة — Room Code</strong>
+      <button class="btn" style="font-size:12px;padding:5px 10px;" onclick="copyInvite()">📋 Copy link</button>
+    </div>
+    <div class="room-code-box" id="room-code-show">----</div>
+    <p style="font-size:11px;color:var(--ink-dim);text-align:center;direction:ltr;">Share this code with up to 6 friends</p>
+  </div>
+  <div class="scroll">
+    <strong style="font-size:14px;">اللاعبون — Players</strong>
+    <div class="player-list" id="player-list"></div>
+    <div id="wait-msg" class="wait-msg" style="display:none;">
+      Waiting for players<span>.</span><span>.</span><span>.</span>
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="btn danger" id="start-btn" onclick="hostStart()">▶ ابدأ اللعبة</button>
+    <button class="btn"        onclick="leaveLobby()">← رجوع</button>
+  </div>
+  <p id="host-hint" style="font-size:12px;color:var(--ink-dim);margin-top:.75rem;direction:ltr;"></p>
+</div>
+
+<!-- ══════════ INTRO ══════════ -->
+<div id="screen-intro" class="screen">
+  <div class="intro-box">
+    <div class="intro-num"    id="intro-num">١</div>
+    <div class="intro-label"  id="intro-lbl">القصيدة الأولى<br><small>Listening to the opening poem…</small></div>
+    <div class="wave" id="wave">
+      <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <div class="intro-status" id="intro-status">اللعبة ستبدأ بعد انتهاء القصيدة…</div>
+    <div class="countdown"    id="countdown"></div>
+    <button class="btn" id="skip-intro-btn" onclick="skipIntro()"
+      style="margin-top:1.5rem;display:none;">تخطى ← Skip</button>
+  </div>
+</div>
+
+<!-- ══════════ GAME ══════════ -->
+<div id="screen-game" class="screen">
+  <div class="game-header">
+    <div class="scores" id="scores"></div>
+    <div class="round-tag" id="round-tag">بيت ١ / ٢٨</div>
+  </div>
+
+  <!-- yomifuda / reading card -->
+  <div class="yomifuda">
+    <div class="yomi-left"><span class="yomi-lbl">READING CARD · بطاقة القراءة</span></div>
+    <div class="yomi-right">
+      <div class="reading-now" id="reading-now"><div class="rdot"></div><span>reading aloud…</span></div>
+      <div class="yomi-verse" id="reader-verse">…</div>
+      <div class="yomi-poet"  id="reader-poet"></div>
+    </div>
+  </div>
+
+  <div class="cards-grid" id="cards-grid"></div>
+
+  <div class="btn-row" style="margin-top:1rem;">
+    <button class="btn primary" id="skip-btn" onclick="hostSkip()" style="display:none;">التالي →</button>
+    <button class="btn"         onclick="leaveGame()">مغادرة</button>
+  </div>
+</div>
+
+<!-- ══════════ RESULT ══════════ -->
+<div id="screen-result" class="screen">
+  <div class="result-scroll">
     <div class="result-title">🏆 اللعبة انتهت!</div>
     <div class="result-sub" id="result-sub"></div>
-    <div class="podium" id="podium"></div>
-    <div class="btn-group">
-      <button class="btn gold" onclick="hostRestartGame()">Play Again</button>
-      <button class="btn" onclick="leaveLobby()">Back to Lobby</button>
-    </div>
+    <div class="podium"     id="podium"></div>
   </div>
-
+  <div class="btn-group">
+    <button class="btn danger" id="again-btn" onclick="hostRestart()">العب مجدداً</button>
+    <button class="btn"        onclick="leaveLobby()">← اللوبي</button>
+  </div>
 </div>
+
+</div><!-- #app -->
 <div class="toast" id="toast"></div>
 
 <script>
+/* ══════════════════════════════════════
+   FIREBASE CONFIG
+══════════════════════════════════════ */
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyC5sN98KTmy2jLtR2or5HRu5UkHR5r-g-8",
   authDomain: "karuta-e5189.firebaseapp.com",
@@ -351,504 +576,503 @@ const FIREBASE_CONFIG = {
   measurementId: "G-05H7MVKD9R"
 };
 
-/* ─── POEMS DATA ─── */
+/* ══════════════════════════════════════
+   POEMS
+══════════════════════════════════════ */
 const POEMS = [
-  { poet:"امرؤ القيس", read:"قِفَا نَبْكِ مِن ذِكرى حَبيبٍ وَمَنزِلِ", card:"بِسِقطِ اللِّوى بَينَ الدَّخولِ فَحَومَلِ" },
-  { poet:"امرؤ القيس", read:"وَقوفاً بِها صَحبي عَلَيَّ مَطِيَّهُم", card:"يَقولونَ لا تَهلِك أَسىً وَتَجَمَّلِ" },
-  { poet:"امرؤ القيس", read:"أَلا أَيُّها اللَّيلُ الطَّويلُ أَلا انجَلِ", card:"بِصُبحٍ وَما الإِصباحُ مِنكَ بِأَمثَلِ" },
-  { poet:"امرؤ القيس", read:"كَأَنَّ قُلوبَ الطَّيرِ رَطباً وَيابِساً", card:"لَدى وَكرِها العُنّابُ وَالحَشَفُ البالي" },
-  { poet:"امرؤ القيس", read:"مِكَرٍّ مِفَرٍّ مُقبِلٍ مُدبِرٍ مَعاً", card:"كَجُلمودِ صَخرٍ حَطَّهُ السَّيلُ مِن عَلِ" },
-  { poet:"طرفة بن العبد", read:"لِخَولَةَ أَطلالٌ بِبُرقَةِ ثَهمَدِ", card:"تَلوحُ كَباقي الوَشمِ في ظاهِرِ اليَدِ" },
-  { poet:"طرفة بن العبد", read:"سَتُبدي لَكَ الأَيّامُ ما كُنتَ جاهِلاً", card:"وَيَأتيكَ بِالأَخبارِ مَن لَم تُزَوِّدِ" },
-  { poet:"طرفة بن العبد", read:"لَعَمرُكَ إِنَّ المَوتَ ما أَخطَأَ الفَتى", card:"لَكَالطِّوَلِ المُرخى وَثِنياهُ باليَدِ" },
-  { poet:"طرفة بن العبد", read:"نَحنُ في المَشتاةِ نَدعو الجَفَلى", card:"لا تَرى الآدِبَ فينا يَنتَقِر" },
-  { poet:"طرفة بن العبد", read:"إِذا القَومُ قالوا مَن فَتىً خِلتُ أَنَّني", card:"عُنيتُ فَلَم أَكسَل وَلَم أَتَبَلَّدِ" },
-  { poet:"زهير بن أبي سلمى", read:"أَمِن أُمِّ أَوفى دِمنَةٌ لَم تَكَلَّمِ", card:"بِحَومانَةِ الدَّرّاجِ فَالمُتَثَلَّمِ" },
-  { poet:"زهير بن أبي سلمى", read:"سَئِمتُ تَكاليفَ الحَياةِ وَمَن يَعِش", card:"ثَمانينَ حَولاً لا أَبا لَكَ يَسأَمِ" },
-  { poet:"زهير بن أبي سلمى", read:"وَما الحَربُ إِلّا ما عَلِمتُم وَذُقتُمُ", card:"وَما هُوَ عَنها بِالحَديثِ المُرَجَّمِ" },
-  { poet:"زهير بن أبي سلمى", read:"فَتَنتِج لَكُم غِلمانَ أَشأَمَ كُلُّهُم", card:"كَأَحمَرِ عادٍ ثُمَّ تُرضِعُ فَتَفطِمِ" },
-  { poet:"زهير بن أبي سلمى", read:"وَمَن يَجعَلِ المَعروفَ مِن دونِ عِرضِهِ", card:"يَفِرهُ وَمَن لا يَتَّقِ الشَّتمَ يُشتَمِ" },
-  { poet:"لبيد بن ربيعة", read:"عَفَت الدِّيارُ مَحَلُّها فَمُقامُها", card:"بِمِنىً تَأَبَّدَ غَولُها فَرِجامُها" },
-  { poet:"لبيد بن ربيعة", read:"وَجَلا السُّيولُ عَنِ الطُّلولِ كَأَنَّها", card:"زُبُرٌ تَجِدُّ مُتونَها أَقلامُها" },
-  { poet:"لبيد بن ربيعة", read:"أَلا كُلُّ شَيءٍ ما خَلا اللَهَ باطِلُ", card:"وَكُلُّ نَعيمٍ لا مَحالَةَ زائِلُ" },
-  { poet:"لبيد بن ربيعة", read:"وَما المَرءُ إِلّا كَالشِّهابِ وَضَوئِهِ", card:"يَحورُ رَماداً بَعدَ إِذ هُوَ ساطِعُ" },
-  { poet:"لبيد بن ربيعة", read:"فَإِن تَسأَلينا فيمَ نَحنُ فَإِنَّنا", card:"عَصافيرُ مِن هَذا الأَنامِ المُسَرَّحِ" },
-  { poet:"عنترة بن شداد", read:"هَل غادَرَ الشُّعَراءُ مِن مُتَرَدَّمِ", card:"أَم هَل عَرَفتَ الدارَ بَعدَ تَوَهُّمِ" },
-  { poet:"عنترة بن شداد", read:"يا دارَ عَبلَةَ بِالجِواءِ تَكَلَّمي", card:"وَعِمي صَباحاً دارَ عَبلَةَ وَاسلَمي" },
-  { poet:"عنترة بن شداد", read:"وَلَقَد شَرِبتُ مِنَ المُدامَةِ بَعدَما", card:"رَكَدَ الهَواجِرُ بِالمَشوفِ المُعلَمِ" },
-  { poet:"عنترة بن شداد", read:"وَلَقَد ذَكَرتُكِ وَالرِّماحُ نَواهِلٌ", card:"مِنّي وَبيضُ الهِندِ تَقطُرُ مِن دَمي" },
-  { poet:"عنترة بن شداد", read:"عُلِّقتُها عَرَضاً وَأَقتُلُ قَومَها", card:"زَعماً لَعَمرُ أَبيكَ لَيسَ بِمَزعَمِ" },
-  { poet:"الحارث بن حلزة", read:"آذَنَتنا بِبَينِها أَسماءُ", card:"رُبَّ ثاوٍ يَمَلُّ مِنهُ الثَّواءُ" },
-  { poet:"عمرو بن كلثوم", read:"أَلا هُبّي بِصَحنِكِ فَاصبَحينا", card:"وَلا تُبقي خُمورَ الأَندَرينا" },
-  { poet:"عمرو بن كلثوم", read:"أَلا لا يَجهَلَن أَحَدٌ عَلَينا", card:"فَنَجهَلَ فَوقَ جَهلِ الجاهِلينا" },
+  {poet:"امرؤ القيس",      read:"قِفَا نَبْكِ مِن ذِكرى حَبيبٍ وَمَنزِلِ",       card:"بِسِقطِ اللِّوى بَينَ الدَّخولِ فَحَومَلِ"},
+  {poet:"امرؤ القيس",      read:"وَقوفاً بِها صَحبي عَلَيَّ مَطِيَّهُم",          card:"يَقولونَ لا تَهلِك أَسىً وَتَجَمَّلِ"},
+  {poet:"امرؤ القيس",      read:"أَلا أَيُّها اللَّيلُ الطَّويلُ أَلا انجَلِ",    card:"بِصُبحٍ وَما الإِصباحُ مِنكَ بِأَمثَلِ"},
+  {poet:"امرؤ القيس",      read:"كَأَنَّ قُلوبَ الطَّيرِ رَطباً وَيابِساً",       card:"لَدى وَكرِها العُنّابُ وَالحَشَفُ البالي"},
+  {poet:"امرؤ القيس",      read:"مِكَرٍّ مِفَرٍّ مُقبِلٍ مُدبِرٍ مَعاً",         card:"كَجُلمودِ صَخرٍ حَطَّهُ السَّيلُ مِن عَلِ"},
+  {poet:"طرفة بن العبد",   read:"لِخَولَةَ أَطلالٌ بِبُرقَةِ ثَهمَدِ",           card:"تَلوحُ كَباقي الوَشمِ في ظاهِرِ اليَدِ"},
+  {poet:"طرفة بن العبد",   read:"سَتُبدي لَكَ الأَيّامُ ما كُنتَ جاهِلاً",       card:"وَيَأتيكَ بِالأَخبارِ مَن لَم تُزَوِّدِ"},
+  {poet:"طرفة بن العبد",   read:"لَعَمرُكَ إِنَّ المَوتَ ما أَخطَأَ الفَتى",     card:"لَكَالطِّوَلِ المُرخى وَثِنياهُ باليَدِ"},
+  {poet:"طرفة بن العبد",   read:"نَحنُ في المَشتاةِ نَدعو الجَفَلى",              card:"لا تَرى الآدِبَ فينا يَنتَقِر"},
+  {poet:"طرفة بن العبد",   read:"إِذا القَومُ قالوا مَن فَتىً خِلتُ أَنَّني",    card:"عُنيتُ فَلَم أَكسَل وَلَم أَتَبَلَّدِ"},
+  {poet:"زهير بن أبي سلمى",read:"أَمِن أُمِّ أَوفى دِمنَةٌ لَم تَكَلَّمِ",      card:"بِحَومانَةِ الدَّرّاجِ فَالمُتَثَلَّمِ"},
+  {poet:"زهير بن أبي سلمى",read:"سَئِمتُ تَكاليفَ الحَياةِ وَمَن يَعِش",        card:"ثَمانينَ حَولاً لا أَبا لَكَ يَسأَمِ"},
+  {poet:"زهير بن أبي سلمى",read:"وَما الحَربُ إِلّا ما عَلِمتُم وَذُقتُمُ",     card:"وَما هُوَ عَنها بِالحَديثِ المُرَجَّمِ"},
+  {poet:"زهير بن أبي سلمى",read:"فَتَنتِج لَكُم غِلمانَ أَشأَمَ كُلُّهُم",      card:"كَأَحمَرِ عادٍ ثُمَّ تُرضِعُ فَتَفطِمِ"},
+  {poet:"زهير بن أبي سلمى",read:"وَمَن يَجعَلِ المَعروفَ مِن دونِ عِرضِهِ",    card:"يَفِرهُ وَمَن لا يَتَّقِ الشَّتمَ يُشتَمِ"},
+  {poet:"لبيد بن ربيعة",   read:"عَفَت الدِّيارُ مَحَلُّها فَمُقامُها",           card:"بِمِنىً تَأَبَّدَ غَولُها فَرِجامُها"},
+  {poet:"لبيد بن ربيعة",   read:"وَجَلا السُّيولُ عَنِ الطُّلولِ كَأَنَّها",     card:"زُبُرٌ تَجِدُّ مُتونَها أَقلامُها"},
+  {poet:"لبيد بن ربيعة",   read:"أَلا كُلُّ شَيءٍ ما خَلا اللَهَ باطِلُ",       card:"وَكُلُّ نَعيمٍ لا مَحالَةَ زائِلُ"},
+  {poet:"لبيد بن ربيعة",   read:"وَما المَرءُ إِلّا كَالشِّهابِ وَضَوئِهِ",     card:"يَحورُ رَماداً بَعدَ إِذ هُوَ ساطِعُ"},
+  {poet:"لبيد بن ربيعة",   read:"فَإِن تَسأَلينا فيمَ نَحنُ فَإِنَّنا",          card:"عَصافيرُ مِن هَذا الأَنامِ المُسَرَّحِ"},
+  {poet:"عنترة بن شداد",   read:"هَل غادَرَ الشُّعَراءُ مِن مُتَرَدَّمِ",        card:"أَم هَل عَرَفتَ الدارَ بَعدَ تَوَهُّمِ"},
+  {poet:"عنترة بن شداد",   read:"يا دارَ عَبلَةَ بِالجِواءِ تَكَلَّمي",           card:"وَعِمي صَباحاً دارَ عَبلَةَ وَاسلَمي"},
+  {poet:"عنترة بن شداد",   read:"وَلَقَد شَرِبتُ مِنَ المُدامَةِ بَعدَما",       card:"رَكَدَ الهَواجِرُ بِالمَشوفِ المُعلَمِ"},
+  {poet:"عنترة بن شداد",   read:"وَلَقَد ذَكَرتُكِ وَالرِّماحُ نَواهِلٌ",        card:"مِنّي وَبيضُ الهِندِ تَقطُرُ مِن دَمي"},
+  {poet:"عنترة بن شداد",   read:"عُلِّقتُها عَرَضاً وَأَقتُلُ قَومَها",          card:"زَعماً لَعَمرُ أَبيكَ لَيسَ بِمَزعَمِ"},
+  {poet:"الحارث بن حلزة",  read:"آذَنَتنا بِبَينِها أَسماءُ",                    card:"رُبَّ ثاوٍ يَمَلُّ مِنهُ الثَّواءُ"},
+  {poet:"عمرو بن كلثوم",   read:"أَلا هُبّي بِصَحنِكِ فَاصبَحينا",               card:"وَلا تُبقي خُمورَ الأَندَرينا"},
+  {poet:"عمرو بن كلثوم",   read:"أَلا لا يَجهَلَن أَحَدٌ عَلَينا",               card:"فَنَجهَلَ فَوقَ جَهلِ الجاهِلينا"},
 ];
 
-/* ─── STATE ─── */
-let db = null;
-let roomRef = null;
-let myId = 'p_' + Math.random().toString(36).substring(2, 9);
-let myName = '';
-let roomCode = '';
-let isHost = false;
-let timerInterval = null;
-let unsubscribes = [];
+/* ══════════════════════════════════════
+   AUDIO SLOTS  (4 intro poems, host only)
+══════════════════════════════════════ */
+const audioSlots = [null, null, null, null]; // Object URLs
+const arabicNums = ['١','٢','٣','٤'];
+let curAudio = null;
 
-/* ─── INIT FIREBASE ─── */
-function initFirebase() {
+function loadAudio(i, input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (audioSlots[i]) URL.revokeObjectURL(audioSlots[i]);
+  audioSlots[i] = URL.createObjectURL(file);
+  const el = document.getElementById('sn'+i);
+  el.textContent = file.name;
+  el.classList.add('ok');
+  toast('✓ Loaded: ' + file.name);
+}
+
+/* ══════════════════════════════════════
+   STATE
+══════════════════════════════════════ */
+let db = null, roomRef = null;
+let myId   = 'p_' + Math.random().toString(36).slice(2,9);
+let myName = '', roomCode = '', isHost = false;
+let subs   = [];
+
+/* ══════════════════════════════════════
+   FIREBASE
+══════════════════════════════════════ */
+(function init(){
   try {
     const app = firebase.initializeApp(FIREBASE_CONFIG);
     db = firebase.database(app);
-    return true;
-  } catch(e) {
-    console.warn('Firebase not configured:', e.message);
-    return false;
+  } catch(e){ console.warn('FB:', e.message); }
+})();
+
+/* ══════════════════════════════════════
+   HELPERS
+══════════════════════════════════════ */
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+}
+function toast(msg,dur=2600){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),dur);
+}
+function genCode(){
+  const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let r='';
+  for(let i=0;i<4;i++) r+=c[Math.floor(Math.random()*c.length)];
+  return r;
+}
+function clearSubs(){ subs.forEach(f=>f()); subs=[]; }
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];
   }
+  return a;
 }
+function stopAudio(){ if(curAudio){ curAudio.pause(); curAudio=null; } }
 
-const firebaseReady = initFirebase();
-
-/* ─── UTILS ─── */
-function show(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-' + id).classList.add('active');
-}
-
-function toast(msg, dur = 2500) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), dur);
-}
-
-function genCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let c = '';
-  for (let i = 0; i < 4; i++) c += chars[Math.floor(Math.random() * chars.length)];
-  return c;
-}
-
-function clearSubs() {
-  unsubscribes.forEach(fn => fn());
-  unsubscribes = [];
-}
-
-/* ─── HOME ─── */
-function openCreate() {
-  if (!firebaseReady) {
-    toast('⚠️ Firebase failed to initialize — check the console for errors');
-    return;
-  }
-  const name = prompt('Your name / اسمك', 'Player 1');
-  if (!name) return;
-  myName = name.trim() || 'Player 1';
-  isHost = true;
-  roomCode = genCode();
+/* ══════════════════════════════════════
+   HOME
+══════════════════════════════════════ */
+function openCreate(){
+  if(!db){ toast('⚠️ Firebase error — check console'); return; }
+  const name = prompt('اسمك / Your name','Player 1');
+  if(!name) return;
+  myName=name.trim()||'Player 1'; isHost=true; roomCode=genCode();
   createRoom();
 }
-
-function openJoin() {
-  document.getElementById('join-panel').style.display =
-    document.getElementById('join-panel').style.display === 'none' ? 'block' : 'none';
+function openJoin(){
+  const p=document.getElementById('join-panel');
+  p.style.display = p.style.display==='none' ? 'block' : 'none';
 }
 
-/* ─── ROOM CREATION (HOST) ─── */
-async function createRoom() {
-  if (!db) return;
-  roomRef = db.ref('rooms/' + roomCode);
-  const deck = shuffle([...POEMS]).map((p, i) => ({ ...p, id: i, matched: false, winnerId: null }));
+/* ══════════════════════════════════════
+   ROOM
+══════════════════════════════════════ */
+async function createRoom(){
+  if(!db) return;
+  roomRef = db.ref('rooms/'+roomCode);
+  const deck = shuffle([...POEMS]).map((p,i)=>({...p,id:i,matched:false,winnerId:null,winnerName:null}));
   await roomRef.set({
-    host: myId,
-    status: 'lobby',
-    deck,
-    tableCards: deck,
-    round: 0,
-    players: { [myId]: { name: myName, score: 0, online: true } },
-    currentRead: null,
-    timerStart: null,
+    host:myId, status:'lobby',
+    deck, tableCards:deck, round:0,
+    players:{[myId]:{name:myName,score:0,online:true}},
+    currentRead:deck[0], gameIndex:0,
   });
-  // remove room when host disconnects
-  roomRef.child('players/' + myId + '/online').onDisconnect().set(false);
+  roomRef.child('players/'+myId+'/online').onDisconnect().set(false);
   document.getElementById('room-code-show').textContent = roomCode;
   document.getElementById('start-btn').style.display = 'block';
-  document.getElementById('host-hint').textContent = 'As host, you control the game start.';
-  show('lobby');
-  listenRoom();
+  document.getElementById('host-hint').textContent = 'You are the host. Press Start when everyone is ready.';
+  show('lobby'); listenRoom();
 }
 
-/* ─── JOIN ROOM ─── */
-async function joinRoom() {
-  if (!firebaseReady) {
-    toast('⚠️ Firebase failed to initialize — check the console for errors');
-    return;
-  }
+async function joinRoom(){
+  if(!db){ toast('⚠️ Firebase error'); return; }
   const code = document.getElementById('join-code').value.trim().toUpperCase();
-  const name = document.getElementById('join-name').value.trim() || 'Guest';
-  if (code.length !== 4) { toast('Enter a 4-letter room code'); return; }
-  myName = name;
-  isHost = false;
-  roomCode = code;
-  roomRef = db.ref('rooms/' + roomCode);
+  const name = document.getElementById('join-name').value.trim()||'Guest';
+  if(code.length!==4){ toast('Enter a 4-letter code'); return; }
+  myName=name; isHost=false; roomCode=code;
+  roomRef = db.ref('rooms/'+roomCode);
   const snap = await roomRef.once('value');
-  if (!snap.exists()) { toast('Room not found — check the code'); return; }
+  if(!snap.exists()){ toast('Room not found — check the code'); return; }
   const data = snap.val();
-  const playerCount = Object.keys(data.players || {}).length;
-  if (playerCount >= 6) { toast('Room is full (max 6 players)'); return; }
-  await roomRef.child('players/' + myId).set({ name, score: 0, online: true });
-  roomRef.child('players/' + myId + '/online').onDisconnect().set(false);
+  if(Object.keys(data.players||{}).length>=6){ toast('Room is full (max 6)'); return; }
+  await roomRef.child('players/'+myId).set({name,score:0,online:true});
+  roomRef.child('players/'+myId+'/online').onDisconnect().set(false);
   document.getElementById('room-code-show').textContent = roomCode;
   document.getElementById('start-btn').style.display = 'none';
-  document.getElementById('host-hint').textContent = 'Waiting for host to start...';
-  show('lobby');
-  listenRoom();
+  document.getElementById('host-hint').textContent = 'Waiting for host to start…';
+  show('lobby'); listenRoom();
 }
 
-/* ─── LISTEN TO ROOM ─── */
-function listenRoom() {
+/* ══════════════════════════════════════
+   ROOM LISTENER
+══════════════════════════════════════ */
+function listenRoom(){
   clearSubs();
-  const ref = roomRef;
-
-  const handler = ref.on('value', snap => {
-    if (!snap.exists()) { toast('Room closed'); goHome(); return; }
-    const data = snap.val();
-
-    if (data.status === 'lobby') renderLobby(data);
-    else if (data.status === 'playing') renderGame(data);
-    else if (data.status === 'ended') renderResult(data);
+  const h = roomRef.on('value', snap=>{
+    if(!snap.exists()){ toast('Room closed'); goHome(); return; }
+    const d = snap.val();
+    if     (d.status==='lobby')   renderLobby(d);
+    else if(d.status==='intro')   renderIntroScreen(d);
+    else if(d.status==='playing') renderGame(d);
+    else if(d.status==='ended')   renderResult(d);
   });
-
-  unsubscribes.push(() => ref.off('value', handler));
+  subs.push(()=>roomRef.off('value',h));
 }
 
-/* ─── LOBBY RENDER ─── */
-function renderLobby(data) {
-  const players = Object.entries(data.players || {});
-  const el = document.getElementById('player-list');
-  el.innerHTML = players.map(([id, p]) => `
+/* ══════════════════════════════════════
+   LOBBY
+══════════════════════════════════════ */
+function renderLobby(d){
+  show('lobby');
+  const ps = Object.entries(d.players||{});
+  document.getElementById('player-list').innerHTML = ps.map(([id,p])=>`
     <div class="player-item">
-      <div class="dot ${p.online ? 'online' : 'wait'}"></div>
+      <div class="dot ${p.online?'on':'off'}"></div>
       <span>${p.name}</span>
-      ${id === data.host ? '<span class="badge">Host</span>' : ''}
-      ${!p.online ? '<span style="font-size:10px;color:var(--gold-dim);">offline</span>' : ''}
+      ${id===d.host?'<span class="host-tag">Host</span>':''}
     </div>`).join('');
+  document.getElementById('wait-msg').style.display = ps.length<2?'block':'none';
+  document.getElementById('start-btn').style.display = (myId===d.host)?'block':'none';
+}
 
-  const waiting = document.getElementById('lobby-waiting');
-  waiting.style.display = players.length < 2 ? 'block' : 'none';
+/* ══════════════════════════════════════
+   HOST START
+══════════════════════════════════════ */
+async function hostStart(){
+  if(!isHost) return;
+  const snap = await roomRef.once('value');
+  const d = snap.val();
+  const deck = shuffle([...POEMS]).map((p,i)=>({...p,id:i,matched:false,winnerId:null,winnerName:null}));
+  const players = d.players||{};
+  Object.keys(players).forEach(id=>{ players[id].score=0; });
+  const nextIdx = ((d.gameIndex||0)+1) % 4;
+  await roomRef.update({
+    status:'intro', deck, tableCards:deck, round:0, players,
+    currentRead:deck[0], gameIndex:nextIdx,
+    introAt: firebase.database.ServerValue.TIMESTAMP,
+  });
+}
+async function hostRestart(){ if(isHost) await hostStart(); }
 
-  // start btn only for host
-  document.getElementById('start-btn').style.display = (myId === data.host) ? 'block' : 'none';
-  if (myId !== data.host) {
-    document.getElementById('host-hint').textContent = 'Waiting for host to start...';
+/* ══════════════════════════════════════
+   INTRO SCREEN
+══════════════════════════════════════ */
+function renderIntroScreen(d){
+  show('intro');
+  stopAudio();
+  const idx = (d.gameIndex||0) % 4;
+  document.getElementById('intro-num').textContent  = arabicNums[idx];
+  document.getElementById('intro-lbl').innerHTML    =
+    `القصيدة ${arabicNums[idx]}<br><small>Listening to the opening poem…</small>`;
+  document.getElementById('skip-intro-btn').style.display = isHost ? 'block' : 'none';
+  document.getElementById('countdown').style.display = 'none';
+  document.getElementById('wave').classList.remove('still');
+
+  if(isHost){
+    if(audioSlots[idx]){
+      playIntro(audioSlots[idx]);
+    } else {
+      // no audio — just countdown 5s
+      document.getElementById('wave').classList.add('still');
+      document.getElementById('intro-status').textContent = 'لا يوجد تسجيل — اللعبة تبدأ خلال 5 ثوانٍ';
+      runCountdown(5, ()=>roomRef.update({status:'playing'}));
+    }
+  } else {
+    document.getElementById('intro-status').textContent = 'استمع إلى القصيدة… تنتظر بدء اللعبة';
+    // non-host just waits — firebase status change triggers renderGame
   }
 }
 
-/* ─── HOST ACTIONS ─── */
-async function hostStartGame() {
-  if (!isHost) return;
-  const snap = await roomRef.once('value');
-  const data = snap.val();
-  const deck = shuffle([...POEMS]).map((p, i) => ({ ...p, id: i, matched: false, winnerId: null }));
-
-  // reset scores
-  const players = data.players || {};
-  Object.keys(players).forEach(id => { players[id].score = 0; });
-
-  await roomRef.update({
-    status: 'playing',
-    deck,
-    tableCards: deck,
-    round: 0,
-    players,
-    currentRead: deck[0],
-    timerStart: firebase.database.ServerValue.TIMESTAMP,
+function playIntro(src){
+  const audio = new Audio(src);
+  curAudio = audio;
+  document.getElementById('intro-status').textContent = '🎙 يُقرأ الآن…';
+  audio.play().catch(()=>{
+    document.getElementById('intro-status').textContent = 'Tap skip or wait…';
+  });
+  audio.addEventListener('timeupdate', ()=>{
+    const rem = Math.ceil((audio.duration||0) - audio.currentTime);
+    if(!isNaN(rem) && rem>0)
+      document.getElementById('intro-status').textContent = `🎙 يُقرأ الآن — ${rem}s`;
+  });
+  audio.addEventListener('ended', ()=>{
+    document.getElementById('wave').classList.add('still');
+    document.getElementById('intro-status').textContent = 'انتهت القصيدة…';
+    runCountdown(3, ()=>roomRef.update({status:'playing'}));
   });
 }
 
-async function hostSkip() {
-  if (!isHost) return;
-  const snap = await roomRef.once('value');
-  const data = snap.val();
-  const nextRound = (data.round || 0) + 1;
-  if (nextRound >= data.deck.length) {
-    await roomRef.update({ status: 'ended' });
-  } else {
-    await roomRef.update({
-      round: nextRound,
-      currentRead: data.deck[nextRound],
-      timerStart: firebase.database.ServerValue.TIMESTAMP,
-    });
-  }
+function runCountdown(n, cb){
+  const el = document.getElementById('countdown');
+  el.style.display='block'; el.textContent=n;
+  const iv = setInterval(()=>{
+    n--;
+    if(n>0){ el.textContent=n; }
+    else { clearInterval(iv); el.style.display='none'; cb(); }
+  },1000);
 }
 
-async function hostRestartGame() {
-  if (!isHost) { leaveLobby(); return; }
-  await hostStartGame();
+function skipIntro(){
+  if(!isHost) return;
+  stopAudio();
+  roomRef.update({status:'playing'});
 }
 
-/* ─── GAME RENDER ─── */
-let lastRound = -1;
-
-function renderGame(data) {
+/* ══════════════════════════════════════
+   GAME
+══════════════════════════════════════ */
+function renderGame(d){
   show('game');
+  stopAudio();
 
-  // Scores
-  const players = Object.entries(data.players || {});
-  document.getElementById('scores-display').innerHTML = players
-    .sort((a,b) => (b[1].score||0) - (a[1].score||0))
-    .map(([id, p]) => `<div class="score-chip ${id===myId?'me':''}">
-      ${p.name}: <span>${p.score||0}</span></div>`).join('');
+  // scores
+  document.getElementById('scores').innerHTML =
+    Object.entries(d.players||{})
+      .sort((a,b)=>(b[1].score||0)-(a[1].score||0))
+      .map(([id,p])=>`<div class="chip ${id===myId?'me':''}">${p.name}: <span>${p.score||0}</span></div>`)
+      .join('');
 
-  // Round display
-  const round = data.round || 0;
-  document.getElementById('round-display').textContent = `Round ${round+1} / ${data.deck.length}`;
+  // round
+  const r = d.round||0;
+  document.getElementById('round-tag').textContent = `بيت ${r+1} / ${d.deck.length}`;
 
-  // Reader
-  if (data.currentRead) {
-    document.getElementById('reader-verse').textContent = data.currentRead.read;
-    document.getElementById('reader-poet').textContent = '— ' + data.currentRead.poet;
+  // reading card
+  if(d.currentRead){
+    document.getElementById('reader-verse').textContent = d.currentRead.read;
+    document.getElementById('reader-poet').textContent  = '— '+d.currentRead.poet;
   }
 
-  // Skip button (host only)
+  // host controls
   document.getElementById('skip-btn').style.display = isHost ? 'inline-block' : 'none';
 
-  // Timer — restart when round changes
-  if (round !== lastRound) {
-    lastRound = round;
-    startVisualTimer(15);
-  }
-
-  // Cards
-  const tableCards = data.tableCards || [];
-  renderCards(tableCards, data.currentRead);
+  renderCards(d.tableCards||[]);
 }
 
-function renderCards(tableCards, currentRead) {
-  const grid = document.getElementById('cards-grid');
-  const unmatched = tableCards.filter(c => !c.matched);
-  const matched = tableCards.filter(c => c.matched);
-  grid.innerHTML = [...unmatched, ...matched].map(c => `
-    <div class="kcard ${c.matched ? 'matched' : ''}"
-      onclick="${!c.matched ? `pickCard(${c.id})` : ''}">
-      <div class="kcard-verse">${c.card}</div>
-      <div class="kcard-poet">${c.poet}</div>
-      ${c.matched && c.winnerName ? `<div class="kcard-winner">✓ ${c.winnerName}</div>` : ''}
-    </div>`).join('');
+function renderCards(tc){
+  const unmatch = tc.filter(c=>!c.matched);
+  const matched = tc.filter(c=> c.matched);
+  document.getElementById('cards-grid').innerHTML =
+    [...unmatch,...matched].map(c=>`
+      <div class="kcard ${c.matched?'matched':''}"
+           onclick="${!c.matched?`pickCard(${c.id})`:''}">
+        <div class="kcard-body">
+          <div class="kcard-verse">${c.card}</div>
+        </div>
+        <div class="kcard-footer">
+          <span class="kcard-poet">${c.poet}</span>
+          ${c.matched&&c.winnerName?`<span class="kcard-winner">✓ ${c.winnerName}</span>`:''}
+        </div>
+      </div>`).join('');
 }
 
-/* ─── PLAYER PICKS A CARD ─── */
-async function pickCard(cardId) {
+async function pickCard(cardId){
   const snap = await roomRef.once('value');
-  const data = snap.val();
-  if (data.status !== 'playing') return;
-  const tableCards = data.tableCards || [];
-  const card = tableCards.find(c => c.id === cardId);
-  if (!card || card.matched) return;
+  const d = snap.val();
+  if(d.status!=='playing') return;
+  const tc = d.tableCards||[];
+  const card = tc.find(c=>c.id===cardId);
+  if(!card||card.matched) return;
 
-  const currentRead = data.currentRead;
-  const correct = card.card === currentRead.card && card.poet === currentRead.poet;
-
-  if (correct) {
-    // Mark card matched, update score
-    card.matched = true;
-    card.winnerId = myId;
-    card.winnerName = myName;
-
-    const players = data.players || {};
-    if (players[myId]) players[myId].score = (players[myId].score || 0) + 1;
-
-    const nextRound = (data.round || 0) + 1;
-    const ended = nextRound >= data.deck.length || tableCards.filter(c => !c.matched).length <= 1;
-
+  const correct = card.card===d.currentRead.card && card.poet===d.currentRead.poet;
+  if(correct){
+    card.matched=true; card.winnerId=myId; card.winnerName=myName;
+    const players=d.players||{};
+    if(players[myId]) players[myId].score=(players[myId].score||0)+1;
+    const nextR=(d.round||0)+1;
+    const ended = nextR>=d.deck.length || tc.filter(c=>!c.matched).length<=1;
     await roomRef.update({
-      tableCards,
-      players,
-      status: ended ? 'ended' : 'playing',
-      round: ended ? data.round : nextRound,
-      currentRead: ended ? data.currentRead : data.deck[nextRound],
-      timerStart: ended ? data.timerStart : firebase.database.ServerValue.TIMESTAMP,
+      tableCards:tc, players,
+      status: ended?'ended':'playing',
+      round:  ended?d.round:nextR,
+      currentRead: ended?d.currentRead:d.deck[nextR],
     });
-    toast(`✓ صحيح! أحسنت — ${myName}!`);
+    toast('✓ صحيح! أحسنت!');
   } else {
-    // Flash wrong locally
-    const el = document.querySelectorAll('.kcard')[
-      [...document.querySelectorAll('.kcard')].findIndex(el =>
-        el.querySelector('.kcard-verse')?.textContent === card.card)
-    ];
-    if (el) { el.classList.add('wrong'); setTimeout(() => el.classList.remove('wrong'), 500); }
-    toast('✗ خطأ! Try again');
+    // flash locally
+    const els=[...document.querySelectorAll('.kcard')];
+    const el=els.find(e=>e.querySelector('.kcard-verse')?.textContent===card.card);
+    if(el){ el.classList.add('wrong'); setTimeout(()=>el.classList.remove('wrong'),450); }
+    toast('✗ خطأ! حاول مرة أخرى');
   }
 }
 
-/* ─── VISUAL TIMER ─── */
-function startVisualTimer(sec) {
-  clearInterval(timerInterval);
-  const bar = document.getElementById('timer-bar');
-  bar.style.transition = 'none';
-  bar.style.width = '100%';
-  bar.classList.remove('urgent');
-  let elapsed = 0;
-  setTimeout(() => {
-    bar.style.transition = `width ${sec}s linear`;
-    bar.style.width = '0%';
-  }, 60);
-  timerInterval = setInterval(() => {
-    elapsed++;
-    if (elapsed >= sec - 4) bar.classList.add('urgent');
-    if (elapsed >= sec) {
-      clearInterval(timerInterval);
-      if (isHost) hostSkip();
-    }
-  }, 1000);
+async function hostSkip(){
+  if(!isHost) return;
+  const snap = await roomRef.once('value');
+  const d = snap.val();
+  const nextR=(d.round||0)+1;
+  if(nextR>=d.deck.length) await roomRef.update({status:'ended'});
+  else await roomRef.update({round:nextR, currentRead:d.deck[nextR]});
 }
 
-/* ─── RESULT ─── */
-function renderResult(data) {
-  clearInterval(timerInterval);
+/* ══════════════════════════════════════
+   RESULT
+══════════════════════════════════════ */
+function renderResult(d){
   show('result');
-  const players = Object.entries(data.players || {})
-    .map(([id, p]) => ({ id, name: p.name, score: p.score || 0 }))
-    .sort((a, b) => b.score - a.score);
-
+  const ps = Object.entries(d.players||{})
+    .map(([id,p])=>({id,name:p.name,score:p.score||0}))
+    .sort((a,b)=>b.score-a.score);
   document.getElementById('result-sub').textContent =
-    players.length > 0 ? `${players[0].name} wins with ${players[0].score} cards!` : 'Game over!';
+    ps.length ? `${ps[0].name} wins with ${ps[0].score} cards!` : 'Game over!';
 
-  const colors = ['#e8c97a', '#888780', '#d85a30', '#534ab7', '#1d9e75', '#e24b4a'];
-  const topH = [120, 90, 70, 55, 45, 35];
-  const podiumOrder = players.length >= 3
-    ? [players[1], players[0], players[2]]
-    : players;
-  const heights = players.length >= 3 ? [topH[1], topH[0], topH[2]] : [topH[0]];
-  const podiumColors = players.length >= 3
-    ? [colors[1], colors[0], colors[2]]
-    : [colors[0]];
-
-  document.getElementById('podium').innerHTML = podiumOrder.map((p, i) => `
-    <div class="podium-item">
-      <div class="podium-bar" style="height:${heights[i]}px;background:${podiumColors[i]}">${p.score}</div>
-      <div class="podium-name">${p.name}</div>
-    </div>`).join('');
-
-  if (isHost) {
-    document.querySelector('#screen-result .btn.gold').style.display = 'inline-block';
-  } else {
-    document.querySelector('#screen-result .btn.gold').style.display = 'none';
-  }
+  const cols=['#8b1a1a','#6b5010','#2d5a27','#534ab7','#1d9e75'];
+  const hts =[130,95,75,60,50];
+  const ord = ps.length>=3?[ps[1],ps[0],ps[2]]:ps;
+  const hs  = ps.length>=3?[hts[1],hts[0],hts[2]]:[hts[0]];
+  const cs  = ps.length>=3?[cols[1],cols[0],cols[2]]:[cols[0]];
+  document.getElementById('podium').innerHTML =
+    ord.map((p,i)=>`
+      <div class="podium-item">
+        <div class="podium-bar" style="height:${hs[i]}px;background:${cs[i]}">${p.score}</div>
+        <div class="podium-name">${p.name}</div>
+      </div>`).join('');
+  document.getElementById('again-btn').style.display = isHost?'inline-block':'none';
 }
 
-/* ─── SOLO MODE ─── */
-function playSolo() {
-  isHost = true;
-  myName = 'أنت';
-  let soloDeck = shuffle([...POEMS]);
-  let soloCards = soloDeck.map((p, i) => ({ ...p, id: i, matched: false }));
-  let soloRound = 0;
-  let soloScore = 0;
+/* ══════════════════════════════════════
+   SOLO MODE
+══════════════════════════════════════ */
+function playSolo(){
+  isHost=true; myName='أنت';
+  clearSubs(); stopAudio();
+  let deck  = shuffle([...POEMS]);
+  let cards = deck.map((p,i)=>({...p,id:i,matched:false}));
+  let round=0, score=0;
+  const audioIdx = Math.floor(Math.random()*4); // pick random slot
 
-  clearSubs(); // no firebase for solo
-  show('game');
-  document.getElementById('skip-btn').style.display = 'inline-block';
-  document.getElementById('skip-btn').onclick = () => {
-    soloRound++;
-    soloNext();
-  };
+  function startSolo(){
+    show('game');
+    document.getElementById('skip-btn').style.display='inline-block';
+    document.getElementById('skip-btn').onclick=()=>{ round++; next(); };
+    next();
+  }
 
-  function soloNext() {
-    clearInterval(timerInterval);
-    if (soloRound >= soloDeck.length || soloCards.filter(c=>!c.matched).length === 0) {
-      // end
+  function next(){
+    if(round>=deck.length || cards.filter(c=>!c.matched).length===0){
       show('result');
-      document.getElementById('result-sub').textContent = `You collected ${soloScore} / ${soloDeck.length} cards!`;
-      document.getElementById('podium').innerHTML = `
+      document.getElementById('result-sub').textContent=`جمعت ${score} / ${deck.length} بطاقة!`;
+      document.getElementById('podium').innerHTML=`
         <div class="podium-item">
-          <div class="podium-bar" style="height:120px;background:#e8c97a">${soloScore}</div>
+          <div class="podium-bar" style="height:130px;background:#8b1a1a">${score}</div>
           <div class="podium-name">أنت</div>
         </div>`;
-      document.querySelector('#screen-result .btn.gold').onclick = () => { playSolo(); };
+      document.getElementById('again-btn').style.display='inline-block';
+      document.getElementById('again-btn').onclick=()=>playSolo();
       return;
     }
-    const current = soloDeck[soloRound];
-    document.getElementById('reader-verse').textContent = current.read;
-    document.getElementById('reader-poet').textContent = '— ' + current.poet;
-    document.getElementById('round-display').textContent = `Round ${soloRound+1} / ${soloDeck.length}`;
-    document.getElementById('scores-display').innerHTML =
-      `<div class="score-chip me">أنت: <span>${soloScore}</span></div>`;
-    // render cards
-    const grid = document.getElementById('cards-grid');
-    const unmatched = soloCards.filter(c => !c.matched);
-    const matched = soloCards.filter(c => c.matched);
-    grid.innerHTML = [...unmatched, ...matched].map(c => `
-      <div class="kcard ${c.matched?'matched':''}" onclick="${!c.matched?`soloPickCard(${c.id})`:''}">
-        <div class="kcard-verse">${c.card}</div>
-        <div class="kcard-poet">${c.poet}</div>
-      </div>`).join('');
-    startVisualTimer(15);
+    const cur=deck[round];
+    document.getElementById('reader-verse').textContent=cur.read;
+    document.getElementById('reader-poet').textContent='— '+cur.poet;
+    document.getElementById('round-tag').textContent=`بيت ${round+1} / ${deck.length}`;
+    document.getElementById('scores').innerHTML=`<div class="chip me">أنت: <span>${score}</span></div>`;
+    const unmatch=cards.filter(c=>!c.matched);
+    const matched=cards.filter(c=> c.matched);
+    document.getElementById('cards-grid').innerHTML=
+      [...unmatch,...matched].map(c=>`
+        <div class="kcard ${c.matched?'matched':''}" onclick="${!c.matched?`solopick(${c.id})`:''}">
+          <div class="kcard-body"><div class="kcard-verse">${c.card}</div></div>
+          <div class="kcard-footer"><span class="kcard-poet">${c.poet}</span></div>
+        </div>`).join('');
   }
 
-  window.soloPickCard = (id) => {
-    const card = soloCards.find(c => c.id === id);
-    if (!card || card.matched) return;
-    const current = soloDeck[soloRound];
-    if (card.card === current.card && card.poet === current.poet) {
-      card.matched = true;
-      soloScore++;
+  window.solopick=(id)=>{
+    const card=cards.find(c=>c.id===id);
+    if(!card||card.matched) return;
+    if(card.card===deck[round].card && card.poet===deck[round].poet){
+      card.matched=true; score++;
       toast('✓ صحيح! أحسنت!');
-      soloRound++;
-      clearInterval(timerInterval);
-      setTimeout(() => soloNext(), 900);
+      round++;
+      setTimeout(next,800);
     } else {
-      const els = document.querySelectorAll('.kcard');
-      const el = [...els].find(e => e.querySelector('.kcard-verse')?.textContent === card.card);
-      if (el) { el.classList.add('wrong'); setTimeout(()=>el.classList.remove('wrong'),500); }
-      toast('✗ خطأ! Try again');
+      const el=[...document.querySelectorAll('.kcard')].find(e=>e.querySelector('.kcard-verse')?.textContent===card.card);
+      if(el){el.classList.add('wrong');setTimeout(()=>el.classList.remove('wrong'),450);}
+      toast('✗ خطأ! حاول مرة أخرى');
     }
   };
 
-  soloNext();
+  // play intro audio if loaded, then start
+  if(audioSlots[audioIdx]){
+    show('intro');
+    document.getElementById('intro-num').textContent = arabicNums[audioIdx];
+    document.getElementById('intro-lbl').innerHTML =
+      `القصيدة ${arabicNums[audioIdx]}<br><small>Listening to the opening poem…</small>`;
+    document.getElementById('skip-intro-btn').style.display='block';
+    document.getElementById('skip-intro-btn').onclick=()=>{ stopAudio(); startSolo(); };
+    document.getElementById('wave').classList.remove('still');
+
+    const audio = new Audio(audioSlots[audioIdx]);
+    curAudio = audio;
+    audio.play().catch(()=>{});
+    audio.addEventListener('timeupdate',()=>{
+      const rem=Math.ceil((audio.duration||0)-audio.currentTime);
+      if(!isNaN(rem)&&rem>0) document.getElementById('intro-status').textContent=`🎙 يُقرأ الآن — ${rem}s`;
+    });
+    audio.addEventListener('ended',()=>{
+      document.getElementById('wave').classList.add('still');
+      runCountdown(3, startSolo);
+    });
+  } else {
+    startSolo();
+  }
 }
 
-/* ─── NAV ─── */
-function leaveLobby() {
-  clearSubs();
-  clearInterval(timerInterval);
-  if (roomRef) roomRef.child('players/' + myId + '/online').set(false);
-  roomRef = null;
-  roomCode = '';
-  isHost = false;
-  document.getElementById('join-panel').style.display = 'none';
+/* ══════════════════════════════════════
+   NAV
+══════════════════════════════════════ */
+function leaveLobby(){
+  clearSubs(); stopAudio();
+  if(roomRef) roomRef.child('players/'+myId+'/online').set(false);
+  roomRef=null; roomCode=''; isHost=false;
+  document.getElementById('join-panel').style.display='none';
   show('home');
 }
+function leaveGame(){ leaveLobby(); }
+function goHome()   { leaveLobby(); }
 
-function leaveGame() { leaveLobby(); }
-function goHome() { leaveLobby(); }
-
-function copyInvite() {
-  const url = `${location.origin}${location.pathname}?room=${roomCode}`;
-  navigator.clipboard.writeText(url).then(() => toast('Invite link copied! ↗ Share it with friends'));
+function copyInvite(){
+  const url=`${location.origin}${location.pathname}?room=${roomCode}`;
+  navigator.clipboard.writeText(url).then(()=>toast('Invite link copied! ↗ Share with friends'));
 }
 
-/* ─── AUTO-JOIN FROM URL ─── */
-window.addEventListener('load', () => {
-  const params = new URLSearchParams(location.search);
-  const room = params.get('room');
-  if (room && room.length === 4) {
-    document.getElementById('join-code').value = room.toUpperCase();
-    document.getElementById('join-panel').style.display = 'block';
+/* ══════════════════════════════════════
+   AUTO-JOIN FROM URL
+══════════════════════════════════════ */
+window.addEventListener('load',()=>{
+  const p=new URLSearchParams(location.search);
+  const r=p.get('room');
+  if(r&&r.length===4){
+    document.getElementById('join-code').value=r.toUpperCase();
+    document.getElementById('join-panel').style.display='block';
     toast('Room code pre-filled — enter your name and join!');
   }
-  // Firebase is configured — hide setup notice
-    document.getElementById('setup-notice').style.display = 'none';
 });
 
-/* ─── HELPERS ─── */
-function shuffle(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
-
-document.getElementById('join-code').addEventListener('input', e => {
-  e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'');
+document.getElementById('join-code').addEventListener('input',e=>{
+  e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'');
 });
 </script>
 </body>

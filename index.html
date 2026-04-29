@@ -168,36 +168,7 @@ input[type=text]:focus { border-color:var(--green); }
 .wait-msg span:nth-child(3){animation-delay:.4s}
 @keyframes blink{0%,80%,100%{opacity:0}40%{opacity:1}}
 
-/* ─── AUDIO UPLOAD ─── */
-.audio-panel {
-  background:var(--paper2); border:1.5px solid var(--gold);
-  border-radius:2px; padding:1rem 1.25rem; margin-top:1rem;
-  direction:ltr;
-}
-.audio-panel h3 { font-size:13px; color:var(--ink); margin-bottom:.25rem; }
-.audio-panel p  { font-size:11px; color:var(--ink-dim); margin-bottom:.75rem; line-height:1.6; }
-.audio-slot {
-  display:flex; align-items:center; gap:10px;
-  padding:7px 10px; margin-bottom:6px;
-  background:var(--paper); border:1px solid var(--paper3); border-radius:2px;
-}
-.slot-num {
-  width:26px; height:26px; border-radius:50%;
-  background:var(--red); color:var(--paper);
-  display:flex; align-items:center; justify-content:center;
-  font-size:13px; font-weight:700; flex-shrink:0;
-  font-family:'Amiri',serif;
-}
-.slot-name { font-size:12px; color:var(--ink-dim); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.slot-name.ok { color:#2d7a2a; font-weight:600; }
-input[type=file] { display:none; }
-.upload-lbl {
-  padding:4px 10px; font-size:11px;
-  border:1px solid var(--green); background:var(--paper);
-  color:var(--green); border-radius:2px; cursor:pointer;
-  font-family:'Noto Naskh Arabic',serif; flex-shrink:0;
-}
-.upload-lbl:hover { background:var(--paper2); }
+
 
 /* ─── INTRO SCREEN ─── */
 #screen-intro { text-align:center; }
@@ -443,36 +414,6 @@ input[type=file] { display:none; }
     </div>
   </div>
 
-  <!-- ── AUDIO UPLOAD (host only) ── -->
-  <div class="audio-panel">
-    <h3>🎙 Upload your 4 voice recordings (host only)</h3>
-    <p>Each file is an intro poem (15–30 sec). One plays before each game, cycling through all 4. MP3 / WAV / M4A supported. Files stay in your browser — nothing is uploaded to a server.</p>
-    <div class="audio-slot">
-      <div class="slot-num">١</div>
-      <span class="slot-name" id="sn0">القصيدة الأولى — not loaded</span>
-      <label class="upload-lbl" for="f0">Upload</label>
-      <input type="file" id="f0" accept="audio/*" onchange="loadAudio(0,this)"/>
-    </div>
-    <div class="audio-slot">
-      <div class="slot-num">٢</div>
-      <span class="slot-name" id="sn1">القصيدة الثانية — not loaded</span>
-      <label class="upload-lbl" for="f1">Upload</label>
-      <input type="file" id="f1" accept="audio/*" onchange="loadAudio(1,this)"/>
-    </div>
-    <div class="audio-slot">
-      <div class="slot-num">٣</div>
-      <span class="slot-name" id="sn2">القصيدة الثالثة — not loaded</span>
-      <label class="upload-lbl" for="f2">Upload</label>
-      <input type="file" id="f2" accept="audio/*" onchange="loadAudio(2,this)"/>
-    </div>
-    <div class="audio-slot">
-      <div class="slot-num">٤</div>
-      <span class="slot-name" id="sn3">القصيدة الرابعة — not loaded</span>
-      <label class="upload-lbl" for="f3">Upload</label>
-      <input type="file" id="f3" accept="audio/*" onchange="loadAudio(3,this)"/>
-    </div>
-  </div>
-
   <div class="info-box">
     <strong>How to play:</strong> The host's voice reads an opening poem. Then each verse from the
     Muallaqat is shown — race to slap the card that shows the <em>continuation</em> of that verse.
@@ -577,56 +518,56 @@ const FIREBASE_CONFIG = {
 };
 
 /* ══════════════════════════════════════
-   POEMS
+   POEMS  (each has an audio file path)
+   Place your files in:  audio/poem-01.mp3 … audio/poem-28.mp3
 ══════════════════════════════════════ */
 const POEMS = [
-  {poet:"امرؤ القيس",      read:"قِفَا نَبْكِ مِن ذِكرى حَبيبٍ وَمَنزِلِ",       card:"بِسِقطِ اللِّوى بَينَ الدَّخولِ فَحَومَلِ"},
-  {poet:"امرؤ القيس",      read:"وَقوفاً بِها صَحبي عَلَيَّ مَطِيَّهُم",          card:"يَقولونَ لا تَهلِك أَسىً وَتَجَمَّلِ"},
-  {poet:"امرؤ القيس",      read:"أَلا أَيُّها اللَّيلُ الطَّويلُ أَلا انجَلِ",    card:"بِصُبحٍ وَما الإِصباحُ مِنكَ بِأَمثَلِ"},
-  {poet:"امرؤ القيس",      read:"كَأَنَّ قُلوبَ الطَّيرِ رَطباً وَيابِساً",       card:"لَدى وَكرِها العُنّابُ وَالحَشَفُ البالي"},
-  {poet:"امرؤ القيس",      read:"مِكَرٍّ مِفَرٍّ مُقبِلٍ مُدبِرٍ مَعاً",         card:"كَجُلمودِ صَخرٍ حَطَّهُ السَّيلُ مِن عَلِ"},
-  {poet:"طرفة بن العبد",   read:"لِخَولَةَ أَطلالٌ بِبُرقَةِ ثَهمَدِ",           card:"تَلوحُ كَباقي الوَشمِ في ظاهِرِ اليَدِ"},
-  {poet:"طرفة بن العبد",   read:"سَتُبدي لَكَ الأَيّامُ ما كُنتَ جاهِلاً",       card:"وَيَأتيكَ بِالأَخبارِ مَن لَم تُزَوِّدِ"},
-  {poet:"طرفة بن العبد",   read:"لَعَمرُكَ إِنَّ المَوتَ ما أَخطَأَ الفَتى",     card:"لَكَالطِّوَلِ المُرخى وَثِنياهُ باليَدِ"},
-  {poet:"طرفة بن العبد",   read:"نَحنُ في المَشتاةِ نَدعو الجَفَلى",              card:"لا تَرى الآدِبَ فينا يَنتَقِر"},
-  {poet:"طرفة بن العبد",   read:"إِذا القَومُ قالوا مَن فَتىً خِلتُ أَنَّني",    card:"عُنيتُ فَلَم أَكسَل وَلَم أَتَبَلَّدِ"},
-  {poet:"زهير بن أبي سلمى",read:"أَمِن أُمِّ أَوفى دِمنَةٌ لَم تَكَلَّمِ",      card:"بِحَومانَةِ الدَّرّاجِ فَالمُتَثَلَّمِ"},
-  {poet:"زهير بن أبي سلمى",read:"سَئِمتُ تَكاليفَ الحَياةِ وَمَن يَعِش",        card:"ثَمانينَ حَولاً لا أَبا لَكَ يَسأَمِ"},
-  {poet:"زهير بن أبي سلمى",read:"وَما الحَربُ إِلّا ما عَلِمتُم وَذُقتُمُ",     card:"وَما هُوَ عَنها بِالحَديثِ المُرَجَّمِ"},
-  {poet:"زهير بن أبي سلمى",read:"فَتَنتِج لَكُم غِلمانَ أَشأَمَ كُلُّهُم",      card:"كَأَحمَرِ عادٍ ثُمَّ تُرضِعُ فَتَفطِمِ"},
-  {poet:"زهير بن أبي سلمى",read:"وَمَن يَجعَلِ المَعروفَ مِن دونِ عِرضِهِ",    card:"يَفِرهُ وَمَن لا يَتَّقِ الشَّتمَ يُشتَمِ"},
-  {poet:"لبيد بن ربيعة",   read:"عَفَت الدِّيارُ مَحَلُّها فَمُقامُها",           card:"بِمِنىً تَأَبَّدَ غَولُها فَرِجامُها"},
-  {poet:"لبيد بن ربيعة",   read:"وَجَلا السُّيولُ عَنِ الطُّلولِ كَأَنَّها",     card:"زُبُرٌ تَجِدُّ مُتونَها أَقلامُها"},
-  {poet:"لبيد بن ربيعة",   read:"أَلا كُلُّ شَيءٍ ما خَلا اللَهَ باطِلُ",       card:"وَكُلُّ نَعيمٍ لا مَحالَةَ زائِلُ"},
-  {poet:"لبيد بن ربيعة",   read:"وَما المَرءُ إِلّا كَالشِّهابِ وَضَوئِهِ",     card:"يَحورُ رَماداً بَعدَ إِذ هُوَ ساطِعُ"},
-  {poet:"لبيد بن ربيعة",   read:"فَإِن تَسأَلينا فيمَ نَحنُ فَإِنَّنا",          card:"عَصافيرُ مِن هَذا الأَنامِ المُسَرَّحِ"},
-  {poet:"عنترة بن شداد",   read:"هَل غادَرَ الشُّعَراءُ مِن مُتَرَدَّمِ",        card:"أَم هَل عَرَفتَ الدارَ بَعدَ تَوَهُّمِ"},
-  {poet:"عنترة بن شداد",   read:"يا دارَ عَبلَةَ بِالجِواءِ تَكَلَّمي",           card:"وَعِمي صَباحاً دارَ عَبلَةَ وَاسلَمي"},
-  {poet:"عنترة بن شداد",   read:"وَلَقَد شَرِبتُ مِنَ المُدامَةِ بَعدَما",       card:"رَكَدَ الهَواجِرُ بِالمَشوفِ المُعلَمِ"},
-  {poet:"عنترة بن شداد",   read:"وَلَقَد ذَكَرتُكِ وَالرِّماحُ نَواهِلٌ",        card:"مِنّي وَبيضُ الهِندِ تَقطُرُ مِن دَمي"},
-  {poet:"عنترة بن شداد",   read:"عُلِّقتُها عَرَضاً وَأَقتُلُ قَومَها",          card:"زَعماً لَعَمرُ أَبيكَ لَيسَ بِمَزعَمِ"},
-  {poet:"الحارث بن حلزة",  read:"آذَنَتنا بِبَينِها أَسماءُ",                    card:"رُبَّ ثاوٍ يَمَلُّ مِنهُ الثَّواءُ"},
-  {poet:"عمرو بن كلثوم",   read:"أَلا هُبّي بِصَحنِكِ فَاصبَحينا",               card:"وَلا تُبقي خُمورَ الأَندَرينا"},
-  {poet:"عمرو بن كلثوم",   read:"أَلا لا يَجهَلَن أَحَدٌ عَلَينا",               card:"فَنَجهَلَ فَوقَ جَهلِ الجاهِلينا"},
+  {poet:"امرؤ القيس",      read:"قِفَا نَبْكِ مِن ذِكرى حَبيبٍ وَمَنزِلِ",       card:"بِسِقطِ اللِّوى بَينَ الدَّخولِ فَحَومَلِ",       audio:"audio/poem-01.mp3"},
+  {poet:"امرؤ القيس",      read:"وَقوفاً بِها صَحبي عَلَيَّ مَطِيَّهُم",          card:"يَقولونَ لا تَهلِك أَسىً وَتَجَمَّلِ",            audio:"audio/poem-02.mp3"},
+  {poet:"امرؤ القيس",      read:"أَلا أَيُّها اللَّيلُ الطَّويلُ أَلا انجَلِ",    card:"بِصُبحٍ وَما الإِصباحُ مِنكَ بِأَمثَلِ",         audio:"audio/poem-03.mp3"},
+  {poet:"امرؤ القيس",      read:"كَأَنَّ قُلوبَ الطَّيرِ رَطباً وَيابِساً",       card:"لَدى وَكرِها العُنّابُ وَالحَشَفُ البالي",        audio:"audio/poem-04.mp3"},
+  {poet:"امرؤ القيس",      read:"مِكَرٍّ مِفَرٍّ مُقبِلٍ مُدبِرٍ مَعاً",         card:"كَجُلمودِ صَخرٍ حَطَّهُ السَّيلُ مِن عَلِ",      audio:"audio/poem-05.mp3"},
+  {poet:"طرفة بن العبد",   read:"لِخَولَةَ أَطلالٌ بِبُرقَةِ ثَهمَدِ",           card:"تَلوحُ كَباقي الوَشمِ في ظاهِرِ اليَدِ",          audio:"audio/poem-06.mp3"},
+  {poet:"طرفة بن العبد",   read:"سَتُبدي لَكَ الأَيّامُ ما كُنتَ جاهِلاً",       card:"وَيَأتيكَ بِالأَخبارِ مَن لَم تُزَوِّدِ",         audio:"audio/poem-07.mp3"},
+  {poet:"طرفة بن العبد",   read:"لَعَمرُكَ إِنَّ المَوتَ ما أَخطَأَ الفَتى",     card:"لَكَالطِّوَلِ المُرخى وَثِنياهُ باليَدِ",         audio:"audio/poem-08.mp3"},
+  {poet:"طرفة بن العبد",   read:"نَحنُ في المَشتاةِ نَدعو الجَفَلى",              card:"لا تَرى الآدِبَ فينا يَنتَقِر",                   audio:"audio/poem-09.mp3"},
+  {poet:"طرفة بن العبد",   read:"إِذا القَومُ قالوا مَن فَتىً خِلتُ أَنَّني",    card:"عُنيتُ فَلَم أَكسَل وَلَم أَتَبَلَّدِ",          audio:"audio/poem-10.mp3"},
+  {poet:"زهير بن أبي سلمى",read:"أَمِن أُمِّ أَوفى دِمنَةٌ لَم تَكَلَّمِ",      card:"بِحَومانَةِ الدَّرّاجِ فَالمُتَثَلَّمِ",          audio:"audio/poem-11.mp3"},
+  {poet:"زهير بن أبي سلمى",read:"سَئِمتُ تَكاليفَ الحَياةِ وَمَن يَعِش",        card:"ثَمانينَ حَولاً لا أَبا لَكَ يَسأَمِ",            audio:"audio/poem-12.mp3"},
+  {poet:"زهير بن أبي سلمى",read:"وَما الحَربُ إِلّا ما عَلِمتُم وَذُقتُمُ",     card:"وَما هُوَ عَنها بِالحَديثِ المُرَجَّمِ",          audio:"audio/poem-13.mp3"},
+  {poet:"زهير بن أبي سلمى",read:"فَتَنتِج لَكُم غِلمانَ أَشأَمَ كُلُّهُم",      card:"كَأَحمَرِ عادٍ ثُمَّ تُرضِعُ فَتَفطِمِ",         audio:"audio/poem-14.mp3"},
+  {poet:"زهير بن أبي سلمى",read:"وَمَن يَجعَلِ المَعروفَ مِن دونِ عِرضِهِ",    card:"يَفِرهُ وَمَن لا يَتَّقِ الشَّتمَ يُشتَمِ",       audio:"audio/poem-15.mp3"},
+  {poet:"لبيد بن ربيعة",   read:"عَفَت الدِّيارُ مَحَلُّها فَمُقامُها",           card:"بِمِنىً تَأَبَّدَ غَولُها فَرِجامُها",             audio:"audio/poem-16.mp3"},
+  {poet:"لبيد بن ربيعة",   read:"وَجَلا السُّيولُ عَنِ الطُّلولِ كَأَنَّها",     card:"زُبُرٌ تَجِدُّ مُتونَها أَقلامُها",               audio:"audio/poem-17.mp3"},
+  {poet:"لبيد بن ربيعة",   read:"أَلا كُلُّ شَيءٍ ما خَلا اللَهَ باطِلُ",       card:"وَكُلُّ نَعيمٍ لا مَحالَةَ زائِلُ",               audio:"audio/poem-18.mp3"},
+  {poet:"لبيد بن ربيعة",   read:"وَما المَرءُ إِلّا كَالشِّهابِ وَضَوئِهِ",     card:"يَحورُ رَماداً بَعدَ إِذ هُوَ ساطِعُ",            audio:"audio/poem-19.mp3"},
+  {poet:"لبيد بن ربيعة",   read:"فَإِن تَسأَلينا فيمَ نَحنُ فَإِنَّنا",          card:"عَصافيرُ مِن هَذا الأَنامِ المُسَرَّحِ",          audio:"audio/poem-20.mp3"},
+  {poet:"عنترة بن شداد",   read:"هَل غادَرَ الشُّعَراءُ مِن مُتَرَدَّمِ",        card:"أَم هَل عَرَفتَ الدارَ بَعدَ تَوَهُّمِ",          audio:"audio/poem-21.mp3"},
+  {poet:"عنترة بن شداد",   read:"يا دارَ عَبلَةَ بِالجِواءِ تَكَلَّمي",           card:"وَعِمي صَباحاً دارَ عَبلَةَ وَاسلَمي",            audio:"audio/poem-22.mp3"},
+  {poet:"عنترة بن شداد",   read:"وَلَقَد شَرِبتُ مِنَ المُدامَةِ بَعدَما",       card:"رَكَدَ الهَواجِرُ بِالمَشوفِ المُعلَمِ",          audio:"audio/poem-23.mp3"},
+  {poet:"عنترة بن شداد",   read:"وَلَقَد ذَكَرتُكِ وَالرِّماحُ نَواهِلٌ",        card:"مِنّي وَبيضُ الهِندِ تَقطُرُ مِن دَمي",           audio:"audio/poem-24.mp3"},
+  {poet:"عنترة بن شداد",   read:"عُلِّقتُها عَرَضاً وَأَقتُلُ قَومَها",          card:"زَعماً لَعَمرُ أَبيكَ لَيسَ بِمَزعَمِ",          audio:"audio/poem-25.mp3"},
+  {poet:"الحارث بن حلزة",  read:"آذَنَتنا بِبَينِها أَسماءُ",                    card:"رُبَّ ثاوٍ يَمَلُّ مِنهُ الثَّواءُ",               audio:"audio/poem-26.mp3"},
+  {poet:"عمرو بن كلثوم",   read:"أَلا هُبّي بِصَحنِكِ فَاصبَحينا",               card:"وَلا تُبقي خُمورَ الأَندَرينا",                   audio:"audio/poem-27.mp3"},
+  {poet:"عمرو بن كلثوم",   read:"أَلا لا يَجهَلَن أَحَدٌ عَلَينا",               card:"فَنَجهَلَ فَوقَ جَهلِ الجاهِلينا",                audio:"audio/poem-28.mp3"},
 ];
 
 /* ══════════════════════════════════════
-   AUDIO SLOTS  (4 intro poems, host only)
+   AUDIO — hardcoded file paths
+   Place files next to the HTML:
+     audio/intro-1.mp3 … audio/intro-4.mp3   (opening poems, 15-30s each)
+     audio/poem-01.mp3 … audio/poem-28.mp3   (each reading card verse)
 ══════════════════════════════════════ */
-const audioSlots = [null, null, null, null]; // Object URLs
+const INTRO_AUDIO = [
+  'audio/intro-1.mp3',
+  'audio/intro-2.mp3',
+  'audio/intro-3.mp3',
+  'audio/intro-4.mp3',
+];
+
 const arabicNums = ['١','٢','٣','٤'];
 let curAudio = null;
-
-function loadAudio(i, input) {
-  const file = input.files[0];
-  if (!file) return;
-  if (audioSlots[i]) URL.revokeObjectURL(audioSlots[i]);
-  audioSlots[i] = URL.createObjectURL(file);
-  const el = document.getElementById('sn'+i);
-  el.textContent = file.name;
-  el.classList.add('ok');
-  toast('✓ Loaded: ' + file.name);
-}
+let lastPlayedAudio = null; // track which poem audio is playing
 
 /* ══════════════════════════════════════
    STATE
@@ -792,12 +733,12 @@ function renderIntroScreen(d){
   document.getElementById('wave').classList.remove('still');
 
   if(isHost){
-    if(audioSlots[idx]){
-      playIntro(audioSlots[idx]);
+    const src = INTRO_AUDIO[idx];
+    if(src){
+      playIntro(src);
     } else {
-      // no audio — just countdown 5s
       document.getElementById('wave').classList.add('still');
-      document.getElementById('intro-status').textContent = 'لا يوجد تسجيل — اللعبة تبدأ خلال 5 ثوانٍ';
+      document.getElementById('intro-status').textContent = 'ملف الصوت غير موجود — اللعبة تبدأ خلال 5 ثوانٍ';
       runCountdown(5, ()=>roomRef.update({status:'playing'}));
     }
   } else {
@@ -846,7 +787,6 @@ function skipIntro(){
 ══════════════════════════════════════ */
 function renderGame(d){
   show('game');
-  stopAudio();
 
   // scores
   document.getElementById('scores').innerHTML =
@@ -859,10 +799,24 @@ function renderGame(d){
   const r = d.round||0;
   document.getElementById('round-tag').textContent = `بيت ${r+1} / ${d.deck.length}`;
 
-  // reading card
+  // reading card + play its audio when it changes
   if(d.currentRead){
     document.getElementById('reader-verse').textContent = d.currentRead.read;
     document.getElementById('reader-poet').textContent  = '— '+d.currentRead.poet;
+
+    const poemAudio = d.currentRead.audio;
+    if(poemAudio && poemAudio !== lastPlayedAudio){
+      lastPlayedAudio = poemAudio;
+      stopAudio();
+      const a = new Audio(poemAudio);
+      curAudio = a;
+      document.getElementById('reading-now').classList.add('show');
+      a.play().catch(()=>{});
+      a.addEventListener('ended', ()=>{
+        document.getElementById('reading-now').classList.remove('show');
+        curAudio = null;
+      });
+    }
   }
 
   // host controls
@@ -959,15 +913,17 @@ function renderResult(d){
 function playSolo(){
   isHost=true; myName='أنت';
   clearSubs(); stopAudio();
+  lastPlayedAudio = null;
   let deck  = shuffle([...POEMS]);
   let cards = deck.map((p,i)=>({...p,id:i,matched:false}));
   let round=0, score=0;
-  const audioIdx = Math.floor(Math.random()*4); // pick random slot
+  const audioIdx = Math.floor(Math.random()*4);
 
   function startSolo(){
     show('game');
+    lastPlayedAudio = null;
     document.getElementById('skip-btn').style.display='inline-block';
-    document.getElementById('skip-btn').onclick=()=>{ round++; next(); };
+    document.getElementById('skip-btn').onclick=()=>{ stopAudio(); lastPlayedAudio=null; round++; next(); };
     next();
   }
 
@@ -989,6 +945,18 @@ function playSolo(){
     document.getElementById('reader-poet').textContent='— '+cur.poet;
     document.getElementById('round-tag').textContent=`بيت ${round+1} / ${deck.length}`;
     document.getElementById('scores').innerHTML=`<div class="chip me">أنت: <span>${score}</span></div>`;
+
+    // play this verse's audio
+    if(cur.audio && cur.audio !== lastPlayedAudio){
+      lastPlayedAudio = cur.audio;
+      stopAudio();
+      const a = new Audio(cur.audio);
+      curAudio = a;
+      document.getElementById('reading-now').classList.add('show');
+      a.play().catch(()=>{});
+      a.addEventListener('ended',()=>{ document.getElementById('reading-now').classList.remove('show'); curAudio=null; });
+    }
+
     const unmatch=shuffle([...cards.filter(c=>!c.matched)]);
     const matched=cards.filter(c=> c.matched);
     document.getElementById('cards-grid').innerHTML=
@@ -1005,6 +973,7 @@ function playSolo(){
     if(card.card===deck[round].card && card.poet===deck[round].poet){
       card.matched=true; score++;
       toast('✓ صحيح! أحسنت!');
+      stopAudio(); lastPlayedAudio=null;
       round++;
       setTimeout(next,800);
     } else {
@@ -1014,8 +983,9 @@ function playSolo(){
     }
   };
 
-  // play intro audio if loaded, then start
-  if(audioSlots[audioIdx]){
+  // play intro audio if file exists, then start
+  const introSrc = INTRO_AUDIO[audioIdx];
+  if(introSrc){
     show('intro');
     document.getElementById('intro-num').textContent = arabicNums[audioIdx];
     document.getElementById('intro-lbl').innerHTML =
@@ -1023,8 +993,7 @@ function playSolo(){
     document.getElementById('skip-intro-btn').style.display='block';
     document.getElementById('skip-intro-btn').onclick=()=>{ stopAudio(); startSolo(); };
     document.getElementById('wave').classList.remove('still');
-
-    const audio = new Audio(audioSlots[audioIdx]);
+    const audio = new Audio(introSrc);
     curAudio = audio;
     audio.play().catch(()=>{});
     audio.addEventListener('timeupdate',()=>{
@@ -1045,6 +1014,7 @@ function playSolo(){
 ══════════════════════════════════════ */
 function leaveLobby(){
   clearSubs(); stopAudio();
+  lastPlayedAudio = null;
   if(roomRef) roomRef.child('players/'+myId+'/online').set(false);
   roomRef=null; roomCode=''; isHost=false;
   document.getElementById('join-panel').style.display='none';

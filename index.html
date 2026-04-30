@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>الكاروتا العربية</title>
+<title>كارُوتا المُعَلَّقات</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
@@ -102,7 +102,10 @@ textarea{resize:vertical;min-height:70px;}
 
 /* ══════════ PROFILE ══════════ */
 .profile-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.25rem;flex-wrap:wrap;}
-.avatar-lg{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:38px;border:3px solid var(--green);background:var(--paper2);flex-shrink:0;}
+.avatar-lg{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:38px;border:3px solid var(--green);background:var(--paper2);flex-shrink:0;overflow:hidden;cursor:pointer;position:relative;}
+.avatar-lg img,.avatar-sm img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.avatar-photo-wrap{position:relative;display:inline-block;}
+.avatar-photo-wrap .change-lbl{position:absolute;bottom:0;left:0;right:0;background:rgba(26,18,8,.65);color:var(--paper);font-size:10px;text-align:center;padding:3px 0;cursor:pointer;border-radius:0 0 50% 50%;}
 .profile-info h2{font-family:'Amiri',serif;font-size:22px;color:var(--red);}
 .profile-info p{font-size:13px;color:var(--ink-dim);}
 .stats-row{display:flex;gap:10px;flex-wrap:wrap;margin:1rem 0;}
@@ -292,8 +295,8 @@ textarea{resize:vertical;min-height:70px;}
       <div class="corner tl"></div><div class="corner tr"></div>
       <div class="corner bl"></div><div class="corner br"></div>
       <div class="hero-seal">م</div>
-      <h1 class="hero-title">الكاروتا العربية</h1>
-      <p class="hero-sub">ARABIC KARUTA ·</p>
+      <h1 class="hero-title">كارُوتا المُعَلَّقات</h1>
+      <p class="hero-sub">ARABIC KARUTA · THE SEVEN HANGING ODES</p>
     </div>
     <div class="btn-group">
       <button class="btn danger"    onclick="openCreate()">إنشاء غرفة — Create Room</button>
@@ -310,6 +313,14 @@ textarea{resize:vertical;min-height:70px;}
         <input id="join-code" type="text" placeholder="AMRQ" maxlength="4" style="text-transform:uppercase;letter-spacing:8px;font-size:20px;text-align:center;"/>
         <button class="btn primary" onclick="joinRoom()">دخول ←</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Friend game invites inbox -->
+  <div id="invites-panel" style="display:none;margin-bottom:1rem;">
+    <div class="scroll" style="border-color:var(--gold);">
+      <div class="section-title" style="color:var(--gold);">📩 دعوات للعب</div>
+      <div id="invites-list"></div>
     </div>
   </div>
 
@@ -346,7 +357,19 @@ textarea{resize:vertical;min-height:70px;}
     <div class="field"><label>اسم المستخدم</label><input id="edit-name" type="text" maxlength="20"/></div>
     <div class="field"><label>نبذة</label><textarea id="edit-bio" maxlength="100" placeholder="اكتب نبذة عنك..."></textarea></div>
     <div class="field">
-      <label>اختر رمزاً تعبيرياً (Avatar)</label>
+      <label>صورة الملف الشخصي (اختياري — تُضغط تلقائياً)</label>
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:.5rem;">
+        <div class="avatar-lg" id="p-photo-preview" style="width:64px;height:64px;font-size:32px;">🦁</div>
+        <div>
+          <label class="upload-lbl" for="photo-input" style="display:inline-block;padding:7px 14px;border:1.5px solid var(--green);border-radius:2px;cursor:pointer;font-size:13px;background:var(--paper);color:var(--green);">📷 اختر صورة</label>
+          <input type="file" id="photo-input" accept="image/*" style="display:none;" onchange="handlePhotoUpload(this)"/>
+          <div style="font-size:11px;color:var(--ink-dim);margin-top:4px;">JPG / PNG · تُضغط إلى 120×120</div>
+          <button class="btn sm danger" id="remove-photo-btn" onclick="removePhoto()" style="margin-top:6px;display:none;">حذف الصورة</button>
+        </div>
+      </div>
+    </div>
+    <div class="field">
+      <label>أو اختر رمزاً تعبيرياً (يُستخدم إن لم تكن هناك صورة)</label>
       <div class="avatar-grid" id="avatar-grid"></div>
     </div>
     <button class="btn primary" onclick="saveProfile()">حفظ التغييرات ✓</button>
@@ -526,7 +549,7 @@ const FIREBASE_CONFIG = {
    Set your email here — this account gets
    admin access automatically on register.
 ════════════════════════════════════════ */
-const ADMIN_EMAIL = "kald94098@gmail.com"; // ← change this
+const ADMIN_EMAIL = "your-admin-email@example.com"; // ← change this
 
 /* ════════════════════════════════════════
    AVATARS
@@ -667,6 +690,7 @@ function arabifyAuthError(code){
 async function doLogout(){
   clearSubs(); stopAudio(); cancelMatchmaking();
   if(roomRef) roomRef.child(`players/${myUid}/online`).set(false);
+  if(inviteListener){db.ref(`users/${myUid}/gameInvites`).off('value',inviteListener);inviteListener=null;}
   await auth.signOut();
 }
 
@@ -677,8 +701,11 @@ function goHome(){
   clearSubs(); stopAudio(); lastPlayedAudio=null;
   cancelMatchmaking();
   document.getElementById('join-panel').style.display='none';
-  document.getElementById('nav-avatar').textContent = myProfile.avatar||'🦁';
+  const navAv=document.getElementById('nav-avatar');
+  if(myProfile.photoURL){navAv.innerHTML='<img src="'+myProfile.photoURL+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>';}
+  else{navAv.textContent=myProfile.avatar||'🦁';}
   document.getElementById('admin-link').style.display = myProfile.isAdmin?'inline':'none';
+  listenForInvites();
   show('home');
 }
 
@@ -699,25 +726,38 @@ function showProfile(uid, readonly=false){
       document.getElementById('modal-title').textContent=p.username||'لاعب';
       const isFriend = myProfile.friends && myProfile.friends[uid]==='accepted';
       const isPending= myProfile.friends && myProfile.friends[uid]==='pending_sent';
+      const avatarHTML = p.photoURL
+        ? `<img src="${p.photoURL}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid var(--green);"/>`
+        : `<div style="font-size:52px;">${p.avatar||'🦁'}</div>`;
       document.getElementById('modal-body').innerHTML=`
         <div style="text-align:center;margin-bottom:1rem;">
-          <div style="font-size:52px;margin-bottom:.5rem;">${p.avatar||'🦁'}</div>
-          <div style="font-size:13px;color:var(--ink-dim);">${p.bio||''}</div>
+          ${avatarHTML}
+          <div style="font-size:13px;color:var(--ink-dim);margin-top:.5rem;">${p.bio||''}</div>
           <div class="stats-row" style="margin-top:1rem;">
             <div class="stat-box"><div class="stat-num">${p.stats?.gamesPlayed||0}</div><div class="stat-lbl">مباريات</div></div>
             <div class="stat-box"><div class="stat-num">${p.stats?.gamesWon||0}</div><div class="stat-lbl">انتصارات</div></div>
             <div class="stat-box"><div class="stat-num">${p.stats?.cardsWon||0}</div><div class="stat-lbl">بطاقات</div></div>
           </div>
         </div>
-        ${isFriend?`<div style="text-align:center;color:#2d7a2a;font-size:13px;">✓ صديق</div>`:
-          isPending?`<div style="text-align:center;color:var(--ink-dim);font-size:13px;">طلب مُرسَل…</div>`:
-          `<button class="btn primary" style="width:100%" onclick="sendFriendReq('${uid}','${p.username}')">إضافة صديق +</button>`}`;
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:.5rem;">
+          ${isFriend
+            ?`<button class="btn danger" style="width:100%" onclick="sendGameInvite('${uid}','${p.username}')">🎮 دعوة للعب معاً</button>
+              <div style="text-align:center;color:#2d7a2a;font-size:12px;">✓ صديق</div>`
+            : isPending
+              ?`<div style="text-align:center;color:var(--ink-dim);font-size:13px;">طلب صداقة مُرسَل…</div>`
+              :`<button class="btn primary" style="width:100%" onclick="sendFriendReq('${uid}','${p.username}')">إضافة صديق +</button>`
+          }
+        </div>`;
       document.getElementById('modal-bg').classList.add('show');
     });
     return;
   }
   // own profile
-  document.getElementById('p-avatar').textContent = myProfile.avatar||'🦁';
+  const pAv=document.getElementById('p-avatar');
+  if(myProfile.photoURL){pAv.innerHTML=`<img src="${myProfile.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`;pAv.textContent='';}
+  else{pAv.textContent=myProfile.avatar||'🦁';pAv.innerHTML=myProfile.avatar||'🦁';}
+  document.getElementById('p-photo-preview').innerHTML=myProfile.photoURL?`<img src="${myProfile.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`:(myProfile.avatar||'🦁');
+  document.getElementById('remove-photo-btn').style.display=myProfile.photoURL?'inline-block':'none';
   document.getElementById('p-name').textContent   = myProfile.username||'—';
   document.getElementById('p-email').textContent  = myEmail;
   document.getElementById('p-bio').textContent    = myProfile.bio||'';
@@ -746,10 +786,17 @@ async function saveProfile(){
   const bio  = document.getElementById('edit-bio').value.trim();
   const av   = selectedAvatar||myProfile.avatar||'🦁';
   if(!name){toast('اكتب اسماً');return;}
-  await db.ref(`users/${myUid}`).update({username:name,bio,avatar:av});
+  const updates={username:name,bio,avatar:av};
+  if(pendingPhotoURL!==null) updates.photoURL=pendingPhotoURL;
+  await db.ref(`users/${myUid}`).update(updates);
   myProfile.username=name; myProfile.bio=bio; myProfile.avatar=av;
+  if(pendingPhotoURL!==null) myProfile.photoURL=pendingPhotoURL;
+  pendingPhotoURL=null;
   toast('✓ تم حفظ الملف');
-  document.getElementById('nav-avatar').textContent=av;
+  // Update nav avatar
+  const navAv=document.getElementById('nav-avatar');
+  if(myProfile.photoURL){navAv.innerHTML=`<img src="${myProfile.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`;}
+  else{navAv.textContent=av;}
   show('home');
 }
 
@@ -840,45 +887,79 @@ async function loadFriendsList(){
         <div class="friend-sub">${u.online?'متصل الآن':'غير متصل'}</div>
       </div>
       <button class="btn sm" onclick="showProfile('${uid}')">عرض</button>
+      <button class="btn sm danger" onclick="sendGameInvite('${uid}','${u.username||uid}')">🎮 دعوة</button>
     </div>`;
   }));
   div.innerHTML=rows.join('');
 }
 
 /* ════════════════════════════════════════
-   MATCHMAKING
+   MATCHMAKING  — listener-based (no polling)
+   Host writes roomCode into partner's entry.
+   Partner listens to own entry for roomCode.
 ════════════════════════════════════════ */
-let mmInterval=null;
+let mmInterval=null, mmQueueListener=null;
+
 function startMatchmaking(){
   if(!myUid){toast('يجب تسجيل الدخول');return;}
   show('matchmaking');
   mmRef = db.ref(`matchmaking/${myUid}`);
-  mmRef.set({username:myProfile.username,avatar:myProfile.avatar,joinedAt:firebase.database.ServerValue.TIMESTAMP});
+  mmRef.set({
+    username:myProfile.username, avatar:myProfile.avatar,
+    joinedAt:firebase.database.ServerValue.TIMESTAMP
+  });
   mmRef.onDisconnect().remove();
 
-  let elapsed=0;
   document.getElementById('mm-status').textContent='جاري البحث عن لاعبين…';
   document.getElementById('mm-count').textContent='';
 
+  // Listen to OWN entry — host will write roomCode here when match is found
+  mmQueueListener = mmRef.on('value', async snap=>{
+    if(!snap.exists()) return; // cancelled
+    const data = snap.val()||{};
+    if(data.roomCode){
+      // Someone matched us — join their room as non-host
+      mmRef.off('value', mmQueueListener); mmQueueListener=null;
+      clearInterval(mmInterval); mmInterval=null;
+      mmRef.remove(); mmRef=null;
+      roomCode=data.roomCode; isHost=false;
+      roomRef=db.ref('rooms/'+roomCode);
+      await roomRef.child(`players/${myUid}`).set({
+        name:myProfile.username,
+        avatar: myProfile.photoURL||myProfile.avatar||'🦁',
+        score:0, online:true
+      });
+      roomRef.child(`players/${myUid}/online`).onDisconnect().set(false);
+      document.getElementById('room-code-show').textContent=roomCode;
+      document.getElementById('start-btn').style.display='none';
+      document.getElementById('host-hint').textContent='Waiting for host to start…';
+      show('lobby'); listenRoom();
+      return;
+    }
+  });
+
+  // Poll only to count queue size and attempt to become host
+  let elapsed=0;
   mmInterval=setInterval(async()=>{
     elapsed++;
     document.getElementById('mm-count').textContent=`${elapsed}s`;
     const snap=await db.ref('matchmaking').once('value');
     const queue=snap.val()||{};
-    const players=Object.entries(queue).filter(([uid])=>uid!==myUid);
+    const others=Object.entries(queue).filter(([uid,v])=>uid!==myUid && !v.roomCode);
     document.getElementById('mm-status').textContent=`${Object.keys(queue).length} لاعب في الانتظار…`;
-    if(players.length>0){
-      // I am host if my UID is alphabetically first among queued players
-      const allIds=[myUid,...players.map(([uid])=>uid)].sort();
+    if(others.length>0){
+      // Become host only if my UID sorts first — prevents both players racing
+      const allIds=[myUid,...others.map(([uid])=>uid)].sort();
       if(allIds[0]===myUid){
-        // I'm host — create room
-        clearInterval(mmInterval);
-        const partner=players[0];
+        clearInterval(mmInterval); mmInterval=null;
+        const partnerUid=others[0][0];
         const code=genCode();
-        const partnerUid=partner[0];
+        // Write roomCode into partner's entry FIRST so they auto-join
+        await db.ref(`matchmaking/${partnerUid}`).update({roomCode:code});
+        // Remove myself from queue
+        mmRef.off('value', mmQueueListener); mmQueueListener=null;
+        mmRef.remove(); mmRef=null;
         roomCode=code; isHost=true;
-        // remove everyone from queue
-        await Promise.all([myUid,partnerUid].map(uid=>db.ref(`matchmaking/${uid}`).remove()));
         await createRoom([partnerUid]);
       }
     }
@@ -887,7 +968,10 @@ function startMatchmaking(){
 
 function cancelMatchmaking(){
   clearInterval(mmInterval); mmInterval=null;
-  if(mmRef){mmRef.remove();mmRef=null;}
+  if(mmRef){
+    if(mmQueueListener){mmRef.off('value',mmQueueListener);mmQueueListener=null;}
+    mmRef.remove(); mmRef=null;
+  }
 }
 
 /* ════════════════════════════════════════
@@ -903,11 +987,11 @@ async function createRoom(extraPlayerUids=[]){
   if(!db) return;
   roomRef=db.ref('rooms/'+roomCode);
   const deck=shuffle([...POEMS]).map((p,i)=>({...p,id:i,matched:false,winnerId:null,winnerName:null}));
-  const players={[myUid]:{name:myProfile.username,avatar:myProfile.avatar,score:0,online:true}};
+  const players={[myUid]:{name:myProfile.username,avatar:myProfile.avatar,photoURL:myProfile.photoURL||'',score:0,online:true}};
   extraPlayerUids.forEach(async uid=>{
     const s=await db.ref(`users/${uid}`).once('value');
     const u=s.val()||{};
-    players[uid]={name:u.username||uid,avatar:u.avatar||'🦁',score:0,online:true};
+    players[uid]={name:u.username||uid,avatar:u.avatar||'🦁',photoURL:u.photoURL||'',score:0,online:true};
   });
   await roomRef.set({host:myUid,status:'lobby',deck,tableCards:deck,round:0,players,currentRead:deck[0],gameIndex:0});
   roomRef.child(`players/${myUid}/online`).onDisconnect().set(false);
@@ -951,13 +1035,16 @@ function listenRoom(){
 function renderLobby(d){
   show('lobby');
   const ps=Object.entries(d.players||{});
-  document.getElementById('player-list').innerHTML=ps.map(([uid,p])=>`
-    <div class="player-item">
+  document.getElementById('player-list').innerHTML=ps.map(([uid,p])=>{
+    const photo=p.photoURL||(p.avatar&&(p.avatar.startsWith('data:')||p.avatar.startsWith('http'))?p.avatar:null);
+    const avHTML=photo?`<img src="${photo}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:1.5px solid var(--green);"/>`:`<span>${p.avatar||'🦁'}</span>`;
+    return `<div class="player-item">
       <div class="dot ${p.online?'on':'off'}"></div>
-      <span style="margin-left:4px;">${p.avatar||'🦁'}</span>
+      ${avHTML}
       <span>${p.name}</span>
       ${uid===d.host?'<span class="host-tag">Host</span>':''}
-    </div>`).join('');
+    </div>`;
+  }).join('');
   document.getElementById('wait-msg').style.display=ps.length<2?'block':'none';
   document.getElementById('start-btn').style.display=(myUid===d.host)?'block':'none';
 }
@@ -985,21 +1072,29 @@ function renderIntroScreen(d){
   document.getElementById('skip-intro-btn').style.display=isHost?'block':'none';
   document.getElementById('countdown').style.display='none';
   document.getElementById('wave').classList.remove('still');
-  if(isHost){
-    const src=INTRO_AUDIO[idx];
-    if(src){ playIntro(src); }
-    else{ document.getElementById('wave').classList.add('still');document.getElementById('intro-status').textContent='ملف الصوت غير موجود';runCountdown(5,()=>roomRef.update({status:'playing'}));}
-  }else{
-    document.getElementById('intro-status').textContent='استمع إلى القصيدة…';
+  // ALL players play the audio locally — only host triggers Firebase status change
+  const src=INTRO_AUDIO[idx];
+  if(src){
+    playIntro(src, isHost);
+  } else {
+    document.getElementById('wave').classList.add('still');
+    document.getElementById('intro-status').textContent='ملف الصوت غير موجود';
+    if(isHost) runCountdown(5,()=>roomRef.update({status:'playing'}));
+    else document.getElementById('intro-status').textContent='انتظار بدء اللعبة…';
   }
 }
 
-function playIntro(src){
+function playIntro(src, iAmHost){
   const a=new Audio(src); curAudio=a;
   document.getElementById('intro-status').textContent='🎙 يُقرأ الآن…';
-  a.play().catch(()=>{document.getElementById('intro-status').textContent='انقر على تخطى…';});
+  a.play().catch(()=>{document.getElementById('intro-status').textContent='اضغط تخطى إن لم يعمل الصوت…';});
   a.addEventListener('timeupdate',()=>{const r=Math.ceil((a.duration||0)-a.currentTime);if(!isNaN(r)&&r>0)document.getElementById('intro-status').textContent=`🎙 يُقرأ الآن — ${r}s`;});
-  a.addEventListener('ended',()=>{document.getElementById('wave').classList.add('still');document.getElementById('intro-status').textContent='انتهت القصيدة…';runCountdown(3,()=>roomRef.update({status:'playing'}));});
+  a.addEventListener('ended',()=>{
+    document.getElementById('wave').classList.add('still');
+    document.getElementById('intro-status').textContent='انتهت القصيدة…';
+    // Only host pushes the game-start — non-host Firebase listener handles the rest
+    if(iAmHost) runCountdown(3,()=>roomRef.update({status:'playing'}));
+  });
 }
 function runCountdown(n,cb){const el=document.getElementById('countdown');el.style.display='block';el.textContent=n;const iv=setInterval(()=>{n--;if(n>0){el.textContent=n;}else{clearInterval(iv);el.style.display='none';cb();}},1000);}
 function skipIntro(){if(!isHost)return;stopAudio();roomRef.update({status:'playing'});}
@@ -1329,6 +1424,121 @@ window.addEventListener('load',()=>{
 document.getElementById('join-code').addEventListener('input',e=>{
   e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'');
 });
+
+/* ════════════════════════════════════════
+   PROFILE PICTURE UPLOAD
+   Compresses image to 120x120 base64, stores in DB
+════════════════════════════════════════ */
+let pendingPhotoURL = null;
+function handlePhotoUpload(input){
+  const file=input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const img=new Image();
+    img.onload=()=>{
+      const canvas=document.createElement('canvas');
+      canvas.width=120; canvas.height=120;
+      const ctx=canvas.getContext('2d');
+      // crop to square from center
+      const min=Math.min(img.width,img.height);
+      const sx=(img.width-min)/2, sy=(img.height-min)/2;
+      ctx.drawImage(img,sx,sy,min,min,0,0,120,120);
+      const dataURL=canvas.toDataURL('image/jpeg',0.75);
+      pendingPhotoURL=dataURL;
+      document.getElementById('p-photo-preview').innerHTML=`<img src="${dataURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`;
+      document.getElementById('remove-photo-btn').style.display='inline-block';
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function removePhoto(){
+  pendingPhotoURL=''; // empty string = delete photo
+  document.getElementById('p-photo-preview').textContent=myProfile.avatar||'🦁';
+  document.getElementById('remove-photo-btn').style.display='none';
+}
+
+/* ════════════════════════════════════════
+   FRIEND GAME INVITES
+════════════════════════════════════════ */
+let inviteListener=null;
+
+function listenForInvites(){
+  if(!myUid||!db) return;
+  if(inviteListener) return; // already listening
+  inviteListener=db.ref(`users/${myUid}/gameInvites`).on('value',snap=>{
+    const invites=snap.val()||{};
+    const list=Object.entries(invites);
+    const panel=document.getElementById('invites-panel');
+    const listEl=document.getElementById('invites-list');
+    if(!panel||!listEl) return;
+    if(!list.length){panel.style.display='none'; return;}
+    panel.style.display='block';
+    listEl.innerHTML=list.map(([fromUid,inv])=>`
+      <div class="friend-item">
+        <div class="friend-avatar">${inv.avatar||'🦁'}</div>
+        <div style="flex:1;">
+          <div class="friend-name">${inv.username||'لاعب'}</div>
+          <div class="friend-sub" style="direction:ltr;">Room: ${inv.roomCode}</div>
+        </div>
+        <button class="btn sm primary" onclick="acceptGameInvite('${fromUid}','${inv.roomCode}')">انضمام ✓</button>
+        <button class="btn sm danger"  onclick="declineGameInvite('${fromUid}')">رفض</button>
+      </div>`).join('');
+  });
+}
+
+async function sendGameInvite(toUid, toName){
+  if(!myUid){toast('يجب تسجيل الدخول');return;}
+  // Create a room first
+  const code=genCode(); roomCode=code; isHost=true;
+  await createRoom([]); // creates lobby, shows lobby screen
+  // Write invite to friend's node
+  await db.ref(`users/${toUid}/gameInvites/${myUid}`).set({
+    username: myProfile.username,
+    avatar: myProfile.avatar||'🦁',
+    roomCode: code,
+    sentAt: firebase.database.ServerValue.TIMESTAMP
+  });
+  toast(`✓ تم إرسال الدعوة إلى ${toName}`);
+  closeModal();
+}
+
+async function acceptGameInvite(fromUid, code){
+  // Remove invite
+  await db.ref(`users/${myUid}/gameInvites/${fromUid}`).remove();
+  // Join the room
+  roomCode=code; isHost=false;
+  roomRef=db.ref('rooms/'+roomCode);
+  const snap=await roomRef.once('value');
+  if(!snap.exists()){toast('انتهت صلاحية الدعوة'); return;}
+  await roomRef.child(`players/${myUid}`).set({
+    name:myProfile.username,
+    avatar:myProfile.photoURL||myProfile.avatar||'🦁',
+    score:0, online:true
+  });
+  roomRef.child(`players/${myUid}/online`).onDisconnect().set(false);
+  document.getElementById('room-code-show').textContent=roomCode;
+  document.getElementById('start-btn').style.display='none';
+  document.getElementById('host-hint').textContent='Waiting for host to start…';
+  show('lobby'); listenRoom();
+}
+
+async function declineGameInvite(fromUid){
+  await db.ref(`users/${myUid}/gameInvites/${fromUid}`).remove();
+}
+
+/* ════════════════════════════════════════
+   ALSO show photo in player list & lobby
+════════════════════════════════════════ */
+function avatarHTML(p){
+  const photo=p.photoURL||p.avatar;
+  if(photo && (photo.startsWith('data:') || photo.startsWith('http'))){
+    return `<img src="${photo}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:1.5px solid var(--green);flex-shrink:0;"/>`;
+  }
+  return `<span>${p.avatar||'🦁'}</span>`;
+}
+
 </script>
 
 <!--

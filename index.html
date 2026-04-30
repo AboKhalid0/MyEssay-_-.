@@ -988,11 +988,12 @@ async function createRoom(extraPlayerUids=[]){
   roomRef=db.ref('rooms/'+roomCode);
   const deck=shuffle([...POEMS]).map((p,i)=>({...p,id:i,matched:false,winnerId:null,winnerName:null}));
   const players={[myUid]:{name:myProfile.username,avatar:myProfile.avatar,photoURL:myProfile.photoURL||'',score:0,online:true}};
-  extraPlayerUids.forEach(async uid=>{
+  // Await ALL partner fetches before writing the room — forEach+async doesn't wait
+  await Promise.all(extraPlayerUids.map(async uid=>{
     const s=await db.ref(`users/${uid}`).once('value');
     const u=s.val()||{};
     players[uid]={name:u.username||uid,avatar:u.avatar||'🦁',photoURL:u.photoURL||'',score:0,online:true};
-  });
+  }));
   await roomRef.set({host:myUid,status:'lobby',deck,tableCards:deck,round:0,players,currentRead:deck[0],gameIndex:0});
   roomRef.child(`players/${myUid}/online`).onDisconnect().set(false);
   document.getElementById('room-code-show').textContent=roomCode;

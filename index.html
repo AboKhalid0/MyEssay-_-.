@@ -2,6 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8"/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎴</text></svg>"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>الكاروتا العربية</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -251,9 +252,9 @@ textarea{resize:vertical;min-height:70px;}
 <div id="screen-auth" class="screen active">
   <div class="auth-wrap">
     <div class="auth-hero">
-      <div class="auth-seal">م</div>
+      <div class="auth-seal">ض</div>
       <h1 class="auth-title">الكاروتا العربية</h1>
-      <p class="auth-sub" style="direction:ltr;">ARABIC KARUTA ·</p>
+      <p class="auth-sub" style="direction:ltr;">ARABIC KARUTA · THE SEVEN HANGING ODES</p>
     </div>
     <div class="tab-bar">
       <button class="tab-btn active" id="tab-login"    onclick="switchTab('login')">تسجيل دخول</button>
@@ -294,7 +295,7 @@ textarea{resize:vertical;min-height:70px;}
     <div class="hero-frame">
       <div class="corner tl"></div><div class="corner tr"></div>
       <div class="corner bl"></div><div class="corner br"></div>
-      <div class="hero-seal">ض</div>
+      <div class="hero-seal">م</div>
       <h1 class="hero-title">الكاروتا العربية</h1>
       <p class="hero-sub">ARABIC KARUTA ·</p>
     </div>
@@ -325,7 +326,7 @@ textarea{resize:vertical;min-height:70px;}
   </div>
 
   <div class="info-box">
-    <strong>طريقة اللعب:</strong> ستُقرأ قصيدة بعدها ستبدأ اللعبة, يجب عليك محاولة معرفة تكلمة بيت القصيدة قبل خصمك والفوز! <em>إسرق وكن أراتا</em>. ومن سيحصل على أكثر عدد بطاقات سيفوز.<br><br>
+    <strong>طريقة اللعب:</strong> ستُقرأ قصيدة ثم ستبدأ اللعبة, عليك أن تسبق منافسك في معرفة تكملة البيت المقروئ, الفوز يحسم عبر تحديد من هو أكثر لاعب جمع بطاقات<br><br>
     الشعراء: امرؤ القيس · طرفة · زهير · لبيد · عنترة · الحارث · عمرو بن كلثوم
   </div>
 </div>
@@ -465,7 +466,7 @@ textarea{resize:vertical;min-height:70px;}
   <div class="yomifuda">
     <div class="yomi-left"><span class="yomi-lbl">READING CARD · بطاقة القراءة</span></div>
     <div class="yomi-right">
-      <div class="reading-now" id="reading-now"><div class="rdot"></div><span>يُقرأ الشطر…</span></div>
+      <div class="reading-now" id="reading-now"><div class="rdot"></div><span>reading aloud…</span></div>
       <div class="yomi-verse" id="reader-verse">…</div>
       <div class="yomi-poet"  id="reader-poet"></div>
     </div>
@@ -486,7 +487,7 @@ textarea{resize:vertical;min-height:70px;}
   </div>
   <div class="btn-group">
     <button class="btn danger" id="again-btn" onclick="hostRestart()">العب مجدداً</button>
-    <button class="btn" onclick="leaveLobby()">← اللوبي</button>
+    <button class="btn" onclick="leaveLobby()">← الصفحة الرئيسية</button>
   </div>
 </div>
 
@@ -549,7 +550,7 @@ const FIREBASE_CONFIG = {
    Set your email here — this account gets
    admin access automatically on register.
 ════════════════════════════════════════ */
-const ADMIN_EMAIL = "kald94098@gmail.com"; // ← change this
+const ADMIN_EMAIL = "your-admin-email@example.com"; // ← change this
 
 /* ════════════════════════════════════════
    AVATARS
@@ -1129,14 +1130,19 @@ function renderGame(d){
 function renderCards(tc){
   const unmatch=shuffle([...tc.filter(c=>!c.matched)]);
   const matched=tc.filter(c=>c.matched);
-  document.getElementById('cards-grid').innerHTML=[...unmatch,...matched].map(c=>`
-    <div class="kcard ${c.matched?'matched':''}" onclick="${!c.matched?`pickCard(${c.id})`:''}">
+  const grid=document.getElementById('cards-grid');
+  grid.innerHTML=[...unmatch,...matched].map(c=>`
+    <div class="kcard ${c.matched?'matched':''}" data-id="${c.id}" data-matched="${c.matched?'1':''}">
       <div class="kcard-body"><div class="kcard-verse">${c.card}</div></div>
       <div class="kcard-footer">
         <span class="kcard-poet">${c.poet}</span>
-        ${c.matched&&c.winnerName?`<span class="kcard-winner">✓ ${c.winnerName}</span>`:''}
+        ${c.matched&&c.winnerName?`<span class="kcard-winner">&#10003; ${c.winnerName}</span>`:''}
       </div>
     </div>`).join('');
+  // Event delegation — no inline onclick, CSP-safe
+  grid.querySelectorAll('.kcard:not(.matched)').forEach(el=>{
+    el.addEventListener('click',()=>pickCard(Number(el.dataset.id)));
+  });
 }
 
 async function pickCard(cardId){
@@ -1259,14 +1265,18 @@ function playSolo(){
     }
     const unmatch=shuffle([...cards.filter(c=>!c.matched)]);
     const matched=cards.filter(c=>c.matched);
-    document.getElementById('cards-grid').innerHTML=[...unmatch,...matched].map(c=>`
-      <div class="kcard ${c.matched?'matched':''}" onclick="${!c.matched?`solopick(${c.id})`:''}">
+    const sgrid=document.getElementById('cards-grid');
+    sgrid.innerHTML=[...unmatch,...matched].map(c=>`
+      <div class="kcard ${c.matched?'matched':''}" data-id="${c.id}">
         <div class="kcard-body"><div class="kcard-verse">${c.card}</div></div>
         <div class="kcard-footer"><span class="kcard-poet">${c.poet}</span></div>
       </div>`).join('');
+    sgrid.querySelectorAll('.kcard:not(.matched)').forEach(el=>{
+      el.addEventListener('click',()=>solopick(Number(el.dataset.id)));
+    });
   }
 
-  window.solopick=(id)=>{
+  function solopick(id){
     const card=cards.find(c=>c.id===id);
     if(!card||card.matched) return;
     if(card.card===deck[round].card&&card.poet===deck[round].poet){

@@ -526,14 +526,13 @@ const POEMS = [
   {poet:"",   read:"القارئ يقرأ الشطر",          card:"صوالج صدغيها بتفاح خدها",          audio:"audio/poem-13.mp3"},
   {poet:"",   read:"القارئ يقرأ الشطر",               card:"فَنَجهَلَ فَوقَ جَهلِ الجاهِلينا",                audio:"audio/poem-14.mp3"},
 ];
-
 const AVATARS = ['🦁','🐪','🦅','🌙','⭐','🏺','🌊','🌴','🐴','🦊','🌹','🎭','🦋','🌺','🏵️','🌟'];
 
 /* ═══ STATE ═══ */
 let db=null,auth=null;
 let myUid='',myEmail='',myProfile={username:'',avatar:'🦁',bio:'',photoURL:'',isAdmin:false};
 let roomRef=null,roomCode='',isHost=false;
-let subs=[],curAudio=null,lastPlayedAudio=null;
+let subs=[],curAudio=null,lastPlayedAudio=null,lastGameRound=-2;
 let mmRef=null,mmInterval=null,mmQueueListener=null;
 let inviteListener=null;
 let selectedAvatar=null,pendingPhotoURL=null;
@@ -1099,6 +1098,7 @@ function renderLobby(d){
 }
 async function hostStart(){
   if(!isHost)return;
+  lastGameRound=-2; // reset so audio plays fresh on new game
   const snap=await roomRef.once('value');const d=snap.val();
   const deck=shuffle([...POEMS]).map((p,i)=>({...p,id:i,matched:false,winnerId:null,winnerName:null}));
   const players=d.players||{};
@@ -1176,8 +1176,6 @@ function runCountdown(n,cb){
 
 /* ═══ GAME ═══ */
 function renderGame(d){
-  // CRITICAL: stop intro audio for ALL players when game begins
-  stopAudio();
   show('game');
 
   document.getElementById('scores').innerHTML='';
@@ -1195,13 +1193,19 @@ function renderGame(d){
     document.getElementById('reader-verse').textContent=d.currentRead.read;
     document.getElementById('reader-poet').textContent='— '+d.currentRead.poet;
     const pa=d.currentRead.audio;
-    if(pa&&pa!==lastPlayedAudio){
-      lastPlayedAudio=pa;
-      const a2=new Audio(pa);curAudio=a2;
-      document.getElementById('reading-now').classList.add('show');
-      a2.play().catch(()=>{});
-      a2.addEventListener('ended',()=>{document.getElementById('reading-now').classList.remove('show');if(curAudio===a2)curAudio=null;});
+    // KEY FIX: only touch audio when the ROUND actually changes (not on every Firebase re-render).
+    // This prevents rapid card picks / simultaneous clicks from killing the audio.
+    if(r!==lastGameRound){
+      lastGameRound=r;
+      stopAudio(); // stop intro audio (first entry) or previous poem audio (round advance)
+      if(pa){
+        const a2=new Audio(pa);curAudio=a2;
+        document.getElementById('reading-now').classList.add('show');
+        a2.play().catch(()=>{});
+        a2.addEventListener('ended',()=>{document.getElementById('reading-now').classList.remove('show');if(curAudio===a2)curAudio=null;});
+      }
     }
+    // If r === lastGameRound: same round fired again (e.g. score update) — don't touch audio at all
   }
 
   document.getElementById('skip-btn').style.display=isHost?'inline-block':'none';
@@ -1283,7 +1287,7 @@ function playSolo(){
   const audioIdx=Math.floor(Math.random()*4);
 
   function startSolo(){
-    show('game');lastPlayedAudio=null;
+    show('game');lastPlayedAudio=null;lastGameRound=-2;
     document.getElementById('skip-btn').style.display='inline-block';
     document.getElementById('skip-btn').onclick=()=>{stopAudio();lastPlayedAudio=null;round++;next();};
     next();
@@ -1358,7 +1362,7 @@ function playSolo(){
 
 /* ═══ NAV ═══ */
 function leaveLobby(){
-  clearSubs();stopAudio();lastPlayedAudio=null;cancelMatchmaking();
+  clearSubs();stopAudio();lastPlayedAudio=null;lastGameRound=-2;cancelMatchmaking();
   if(roomRef)roomRef.child('players/'+myUid+'/online').set(false);
   roomRef=null;roomCode='';isHost=false;
   goHome();

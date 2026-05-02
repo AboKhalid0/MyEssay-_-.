@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>كارُوتا المُعَلَّقات</title>
+<title>الكاروتا العربية</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎴</text></svg>"/>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
@@ -256,7 +256,7 @@ textarea{resize:vertical;min-height:70px;}
 <!-- HOME -->
 <div id="screen-home" class="screen">
   <div class="topbar">
-    <span class="topbar-brand" id="home-brand">كارُوتا</span>
+    <span class="topbar-brand" id="home-brand">كاروتا</span>
     <div class="topbar-right">
       <span class="nav-link" id="nav-friends">الأصدقاء 👥</span>
       <span class="nav-link" id="nav-profile">الملف 📜</span>
@@ -270,7 +270,7 @@ textarea{resize:vertical;min-height:70px;}
       <div class="corner tl"></div><div class="corner tr"></div>
       <div class="corner bl"></div><div class="corner br"></div>
       <div class="hero-seal">م</div>
-      <h1 class="hero-title">كارُوتا المُعَلَّقات</h1>
+      <h1 class="hero-title">الكاروتا العربية</h1>
       <p class="hero-sub">ARABIC KARUTA · THE SEVEN HANGING ODES</p>
     </div>
     <div class="btn-group">
@@ -296,15 +296,15 @@ textarea{resize:vertical;min-height:70px;}
     </div>
   </div>
   <div class="info-box">
-    <strong>How to play:</strong> An intro poem is read aloud. Then verses appear — race to slap the card showing the <em>continuation</em>. Most cards wins! No time limit.<br><br>
-    الشعراء: امرؤ القيس · طرفة · زهير · لبيد · عنترة · الحارث · عمرو بن كلثوم
+    <strong>طريقة اللعب:</strong> تبدأ اللعبة بعد ما يقرأ القارئ قصيدة البداية, ويتنافس اللاعبان على من يستطيع معرفة الشطر الاخر من البيت اولًا. - من يحصل على أكبر عدد من البطاقات يفوز!.<br><br>
+    الشعراء: يحيى, باسكال, اراتا, تشيهايا
   </div>
 </div>
 
 <!-- PROFILE -->
 <div id="screen-profile" class="screen">
   <div class="topbar">
-    <span class="topbar-brand" id="profile-back">← كارُوتا</span>
+    <span class="topbar-brand" id="profile-back">← كاروتا</span>
     <div class="topbar-right"><span class="nav-link" id="profile-logout">خروج</span></div>
   </div>
   <div class="scroll">
@@ -349,7 +349,7 @@ textarea{resize:vertical;min-height:70px;}
 <!-- FRIENDS -->
 <div id="screen-friends" class="screen">
   <div class="topbar">
-    <span class="topbar-brand" id="friends-back">← كارُوتا</span>
+    <span class="topbar-brand" id="friends-back">← كاروتا</span>
   </div>
   <div class="scroll">
     <div class="section-title">البحث عن لاعب</div>
@@ -372,7 +372,7 @@ textarea{resize:vertical;min-height:70px;}
 
 <!-- MATCHMAKING -->
 <div id="screen-matchmaking" class="screen">
-  <div class="topbar"><span class="topbar-brand" id="mm-back">← كارُوتا</span></div>
+  <div class="topbar"><span class="topbar-brand" id="mm-back">← كاروتا</span></div>
   <div class="scroll">
     <div class="mm-wrap">
       <div class="section-title">🎲 مباراة عشوائية</div>
@@ -386,19 +386,19 @@ textarea{resize:vertical;min-height:70px;}
 
 <!-- LOBBY -->
 <div id="screen-lobby" class="screen">
-  <div class="topbar"><span class="topbar-brand" id="lobby-back">← كارُوتا</span></div>
+  <div class="topbar"><span class="topbar-brand" id="lobby-back">← كاروتا</span></div>
   <div class="scroll">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;">
       <strong>رمز الغرفة</strong>
       <button class="btn sm" id="copy-invite-btn">📋 نسخ الرابط</button>
     </div>
     <div class="room-code-box" id="room-code-show">----</div>
-    <p style="font-size:11px;color:var(--ink-dim);text-align:center;direction:ltr;">Share with up to 6 friends</p>
+    <p style="font-size:11px;color:var(--ink-dim);text-align:center;direction:ltr;">شارك مع مايصل الى 6 لاعبين</p>
   </div>
   <div class="scroll">
     <strong style="font-size:14px;">اللاعبون</strong>
     <div class="player-list" id="player-list"></div>
-    <div id="wait-msg" class="wait-msg" style="display:none;">Waiting<span>.</span><span>.</span><span>.</span></div>
+    <div id="wait-msg" class="wait-msg" style="display:none;">الانتظار<span>.</span><span>.</span><span>.</span></div>
   </div>
   <div class="btn-row">
     <button class="btn danger" id="start-btn">▶ ابدأ اللعبة</button>
@@ -411,7 +411,7 @@ textarea{resize:vertical;min-height:70px;}
 <div id="screen-intro" class="screen">
   <div class="intro-box">
     <div class="intro-num" id="intro-num">١</div>
-    <div class="intro-label" id="intro-lbl">القصيدة الأولى<br><small>Listening to the opening poem…</small></div>
+    <div class="intro-label" id="intro-lbl">القصيدة الأولى<br><small>استمع الى قصيدة البداية…</small></div>
     <div class="wave" id="wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
     <div class="intro-status" id="intro-status">جاري التحميل…</div>
     <div class="countdown" id="countdown"></div>
@@ -430,7 +430,7 @@ textarea{resize:vertical;min-height:70px;}
   <div class="yomifuda">
     <div class="yomi-left"><span class="yomi-lbl">READING CARD · بطاقة القراءة</span></div>
     <div class="yomi-right">
-      <div class="reading-now" id="reading-now"><div class="rdot"></div><span>reading aloud…</span></div>
+      <div class="reading-now" id="reading-now"><div class="rdot"></div><span>الشطر يُقرأ…</span></div>
       <div class="yomi-verse" id="reader-verse">…</div>
       <div class="yomi-poet" id="reader-poet"></div>
     </div>
@@ -451,14 +451,14 @@ textarea{resize:vertical;min-height:70px;}
   </div>
   <div class="btn-group">
     <button class="btn danger" id="again-btn">العب مجدداً</button>
-    <button class="btn" id="result-lobby-btn">← اللوبي</button>
+    <button class="btn" id="result-lobby-btn">← القائمة الرئيسية</button>
   </div>
 </div>
 
 <!-- ADMIN -->
 <div id="screen-admin" class="screen">
   <div class="topbar">
-    <span class="topbar-brand" id="admin-back">← كارُوتا</span>
+    <span class="topbar-brand" id="admin-back">← كاروتا</span>
     <div class="admin-badge">ADMIN PANEL</div>
   </div>
   <div class="scroll">

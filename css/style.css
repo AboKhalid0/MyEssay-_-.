@@ -530,6 +530,8 @@ body.bg-forest::before{
     var(--bg);
 }
 
+.bg-preview-photo4 { background-image: url('../img/bg-4.jpg'); background-size: cover; }
+.bg-preview-photo5 { background-image: url('../img/bg-5.jpg'); background-size: cover; }
 
 /* ════════════════════════════════════════════
    SETTINGS SCREEN — theme + background pickers

@@ -265,6 +265,8 @@ const BACKGROUNDS = [
   { id:'photo1',  name:'صورة ١',         nameEn:'Photo 1',         emoji:'🖼️', isPhoto:true, src:'img/bg-1.jpg' },
   { id:'photo2',  name:'صورة ٢',         nameEn:'Photo 2',         emoji:'🖼️', isPhoto:true, src:'img/bg-2.jpg' },
   { id:'photo3',  name:'صورة ٣',         nameEn:'Photo 3',         emoji:'🖼️', isPhoto:true, src:'img/bg-3.jpg' },
+  { id:'photo4',  name:'باسكال',         nameEn:'Photo 4',         emoji:'🖼️', isPhoto:true, src:'img/bg-4.jpg' },
+  { id:'photo5',  name:'صورة ٣',         nameEn:'Photo 5',         emoji:'🖼️', isPhoto:true, src:'img/bg-5.jpg' },
 ];
 
 

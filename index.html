@@ -71,11 +71,11 @@
   <div class="topbar">
     <span class="topbar-brand" id="home-brand">الكاروتا العربية</span>
     <div class="topbar-right">
-      <span class="nav-link" id="nav-cards-browser">مكتبة 📖</span>
-      <span class="nav-link" id="nav-friends">أصدقاء 👥</span>
-      <span class="nav-link" id="nav-profile">ملفي 📜</span>
+      <span class="nav-link" id="nav-cards-browser">المكتبة 📖</span>
+      <span class="nav-link" id="nav-friends">الأصدقاء 👥</span>
+      <span class="nav-link" id="nav-profile">الملف الشخصي 📜</span>
       <span class="nav-link" id="nav-settings">🎨 المظهر</span>
-      <span class="nav-link" id="nav-admin" style="display:none;color:var(--red);">إدارة ⚙️</span>
+      <span class="nav-link" id="nav-admin" style="display:none;color:var(--red);">الإدارة ⚙️</span>
       <div class="avatar-sm" id="nav-avatar">🦁</div>
       <span class="nav-link" id="nav-logout">خروج</span>
     </div>
@@ -89,15 +89,15 @@
       <p class="hero-sub">الكاروتا العربية</p>
     </div>
     <div class="btn-group">
-      <button class="btn danger"   id="btn-create">إنشاء غرفة — Create Room</button>
-      <button class="btn primary"  id="btn-join-toggle">انضمام — Join Room</button>
+      <button class="btn danger"   id="btn-create">إنشاء غرفة</button>
+      <button class="btn primary"  id="btn-join-toggle">إنضمام</button>
       <button class="btn blue-btn" id="btn-matchmake">🎲 مباراة عشوائية</button>
-      <button class="btn"          id="btn-solo">منفرداً — Solo</button>
+     <!-- <button class="btn"          id="btn-solo"></button> -->
     </div>
   </div>
   <div id="join-panel" style="display:none;margin-bottom:1rem;">
     <div class="scroll">
-      <label>رمز الغرفة — Room Code</label>
+      <label>رمز الغرفة</label>
       <div class="share-row">
         <input id="join-code" type="text" placeholder="ABCD" maxlength="4"
                style="text-transform:uppercase;letter-spacing:8px;font-size:20px;text-align:center;" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"/>
@@ -112,8 +112,7 @@
     </div>
   </div>
   <div class="info-box">
-    <strong>How to play:</strong> An opening poem is read aloud — race to slap the card that continues the verse.
-    Most cards wins! Choose from 4 poetry decks and 3 card counts.<br><br>
+    <strong>طريقة اللعب:</strong> تُقرأ المقدمة في البداية ثم تبدأ اللعبة, يقرأ القارئ الشطر الأول ثم يتسابق اللاعبون على من يستطيع معرفة الشطر الثاني من القصيدة أولًا ومن يجمع أكبر عدد من البطاقات يفوز<br><br>
     <strong>الأوراق:</strong> المعلقات · الشعر العباسي · الشعر الأندلسي · الشعر الحديث
   </div>
 </div>
@@ -154,7 +153,7 @@
   <div class="scroll">
     <div class="browser-tabs-wrap" id="browser-tabs"></div>
     <div class="browser-search-wrap">
-      <input id="browser-search" type="text" placeholder="ابحث عن شاعر أو مصراع…"/>
+      <input id="browser-search" type="text" placeholder="ابحث عن شاعر أو بيت شعري…"/>
       <span class="browser-search-icon">🔍</span>
     </div>
   </div>
@@ -276,13 +275,13 @@
       <button class="btn sm" id="copy-invite-btn">📋 نسخ الرابط</button>
     </div>
     <div class="room-code-box" id="room-code-show">----</div>
-    <div id="lobby-deck-info" class="lobby-deck-badge">🏜️ المعلقات</div>
-    <p style="font-size:11px;color:var(--ink-dim);text-align:center;direction:ltr;">Share code with up to 6 friends</p>
+    <div id="lobby-deck-info" class="lobby-deck-badge">المختارات</div>
+    <p style="font-size:11px;color:var(--ink-dim);text-align:center;direction:ltr;">يسمح بوجود لاعبين فقط</p>
   </div>
   <div class="scroll">
     <strong style="font-size:14px;">اللاعبون</strong>
     <div class="player-list" id="player-list"></div>
-    <div id="wait-msg" class="wait-msg" style="display:none;">Waiting for players<span>.</span><span>.</span><span>.</span></div>
+    <div id="wait-msg" class="wait-msg" style="display:none;">في انتظار الاعبين<span>.</span><span>.</span><span>.</span></div>
   </div>
   <div class="btn-row">
     <button class="btn danger" id="start-btn">▶ ابدأ اللعبة</button>
@@ -297,8 +296,8 @@
 ══════════════════════════════════════ -->
 <div id="screen-intro" class="screen">
   <div class="intro-box">
-    <div class="intro-num" id="intro-num">🏜️</div>
-    <div class="intro-label" id="intro-lbl">المعلقات<br><small>استمع إلى القصيدة الافتتاحية…</small></div>
+    <div class="intro-num" id="intro-num"></div>
+    <div class="intro-label" id="intro-lbl">المختارات<br><small>استمع إلى القصيدة الافتتاحية…</small></div>
     <div class="wave" id="wave">
       <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
     </div>
@@ -321,7 +320,7 @@
   <div class="yomifuda">
     <div class="yomi-left"><span class="yomi-lbl">READING CARD · بطاقة القراءة</span></div>
     <div class="yomi-right">
-      <div class="reading-now" id="reading-now"><div class="rdot"></div><span>reading aloud…</span></div>
+      <div class="reading-now" id="reading-now"><div class="rdot"></div><span>الشطر يُقرأ…</span></div>
       <div class="yomi-verse" id="reader-verse">…</div>
       <div class="yomi-poet"  id="reader-poet"></div>
     </div>
@@ -345,7 +344,7 @@
   </div>
   <div class="btn-group">
     <button class="btn danger" id="again-btn">العب مجدداً</button>
-    <button class="btn" id="result-lobby-btn">← اللوبي</button>
+    <button class="btn" id="result-lobby-btn">← القائمة الرئيسية</button>
   </div>
 </div>
 

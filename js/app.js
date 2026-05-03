@@ -35,7 +35,7 @@ const FIREBASE_CONFIG = {
 };
 
 // ← Set this to your email — that account becomes admin automatically on register
-const ADMIN_EMAIL = "kald94098@gmail.com";
+const ADMIN_EMAIL = "your-admin-email@example.com";
 
 const AVATARS     = ['🦁','🐪','🦅','🌙','⭐','🏺','🌊','🌴','🐴','🦊','🌹','🎭','🦋','🌺','🏵️','🌟'];
 const ARABIC_NUMS = ['١','٢','٣','٤'];
@@ -49,34 +49,48 @@ const DECKS = [
 
   /* 1 ── المعلقات */
   {
-    id:'muallaqat', name:'مختارات', nameEn:'',
-    desc:'قصائد مختاره',
-    color:'#2d5a27', icon:'',
-    introAudio:['audio/intro-1.mp3','audio/intro-2.mp3','audio/intro-3.mp3','audio/intro-4.mp3'],
+    id:'muallaqat', name:'المعلقات', nameEn:'The Muallaqat',
+    desc:'القصائد السبع المعلقة — أشهر روائع الشعر الجاهلي',
+    color:'#2d5a27', icon:'🏜️',
+    introAudio:['audio/muallaqat/intro-1.mp3','audio/muallaqat/intro-2.mp3','audio/muallaqat/intro-3.mp3','audio/muallaqat/intro-4.mp3'],
     poems:[
-  {poet:"",      read:"القارئ يقرأ الشطر",       card:"بِسِقطِ اللِّوى بَينَ الدَّخولِ فَحَومَلِ",       audio:"audio/poem-01.mp3"},
-  {poet:"",      read:"القارئ يقرأ الشطر",    card:"بِصُبحٍ وَما الإِصباحُ مِنكَ بِأَمثَلِ",         audio:"audio/poem-02.mp3"},
-  {poet:"",      read:"القارئ يقرأ الشطر",         card:"كَجُلمودِ صَخرٍ حَطَّهُ السَّيلُ مِن عَلِ",      audio:"audio/poem-03.mp3"},
-  {poet:"",   read:"القارئ يقرأ الشطر",       card:"وَيَأتيكَ بِالأَخبارِ مَن لَم تُزَوِّدِ",         audio:"audio/poem-04.mp3"},
-  {poet:"",   read:"القارئ يقرأ الشطر",     card:"لَكَالطِّوَلِ المُرخى وَثِنياهُ باليَدِ",         audio:"audio/poem-05.mp3"},
-  {poet:"",   read:"القارئ يقرأ الشطر",        card:"ثَمانينَ حَولاً لا أَبا لَكَ يَسأَمِ",            audio:"audio/poem-06.mp3"},
-  {poet:"",   read:"القارئ يقرأ الشطر",       card:"وَكُلُّ نَعيمٍ لا مَحالَةَ زائِلُ",               audio:"audio/poem-07.mp3"},
-  {poet:"",   read:"القارئ يقرأ الشطر",     card:"يَحورُ رَماداً بَعدَ إِذ هُوَ ساطِعُ",            audio:"audio/poem-08.mp3"},
-  {poet:"",   read:"القارئ يقرأ الشطر",          card:"عَصافيرُ مِن هَذا الأَنامِ المُسَرَّحِ",          audio:"audio/poem-09.mp3"},
-  {poet:"",   read:"القارئ يقرأ الشطر",        card:"أَم هَل عَرَفتَ الدارَ بَعدَ تَوَهُّمِ",          audio:"audio/poem-10.mp3"},
-  {poet:"",   read:"القارئ يقرأ الشطر",           card:"وَعِمي صَباحاً دارَ عَبلَةَ وَاسلَمي",            audio:"audio/poem-11.mp3"},
-  {poet:"",   read:"القارئ يقرأ الشطر",        card:"مِنّي وَبيضُ الهِندِ تَقطُرُ مِن دَمي",           audio:"audio/poem-12.mp3"},
-  {poet:"",   read:"القارئ يقرأ الشطر",          card:"صوالج صدغيها بتفاح خدها",          audio:"audio/poem-13.mp3"},
-  {poet:"",   read:"القارئ يقرأ الشطر",               card:"فَنَجهَلَ فَوقَ جَهلِ الجاهِلينا",                audio:"audio/poem-14.mp3"},
+      {poet:"امرؤ القيس",      read:"قِفَا نَبْكِ مِن ذِكرى حَبيبٍ وَمَنزِلِ",       card:"بِسِقطِ اللِّوى بَينَ الدَّخولِ فَحَومَلِ",       audio:"audio/muallaqat/poem-01.mp3"},
+      {poet:"امرؤ القيس",      read:"وَقوفاً بِها صَحبي عَلَيَّ مَطِيَّهُم",          card:"يَقولونَ لا تَهلِك أَسىً وَتَجَمَّلِ",            audio:"audio/muallaqat/poem-02.mp3"},
+      {poet:"امرؤ القيس",      read:"أَلا أَيُّها اللَّيلُ الطَّويلُ أَلا انجَلِ",    card:"بِصُبحٍ وَما الإِصباحُ مِنكَ بِأَمثَلِ",         audio:"audio/muallaqat/poem-03.mp3"},
+      {poet:"امرؤ القيس",      read:"كَأَنَّ قُلوبَ الطَّيرِ رَطباً وَيابِساً",       card:"لَدى وَكرِها العُنّابُ وَالحَشَفُ البالي",        audio:"audio/muallaqat/poem-04.mp3"},
+      {poet:"امرؤ القيس",      read:"مِكَرٍّ مِفَرٍّ مُقبِلٍ مُدبِرٍ مَعاً",         card:"كَجُلمودِ صَخرٍ حَطَّهُ السَّيلُ مِن عَلِ",      audio:"audio/muallaqat/poem-05.mp3"},
+      {poet:"طرفة بن العبد",   read:"لِخَولَةَ أَطلالٌ بِبُرقَةِ ثَهمَدِ",           card:"تَلوحُ كَباقي الوَشمِ في ظاهِرِ اليَدِ",          audio:"audio/muallaqat/poem-06.mp3"},
+      {poet:"طرفة بن العبد",   read:"سَتُبدي لَكَ الأَيّامُ ما كُنتَ جاهِلاً",       card:"وَيَأتيكَ بِالأَخبارِ مَن لَم تُزَوِّدِ",         audio:"audio/muallaqat/poem-07.mp3"},
+      {poet:"طرفة بن العبد",   read:"لَعَمرُكَ إِنَّ المَوتَ ما أَخطَأَ الفَتى",     card:"لَكَالطِّوَلِ المُرخى وَثِنياهُ باليَدِ",         audio:"audio/muallaqat/poem-08.mp3"},
+      {poet:"طرفة بن العبد",   read:"نَحنُ في المَشتاةِ نَدعو الجَفَلى",              card:"لا تَرى الآدِبَ فينا يَنتَقِر",                   audio:"audio/muallaqat/poem-09.mp3"},
+      {poet:"طرفة بن العبد",   read:"إِذا القَومُ قالوا مَن فَتىً خِلتُ أَنَّني",    card:"عُنيتُ فَلَم أَكسَل وَلَم أَتَبَلَّدِ",          audio:"audio/muallaqat/poem-10.mp3"},
+      {poet:"زهير بن أبي سلمى",read:"أَمِن أُمِّ أَوفى دِمنَةٌ لَم تَكَلَّمِ",      card:"بِحَومانَةِ الدَّرّاجِ فَالمُتَثَلَّمِ",          audio:"audio/muallaqat/poem-11.mp3"},
+      {poet:"زهير بن أبي سلمى",read:"سَئِمتُ تَكاليفَ الحَياةِ وَمَن يَعِش",        card:"ثَمانينَ حَولاً لا أَبا لَكَ يَسأَمِ",            audio:"audio/muallaqat/poem-12.mp3"},
+      {poet:"زهير بن أبي سلمى",read:"وَما الحَربُ إِلّا ما عَلِمتُم وَذُقتُمُ",     card:"وَما هُوَ عَنها بِالحَديثِ المُرَجَّمِ",          audio:"audio/muallaqat/poem-13.mp3"},
+      {poet:"زهير بن أبي سلمى",read:"فَتَنتِج لَكُم غِلمانَ أَشأَمَ كُلُّهُم",      card:"كَأَحمَرِ عادٍ ثُمَّ تُرضِعُ فَتَفطِمِ",         audio:"audio/muallaqat/poem-14.mp3"},
+      {poet:"زهير بن أبي سلمى",read:"وَمَن يَجعَلِ المَعروفَ مِن دونِ عِرضِهِ",    card:"يَفِرهُ وَمَن لا يَتَّقِ الشَّتمَ يُشتَمِ",       audio:"audio/muallaqat/poem-15.mp3"},
+      {poet:"لبيد بن ربيعة",   read:"عَفَت الدِّيارُ مَحَلُّها فَمُقامُها",           card:"بِمِنىً تَأَبَّدَ غَولُها فَرِجامُها",             audio:"audio/muallaqat/poem-16.mp3"},
+      {poet:"لبيد بن ربيعة",   read:"وَجَلا السُّيولُ عَنِ الطُّلولِ كَأَنَّها",     card:"زُبُرٌ تَجِدُّ مُتونَها أَقلامُها",               audio:"audio/muallaqat/poem-17.mp3"},
+      {poet:"لبيد بن ربيعة",   read:"أَلا كُلُّ شَيءٍ ما خَلا اللَهَ باطِلُ",       card:"وَكُلُّ نَعيمٍ لا مَحالَةَ زائِلُ",               audio:"audio/muallaqat/poem-18.mp3"},
+      {poet:"لبيد بن ربيعة",   read:"وَما المَرءُ إِلّا كَالشِّهابِ وَضَوئِهِ",     card:"يَحورُ رَماداً بَعدَ إِذ هُوَ ساطِعُ",            audio:"audio/muallaqat/poem-19.mp3"},
+      {poet:"لبيد بن ربيعة",   read:"فَإِن تَسأَلينا فيمَ نَحنُ فَإِنَّنا",          card:"عَصافيرُ مِن هَذا الأَنامِ المُسَرَّحِ",          audio:"audio/muallaqat/poem-20.mp3"},
+      {poet:"عنترة بن شداد",   read:"هَل غادَرَ الشُّعَراءُ مِن مُتَرَدَّمِ",        card:"أَم هَل عَرَفتَ الدارَ بَعدَ تَوَهُّمِ",          audio:"audio/muallaqat/poem-21.mp3"},
+      {poet:"عنترة بن شداد",   read:"يا دارَ عَبلَةَ بِالجِواءِ تَكَلَّمي",           card:"وَعِمي صَباحاً دارَ عَبلَةَ وَاسلَمي",            audio:"audio/muallaqat/poem-22.mp3"},
+      {poet:"عنترة بن شداد",   read:"وَلَقَد شَرِبتُ مِنَ المُدامَةِ بَعدَما",       card:"رَكَدَ الهَواجِرُ بِالمَشوفِ المُعلَمِ",          audio:"audio/muallaqat/poem-23.mp3"},
+      {poet:"عنترة بن شداد",   read:"وَلَقَد ذَكَرتُكِ وَالرِّماحُ نَواهِلٌ",        card:"مِنّي وَبيضُ الهِندِ تَقطُرُ مِن دَمي",           audio:"audio/muallaqat/poem-24.mp3"},
+      {poet:"عنترة بن شداد",   read:"عُلِّقتُها عَرَضاً وَأَقتُلُ قَومَها",          card:"زَعماً لَعَمرُ أَبيكَ لَيسَ بِمَزعَمِ",          audio:"audio/muallaqat/poem-25.mp3"},
+      {poet:"الحارث بن حلزة",  read:"آذَنَتنا بِبَينِها أَسماءُ",                    card:"رُبَّ ثاوٍ يَمَلُّ مِنهُ الثَّواءُ",               audio:"audio/muallaqat/poem-26.mp3"},
+      {poet:"عمرو بن كلثوم",   read:"أَلا هُبّي بِصَحنِكِ فَاصبَحينا",               card:"وَلا تُبقي خُمورَ الأَندَرينا",                   audio:"audio/muallaqat/poem-27.mp3"},
+      {poet:"عمرو بن كلثوم",   read:"أَلا لا يَجهَلَن أَحَدٌ عَلَينا",               card:"فَنَجهَلَ فَوقَ جَهلِ الجاهِلينا",                audio:"audio/muallaqat/poem-28.mp3"},
     ],
   },
 
   /* 2 ── الشعر العباسي */
   {
-    id:'abbasid', name:'الشعر العباسي', nameEn:'',
+    id:'abbasid', name:'الشعر العباسي', nameEn:'Abbasid Poetry',
     desc:'روائع المتنبي وأبي تمام والبحتري وفحول الشعر العباسي',
-    color:'#1a3a6b', icon:'',
-    introAudio:['audio/intro-1.mp3'],
+    color:'#1a3a6b', icon:'📜',
+    introAudio:['audio/abbasid/intro-1.mp3'],
     poems:[
       {poet:"المتنبي", read:"عَلى قَدرِ أَهلِ العَزمِ تَأتي العَزائِمُ",    card:"وَتَأتي عَلى قَدرِ الكِرامِ المَكارِمُ",      audio:"audio/abbasid/poem-01.mp3"},
       {poet:"المتنبي", read:"الخَيلُ وَاللَّيلُ وَالبَيداءُ تَعرِفُني",     card:"وَالسَّيفُ وَالرُّمحُ وَالقِرطاسُ وَالقَلَمُ",audio:"audio/abbasid/poem-02.mp3"},
@@ -95,10 +109,10 @@ const DECKS = [
 
   /* 3 ── الشعر الأندلسي */
   {
-    id:'andalusian', name:'الشعر الأندلسي', nameEn:'',
+    id:'andalusian', name:'الشعر الأندلسي', nameEn:'Andalusian Poetry',
     desc:'جمال الأندلس في أشعار ابن زيدون وابن عربي والمعتمد',
-    color:'#6b1a3a', icon:'',
-    introAudio:['audio/intro-1.mp3'],
+    color:'#6b1a3a', icon:'🌹',
+    introAudio:['audio/andalusian/intro-1.mp3'],
     poems:[
       {poet:"ابن زيدون",          read:"أَضحى التَّنائي بَديلاً مِن تَدانينا",        card:"وَنابَ عَن طيبِ لُقيانا تَجافينا",             audio:"audio/andalusian/poem-01.mp3"},
       {poet:"ابن زيدون",          read:"إِنّي ذَكَرتُكِ بِالزَّهراءِ مُشتاقاً",      card:"وَالأُفقُ طَلقٌ وَمَرأى الأَرضِ قَد راقا",   audio:"audio/andalusian/poem-02.mp3"},
@@ -113,10 +127,10 @@ const DECKS = [
 
   /* 4 ── الشعر الحديث */
   {
-    id:'modern', name:'الشعر الحديث', nameEn:'',
+    id:'modern', name:'الشعر الحديث', nameEn:'Modern Arabic Poetry',
     desc:'شوقي ودرويش وأبو ماضي وحافظ — روائع الشعر العربي الحديث',
-    color:'#1a6b5a', icon:'',
-    introAudio:['audio/intro-1.mp3'],
+    color:'#1a6b5a', icon:'🌊',
+    introAudio:['audio/modern/intro-1.mp3'],
     poems:[
       {poet:"أحمد شوقي",    read:"وُلِدَ الهُدى فَالكائِناتُ ضِياءُ",           card:"وَفَمُ الزَّمانِ تَبَسُّمٌ وَثَناءُ",          audio:"audio/modern/poem-01.mp3"},
       {poet:"أحمد شوقي",    read:"رِيمٌ عَلى القاعِ بَينَ البانِ وَالعَلَمِ",   card:"أَحَلَّ سَفكَ دَمي في الأَشهُرِ الحُرُمِ",   audio:"audio/modern/poem-02.mp3"},
@@ -776,43 +790,118 @@ function leaveGame(){leaveLobby();}
 
 /* ═══════════════════════════════════════
    §CARDS BROWSER
+   Independent from game deck/count selection.
+   Always shows every poem in the chosen deck.
 ═══════════════════════════════════════ */
-let _browseDeckId='muallaqat';
-function showCardsBrowser(){_browseDeckId=G.selectedDeckId||DECKS[0].id;_renderBrowserTabs();_renderBrowserCards(_browseDeckId);show('cards-browser');}
+
+// Browser keeps its own deck state — never linked to G.selectedDeckId
+let _browseDeckId = DECKS[0].id;
+
+function showCardsBrowser(){
+  // Reset search and always start fresh — independent of game settings
+  const searchEl = document.getElementById('browser-search');
+  if(searchEl) searchEl.value = '';
+  _renderBrowserTabs();
+  _renderBrowserCards(_browseDeckId);
+  show('cards-browser');
+}
+
 function _renderBrowserTabs(){
-  const tabs=document.getElementById('browser-tabs');tabs.innerHTML='';
+  const tabs = document.getElementById('browser-tabs');
+  tabs.innerHTML = '';
   DECKS.forEach(deck=>{
-    const btn=document.createElement('button');btn.className='browser-tab'+(deck.id===_browseDeckId?' active':'');
-    btn.style.setProperty('--deck-color',deck.color);btn.innerHTML=deck.icon+' '+deck.name;
-    btn.addEventListener('click',()=>{_browseDeckId=deck.id;tabs.querySelectorAll('.browser-tab').forEach(b=>b.classList.toggle('active',b===btn));_renderBrowserCards(deck.id);});
+    const btn = document.createElement('button');
+    btn.className = 'browser-tab' + (deck.id === _browseDeckId ? ' active' : '');
+    btn.style.setProperty('--deck-color', deck.color);
+    btn.innerHTML = deck.icon + ' ' + deck.name;
+    btn.addEventListener('click', ()=>{
+      _browseDeckId = deck.id;
+      tabs.querySelectorAll('.browser-tab').forEach(b => b.classList.toggle('active', b === btn));
+      const searchEl = document.getElementById('browser-search');
+      if(searchEl) searchEl.value = ''; // clear search on tab switch
+      _renderBrowserCards(deck.id);
+    });
     tabs.appendChild(btn);
   });
 }
+
 function _renderBrowserCards(deckId){
-  const deck=getDeck(deckId);const container=document.getElementById('browser-cards');
-  const q=(document.getElementById('browser-search')||{value:''}).value.toLowerCase();
-  const filtered=deck.poems.filter(p=>!q||p.read.includes(q)||p.card.includes(q)||p.poet.includes(q));
-  container.innerHTML='';
-  const header=document.createElement('div');
-  header.style.cssText='text-align:center;padding:1.5rem 0 1rem;';
-  header.innerHTML='<div style="font-size:48px;margin-bottom:.5rem;">'+deck.icon+'</div>'+
-    '<h2 style="font-family:Amiri,serif;font-size:26px;color:'+deck.color+';">'+deck.name+'</h2>'+
-    '<p style="font-size:13px;color:var(--ink-dim);margin:.25rem 0;">'+deck.desc+'</p>'+
-    '<p style="font-size:12px;color:var(--ink-dim);direction:ltr;">'+filtered.length+' / '+deck.poems.length+' pairs</p>';
+  const deck = getDeck(deckId);
+  const container = document.getElementById('browser-cards');
+  const q = (document.getElementById('browser-search') || {value:''}).value.toLowerCase();
+
+  // Always use ALL poems from the deck — never sliced by game card count
+  const allPoems = deck.poems;
+  const filtered = allPoems.filter(p =>
+    !q || p.read.includes(q) || p.card.includes(q) || p.poet.includes(q)
+  );
+
+  container.innerHTML = '';
+
+  // Deck header
+  const header = document.createElement('div');
+  header.style.cssText = 'text-align:center;padding:1.5rem 0 1rem;';
+  header.innerHTML =
+    '<div style="font-size:48px;margin-bottom:.5rem;">' + deck.icon + '</div>' +
+    '<h2 style="font-family:Amiri,serif;font-size:26px;color:' + deck.color + ';">' + deck.name + '</h2>' +
+    '<p style="font-size:13px;color:var(--ink-dim);margin:.25rem 0;">' + deck.desc + '</p>' +
+    '<p style="font-size:12px;color:var(--ink-dim);direction:ltr;">' +
+      filtered.length + ' / ' + allPoems.length + ' أبيات' +
+    '</p>';
   container.appendChild(header);
-  if(!filtered.length){container.innerHTML+='<div class="empty-state">لا توجد نتائج</div>';return;}
-  const grid=document.createElement('div');grid.className='browse-grid';
-  filtered.forEach(p=>{
-    const pair=document.createElement('div');pair.className='browse-pair';
-    const yomi=document.createElement('div');yomi.className='browse-yomi';yomi.style.setProperty('--deck-color',deck.color);
-    yomi.innerHTML='<div class="browse-card-label">بطاقة القراءة · Reading</div><div class="browse-verse amiri">'+p.read+'</div><div class="browse-poet">'+p.poet+'</div>';
-    const tori=document.createElement('div');tori.className='browse-tori';
-    tori.innerHTML='<div class="browse-card-label">بطاقة اللعب · Playing</div><div class="browse-verse amiri">'+p.card+'</div><div class="browse-poet">'+p.poet+'</div>';
-    pair.appendChild(yomi);pair.appendChild(tori);grid.appendChild(pair);
+
+  if(!filtered.length){
+    container.innerHTML += '<div class="empty-state">لا توجد نتائج</div>';
+    return;
+  }
+
+  // Each poem shown as a single combined card — click opens detail modal
+  const grid = document.createElement('div');
+  grid.className = 'poem-list';
+
+  filtered.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'poem-list-item';
+    card.style.setProperty('--deck-color', deck.color);
+    card.innerHTML =
+      '<div class="poem-list-verses">' +
+        '<div class="poem-list-read amiri">' + p.read + '</div>' +
+        '<div class="poem-list-card amiri">' + p.card + '</div>' +
+      '</div>' +
+      '<div class="poem-list-poet">' +
+        '<span>— ' + p.poet + '</span>' +
+        '<span class="poem-list-hint">اضغط لعرض البطاقتين</span>' +
+      '</div>';
+
+    card.addEventListener('click', () => _openPoemDetail(p, deck));
+    grid.appendChild(card);
   });
+
   container.appendChild(grid);
 }
-function onBrowserSearch(){_renderBrowserCards(_browseDeckId);}
+
+// Opens a modal showing the two game cards (reading + playing) side by side
+function _openPoemDetail(p, deck){
+  document.getElementById('modal-title').textContent = '— ' + p.poet;
+  document.getElementById('modal-body').innerHTML =
+    '<div class="poem-detail-grid">' +
+      // Reading card (yomifuda)
+      '<div class="poem-detail-card poem-detail-read" style="--deck-color:' + deck.color + '">' +
+        '<div class="poem-detail-label">بطاقة القراءة</div>' +
+        '<div class="poem-detail-verse amiri">' + p.read + '</div>' +
+        '<div class="poem-detail-sub">Reading card · تُقرأ بصوت عالٍ</div>' +
+      '</div>' +
+      // Playing card (torifuda)
+      '<div class="poem-detail-card poem-detail-play">' +
+        '<div class="poem-detail-label">بطاقة اللعب</div>' +
+        '<div class="poem-detail-verse amiri">' + p.card + '</div>' +
+        '<div class="poem-detail-sub">Playing card · تُلتقط من الطاولة</div>' +
+      '</div>' +
+    '</div>';
+  document.getElementById('modal-bg').classList.add('open');
+}
+
+function onBrowserSearch(){ _renderBrowserCards(_browseDeckId); }
 
 
 /* ═══════════════════════════════════════

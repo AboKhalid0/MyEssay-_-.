@@ -312,6 +312,87 @@ textarea{resize:vertical;min-height:70px;}
 .modal-title{font-family:'Amiri',serif;font-size:20px;color:var(--red);margin-bottom:1rem;}
 .modal-close{position:absolute;top:8px;left:10px;cursor:pointer;font-size:18px;color:var(--ink-dim);background:none;border:none;}
 
+/* ── CARDS BROWSER — poem list + detail ── */
+
+/* Single combined poem card shown in the list */
+.poem-list{display:flex;flex-direction:column;gap:10px;margin-top:.5rem;}
+.poem-list-item{
+  background:var(--paper);border:2.5px solid var(--green);border-radius:2px;
+  padding:1.1rem 1.4rem 0.8rem;cursor:pointer;transition:all .18s;
+  position:relative;box-shadow:3px 3px 0 var(--green);
+}
+.poem-list-item::before,.poem-list-item::after{
+  content:'';position:absolute;left:0;right:0;height:4px;
+  background:var(--deck-color,var(--green));
+}
+.poem-list-item::before{top:4px;}.poem-list-item::after{bottom:4px;}
+.poem-list-item:hover{
+  transform:translate(-2px,-2px);
+  box-shadow:5px 5px 0 var(--deck-color,var(--green));
+  border-color:var(--deck-color,var(--green));
+}
+.poem-list-verses{margin-bottom:.6rem;}
+.poem-list-read{
+  font-family:'Amiri',serif;font-size:20px;line-height:2.1;
+  color:var(--ink);text-align:right;
+}
+.poem-list-card{
+  font-family:'Amiri',serif;font-size:20px;line-height:2.1;
+  color:var(--ink-dim);text-align:right;
+  border-top:1px dashed var(--paper3);padding-top:.2rem;
+}
+.poem-list-poet{
+  display:flex;justify-content:space-between;align-items:center;
+  border-top:1px solid var(--paper3);padding-top:.5rem;
+  font-size:12px;color:var(--ink-dim);direction:ltr;
+}
+.poem-list-hint{
+  font-size:10px;color:var(--deck-color,var(--green));
+  border:1px solid var(--deck-color,var(--green));
+  padding:2px 8px;border-radius:2px;opacity:.8;
+}
+
+/* Detail modal — two cards side by side */
+.poem-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:.5rem;}
+@media(max-width:480px){.poem-detail-grid{grid-template-columns:1fr;}}
+.poem-detail-card{
+  border:2.5px solid var(--green);border-radius:2px;padding:1rem;
+  position:relative;text-align:right;
+}
+.poem-detail-card::before,.poem-detail-card::after{
+  content:'';position:absolute;left:0;right:0;height:4px;background:var(--green);
+}
+.poem-detail-card::before{top:4px;}.poem-detail-card::after{bottom:4px;}
+.poem-detail-read{background:var(--paper2);}
+.poem-detail-read::before,.poem-detail-read::after{background:var(--deck-color,var(--red));}
+.poem-detail-play{background:var(--paper);}
+.poem-detail-label{
+  font-size:10px;color:var(--ink-dim);letter-spacing:1px;
+  margin-bottom:.6rem;direction:ltr;border-bottom:1px solid var(--paper3);padding-bottom:.4rem;
+}
+.poem-detail-verse{
+  font-family:'Amiri',serif;font-size:18px;line-height:2.1;
+  color:var(--ink);margin:.4rem 0;
+}
+.poem-detail-sub{
+  font-size:10px;color:var(--ink-dim);direction:ltr;
+  border-top:1px solid var(--paper3);padding-top:.4rem;margin-top:.4rem;
+}
+
+/* Keep old browse classes for reference (unused now) */
+.browse-grid{display:flex;flex-direction:column;gap:12px;margin-top:.5rem;}
+.browse-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:500px){.browse-pair{grid-template-columns:1fr;}}
+.browse-yomi{background:var(--paper);border:3px solid var(--green);border-radius:2px;padding:1rem;position:relative;box-shadow:2px 3px 8px var(--shadow);}
+.browse-yomi::before,.browse-yomi::after{content:'';position:absolute;left:0;right:0;height:4px;background:var(--deck-color,var(--red));}
+.browse-yomi::before{top:4px;}.browse-yomi::after{bottom:4px;}
+.browse-tori{background:var(--paper);border:3px solid var(--green);border-radius:2px;padding:1rem;position:relative;box-shadow:2px 3px 8px var(--shadow);}
+.browse-tori::before,.browse-tori::after{content:'';position:absolute;left:0;right:0;height:4px;background:var(--green);}
+.browse-tori::before{top:4px;}.browse-tori::after{bottom:4px;}
+.browse-card-label{font-size:10px;color:var(--ink-dim);letter-spacing:1px;margin-bottom:.5rem;direction:ltr;}
+.browse-verse{font-family:'Amiri',serif;font-size:16px;line-height:2;color:var(--ink);text-align:right;}
+.browse-poet{font-size:11px;color:var(--ink-dim);margin-top:.5rem;direction:ltr;border-top:1px solid var(--paper3);padding-top:.35rem;}
+
 /* ── MISC ── */
 .section-title{font-family:'Amiri',serif;font-size:18px;color:var(--red);margin-bottom:.75rem;}
 .empty-state{text-align:center;padding:2rem;color:var(--ink-dim);font-size:14px;}

@@ -35,7 +35,7 @@ const FIREBASE_CONFIG = {
 };
 
 // ← Set this to your email — that account becomes admin automatically on register
-const ADMIN_EMAIL = "your-admin-email@example.com";
+const ADMIN_EMAIL = "kald94098@gmail.com";
 
 const AVATARS     = ['🦁','🐪','🦅','🌙','⭐','🏺','🌊','🌴','🐴','🦊','🌹','🎭','🦋','🌺','🏵️','🌟'];
 const ARABIC_NUMS = ['١','٢','٣','٤'];
@@ -49,48 +49,34 @@ const DECKS = [
 
   /* 1 ── المعلقات */
   {
-    id:'muallaqat', name:'المعلقات', nameEn:'The Muallaqat',
-    desc:'القصائد السبع المعلقة — أشهر روائع الشعر الجاهلي',
-    color:'#2d5a27', icon:'🏜️',
-    introAudio:['audio/muallaqat/intro-1.mp3','audio/muallaqat/intro-2.mp3','audio/muallaqat/intro-3.mp3','audio/muallaqat/intro-4.mp3'],
+    id:'muallaqat', name:'مختارات', nameEn:'',
+    desc:'قصائد مختاره',
+    color:'#2d5a27', icon:'',
+    introAudio:['audio/intro-1.mp3','audio/intro-2.mp3','audio/intro-3.mp3','audio/intro-4.mp3'],
     poems:[
-      {poet:"امرؤ القيس",      read:"قِفَا نَبْكِ مِن ذِكرى حَبيبٍ وَمَنزِلِ",       card:"بِسِقطِ اللِّوى بَينَ الدَّخولِ فَحَومَلِ",       audio:"audio/muallaqat/poem-01.mp3"},
-      {poet:"امرؤ القيس",      read:"وَقوفاً بِها صَحبي عَلَيَّ مَطِيَّهُم",          card:"يَقولونَ لا تَهلِك أَسىً وَتَجَمَّلِ",            audio:"audio/muallaqat/poem-02.mp3"},
-      {poet:"امرؤ القيس",      read:"أَلا أَيُّها اللَّيلُ الطَّويلُ أَلا انجَلِ",    card:"بِصُبحٍ وَما الإِصباحُ مِنكَ بِأَمثَلِ",         audio:"audio/muallaqat/poem-03.mp3"},
-      {poet:"امرؤ القيس",      read:"كَأَنَّ قُلوبَ الطَّيرِ رَطباً وَيابِساً",       card:"لَدى وَكرِها العُنّابُ وَالحَشَفُ البالي",        audio:"audio/muallaqat/poem-04.mp3"},
-      {poet:"امرؤ القيس",      read:"مِكَرٍّ مِفَرٍّ مُقبِلٍ مُدبِرٍ مَعاً",         card:"كَجُلمودِ صَخرٍ حَطَّهُ السَّيلُ مِن عَلِ",      audio:"audio/muallaqat/poem-05.mp3"},
-      {poet:"طرفة بن العبد",   read:"لِخَولَةَ أَطلالٌ بِبُرقَةِ ثَهمَدِ",           card:"تَلوحُ كَباقي الوَشمِ في ظاهِرِ اليَدِ",          audio:"audio/muallaqat/poem-06.mp3"},
-      {poet:"طرفة بن العبد",   read:"سَتُبدي لَكَ الأَيّامُ ما كُنتَ جاهِلاً",       card:"وَيَأتيكَ بِالأَخبارِ مَن لَم تُزَوِّدِ",         audio:"audio/muallaqat/poem-07.mp3"},
-      {poet:"طرفة بن العبد",   read:"لَعَمرُكَ إِنَّ المَوتَ ما أَخطَأَ الفَتى",     card:"لَكَالطِّوَلِ المُرخى وَثِنياهُ باليَدِ",         audio:"audio/muallaqat/poem-08.mp3"},
-      {poet:"طرفة بن العبد",   read:"نَحنُ في المَشتاةِ نَدعو الجَفَلى",              card:"لا تَرى الآدِبَ فينا يَنتَقِر",                   audio:"audio/muallaqat/poem-09.mp3"},
-      {poet:"طرفة بن العبد",   read:"إِذا القَومُ قالوا مَن فَتىً خِلتُ أَنَّني",    card:"عُنيتُ فَلَم أَكسَل وَلَم أَتَبَلَّدِ",          audio:"audio/muallaqat/poem-10.mp3"},
-      {poet:"زهير بن أبي سلمى",read:"أَمِن أُمِّ أَوفى دِمنَةٌ لَم تَكَلَّمِ",      card:"بِحَومانَةِ الدَّرّاجِ فَالمُتَثَلَّمِ",          audio:"audio/muallaqat/poem-11.mp3"},
-      {poet:"زهير بن أبي سلمى",read:"سَئِمتُ تَكاليفَ الحَياةِ وَمَن يَعِش",        card:"ثَمانينَ حَولاً لا أَبا لَكَ يَسأَمِ",            audio:"audio/muallaqat/poem-12.mp3"},
-      {poet:"زهير بن أبي سلمى",read:"وَما الحَربُ إِلّا ما عَلِمتُم وَذُقتُمُ",     card:"وَما هُوَ عَنها بِالحَديثِ المُرَجَّمِ",          audio:"audio/muallaqat/poem-13.mp3"},
-      {poet:"زهير بن أبي سلمى",read:"فَتَنتِج لَكُم غِلمانَ أَشأَمَ كُلُّهُم",      card:"كَأَحمَرِ عادٍ ثُمَّ تُرضِعُ فَتَفطِمِ",         audio:"audio/muallaqat/poem-14.mp3"},
-      {poet:"زهير بن أبي سلمى",read:"وَمَن يَجعَلِ المَعروفَ مِن دونِ عِرضِهِ",    card:"يَفِرهُ وَمَن لا يَتَّقِ الشَّتمَ يُشتَمِ",       audio:"audio/muallaqat/poem-15.mp3"},
-      {poet:"لبيد بن ربيعة",   read:"عَفَت الدِّيارُ مَحَلُّها فَمُقامُها",           card:"بِمِنىً تَأَبَّدَ غَولُها فَرِجامُها",             audio:"audio/muallaqat/poem-16.mp3"},
-      {poet:"لبيد بن ربيعة",   read:"وَجَلا السُّيولُ عَنِ الطُّلولِ كَأَنَّها",     card:"زُبُرٌ تَجِدُّ مُتونَها أَقلامُها",               audio:"audio/muallaqat/poem-17.mp3"},
-      {poet:"لبيد بن ربيعة",   read:"أَلا كُلُّ شَيءٍ ما خَلا اللَهَ باطِلُ",       card:"وَكُلُّ نَعيمٍ لا مَحالَةَ زائِلُ",               audio:"audio/muallaqat/poem-18.mp3"},
-      {poet:"لبيد بن ربيعة",   read:"وَما المَرءُ إِلّا كَالشِّهابِ وَضَوئِهِ",     card:"يَحورُ رَماداً بَعدَ إِذ هُوَ ساطِعُ",            audio:"audio/muallaqat/poem-19.mp3"},
-      {poet:"لبيد بن ربيعة",   read:"فَإِن تَسأَلينا فيمَ نَحنُ فَإِنَّنا",          card:"عَصافيرُ مِن هَذا الأَنامِ المُسَرَّحِ",          audio:"audio/muallaqat/poem-20.mp3"},
-      {poet:"عنترة بن شداد",   read:"هَل غادَرَ الشُّعَراءُ مِن مُتَرَدَّمِ",        card:"أَم هَل عَرَفتَ الدارَ بَعدَ تَوَهُّمِ",          audio:"audio/muallaqat/poem-21.mp3"},
-      {poet:"عنترة بن شداد",   read:"يا دارَ عَبلَةَ بِالجِواءِ تَكَلَّمي",           card:"وَعِمي صَباحاً دارَ عَبلَةَ وَاسلَمي",            audio:"audio/muallaqat/poem-22.mp3"},
-      {poet:"عنترة بن شداد",   read:"وَلَقَد شَرِبتُ مِنَ المُدامَةِ بَعدَما",       card:"رَكَدَ الهَواجِرُ بِالمَشوفِ المُعلَمِ",          audio:"audio/muallaqat/poem-23.mp3"},
-      {poet:"عنترة بن شداد",   read:"وَلَقَد ذَكَرتُكِ وَالرِّماحُ نَواهِلٌ",        card:"مِنّي وَبيضُ الهِندِ تَقطُرُ مِن دَمي",           audio:"audio/muallaqat/poem-24.mp3"},
-      {poet:"عنترة بن شداد",   read:"عُلِّقتُها عَرَضاً وَأَقتُلُ قَومَها",          card:"زَعماً لَعَمرُ أَبيكَ لَيسَ بِمَزعَمِ",          audio:"audio/muallaqat/poem-25.mp3"},
-      {poet:"الحارث بن حلزة",  read:"آذَنَتنا بِبَينِها أَسماءُ",                    card:"رُبَّ ثاوٍ يَمَلُّ مِنهُ الثَّواءُ",               audio:"audio/muallaqat/poem-26.mp3"},
-      {poet:"عمرو بن كلثوم",   read:"أَلا هُبّي بِصَحنِكِ فَاصبَحينا",               card:"وَلا تُبقي خُمورَ الأَندَرينا",                   audio:"audio/muallaqat/poem-27.mp3"},
-      {poet:"عمرو بن كلثوم",   read:"أَلا لا يَجهَلَن أَحَدٌ عَلَينا",               card:"فَنَجهَلَ فَوقَ جَهلِ الجاهِلينا",                audio:"audio/muallaqat/poem-28.mp3"},
+  {poet:"",      read:"القارئ يقرأ الشطر",       card:"بِسِقطِ اللِّوى بَينَ الدَّخولِ فَحَومَلِ",       audio:"audio/poem-01.mp3"},
+  {poet:"",      read:"القارئ يقرأ الشطر",    card:"بِصُبحٍ وَما الإِصباحُ مِنكَ بِأَمثَلِ",         audio:"audio/poem-02.mp3"},
+  {poet:"",      read:"القارئ يقرأ الشطر",         card:"كَجُلمودِ صَخرٍ حَطَّهُ السَّيلُ مِن عَلِ",      audio:"audio/poem-03.mp3"},
+  {poet:"",   read:"القارئ يقرأ الشطر",       card:"وَيَأتيكَ بِالأَخبارِ مَن لَم تُزَوِّدِ",         audio:"audio/poem-04.mp3"},
+  {poet:"",   read:"القارئ يقرأ الشطر",     card:"لَكَالطِّوَلِ المُرخى وَثِنياهُ باليَدِ",         audio:"audio/poem-05.mp3"},
+  {poet:"",   read:"القارئ يقرأ الشطر",        card:"ثَمانينَ حَولاً لا أَبا لَكَ يَسأَمِ",            audio:"audio/poem-06.mp3"},
+  {poet:"",   read:"القارئ يقرأ الشطر",       card:"وَكُلُّ نَعيمٍ لا مَحالَةَ زائِلُ",               audio:"audio/poem-07.mp3"},
+  {poet:"",   read:"القارئ يقرأ الشطر",     card:"يَحورُ رَماداً بَعدَ إِذ هُوَ ساطِعُ",            audio:"audio/poem-08.mp3"},
+  {poet:"",   read:"القارئ يقرأ الشطر",          card:"عَصافيرُ مِن هَذا الأَنامِ المُسَرَّحِ",          audio:"audio/poem-09.mp3"},
+  {poet:"",   read:"القارئ يقرأ الشطر",        card:"أَم هَل عَرَفتَ الدارَ بَعدَ تَوَهُّمِ",          audio:"audio/poem-10.mp3"},
+  {poet:"",   read:"القارئ يقرأ الشطر",           card:"وَعِمي صَباحاً دارَ عَبلَةَ وَاسلَمي",            audio:"audio/poem-11.mp3"},
+  {poet:"",   read:"القارئ يقرأ الشطر",        card:"مِنّي وَبيضُ الهِندِ تَقطُرُ مِن دَمي",           audio:"audio/poem-12.mp3"},
+  {poet:"",   read:"القارئ يقرأ الشطر",          card:"صوالج صدغيها بتفاح خدها",          audio:"audio/poem-13.mp3"},
+  {poet:"",   read:"القارئ يقرأ الشطر",               card:"فَنَجهَلَ فَوقَ جَهلِ الجاهِلينا",                audio:"audio/poem-14.mp3"},
     ],
   },
 
   /* 2 ── الشعر العباسي */
   {
-    id:'abbasid', name:'الشعر العباسي', nameEn:'Abbasid Poetry',
+    id:'abbasid', name:'الشعر العباسي', nameEn:'',
     desc:'روائع المتنبي وأبي تمام والبحتري وفحول الشعر العباسي',
-    color:'#1a3a6b', icon:'📜',
-    introAudio:['audio/abbasid/intro-1.mp3'],
+    color:'#1a3a6b', icon:'',
+    introAudio:['audio/intro-1.mp3'],
     poems:[
       {poet:"المتنبي", read:"عَلى قَدرِ أَهلِ العَزمِ تَأتي العَزائِمُ",    card:"وَتَأتي عَلى قَدرِ الكِرامِ المَكارِمُ",      audio:"audio/abbasid/poem-01.mp3"},
       {poet:"المتنبي", read:"الخَيلُ وَاللَّيلُ وَالبَيداءُ تَعرِفُني",     card:"وَالسَّيفُ وَالرُّمحُ وَالقِرطاسُ وَالقَلَمُ",audio:"audio/abbasid/poem-02.mp3"},
@@ -109,10 +95,10 @@ const DECKS = [
 
   /* 3 ── الشعر الأندلسي */
   {
-    id:'andalusian', name:'الشعر الأندلسي', nameEn:'Andalusian Poetry',
+    id:'andalusian', name:'الشعر الأندلسي', nameEn:'',
     desc:'جمال الأندلس في أشعار ابن زيدون وابن عربي والمعتمد',
-    color:'#6b1a3a', icon:'🌹',
-    introAudio:['audio/andalusian/intro-1.mp3'],
+    color:'#6b1a3a', icon:'',
+    introAudio:['audio/intro-1.mp3'],
     poems:[
       {poet:"ابن زيدون",          read:"أَضحى التَّنائي بَديلاً مِن تَدانينا",        card:"وَنابَ عَن طيبِ لُقيانا تَجافينا",             audio:"audio/andalusian/poem-01.mp3"},
       {poet:"ابن زيدون",          read:"إِنّي ذَكَرتُكِ بِالزَّهراءِ مُشتاقاً",      card:"وَالأُفقُ طَلقٌ وَمَرأى الأَرضِ قَد راقا",   audio:"audio/andalusian/poem-02.mp3"},
@@ -127,10 +113,10 @@ const DECKS = [
 
   /* 4 ── الشعر الحديث */
   {
-    id:'modern', name:'الشعر الحديث', nameEn:'Modern Arabic Poetry',
+    id:'modern', name:'الشعر الحديث', nameEn:'',
     desc:'شوقي ودرويش وأبو ماضي وحافظ — روائع الشعر العربي الحديث',
-    color:'#1a6b5a', icon:'🌊',
-    introAudio:['audio/modern/intro-1.mp3'],
+    color:'#1a6b5a', icon:'',
+    introAudio:['audio/intro-1.mp3'],
     poems:[
       {poet:"أحمد شوقي",    read:"وُلِدَ الهُدى فَالكائِناتُ ضِياءُ",           card:"وَفَمُ الزَّمانِ تَبَسُّمٌ وَثَناءُ",          audio:"audio/modern/poem-01.mp3"},
       {poet:"أحمد شوقي",    read:"رِيمٌ عَلى القاعِ بَينَ البانِ وَالعَلَمِ",   card:"أَحَلَّ سَفكَ دَمي في الأَشهُرِ الحُرُمِ",   audio:"audio/modern/poem-02.mp3"},

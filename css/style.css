@@ -530,8 +530,11 @@ body.bg-forest::before{
     var(--bg);
 }
 
-.bg-preview-photo4 { background-image: url('../img/bg-4.jpg'); background-size: cover; }
-.bg-preview-photo5 { background-image: url('../img/bg-5.jpg'); background-size: cover; }
+.bg-preview-photo1 { background-image: url('../img/bg-1.jpg'); background-size: cover; background-position: center; }
+.bg-preview-photo2 { background-image: url('../img/bg-2.jpg'); background-size: cover; background-position: center; }
+.bg-preview-photo3 { background-image: url('../img/bg-3.jpg'); background-size: cover; background-position: center; }
+.bg-preview-photo4 { background-image: url('../img/bg-4.jpg'); background-size: cover; background-position: center; }
+.bg-preview-photo5 { background-image: url('../img/bg-5.jpg'); background-size: cover; background-position: center; }
 
 /* ════════════════════════════════════════════
    SETTINGS SCREEN — theme + background pickers

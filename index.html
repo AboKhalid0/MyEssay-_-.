@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>كارُوتا المُعَلَّقات</title>
+<title>الكاروتا العربية</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎴</text></svg>"/>
 <link rel="stylesheet" href="css/style.css"/>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -20,9 +20,9 @@
 <div id="screen-auth" class="screen active">
   <div class="auth-wrap">
     <div class="auth-hero">
-      <div class="auth-seal">م</div>
-      <h1 class="auth-title">كارُوتا المُعَلَّقات</h1>
-      <p class="auth-sub" style="direction:ltr;">ARABIC KARUTA · POETRY CARD GAME</p>
+      <div class="auth-seal">ض</div>
+      <h1 class="auth-title">لكاروتا العربية</h1>
+      <p class="auth-sub" style="direction:ltr;">ARABIC KARUTA ·</p>
     </div>
     <div class="tab-bar">
       <button class="tab-btn active" id="tab-login">تسجيل دخول</button>
@@ -65,7 +65,7 @@
 ══════════════════════════════════════ -->
 <div id="screen-home" class="screen">
   <div class="topbar">
-    <span class="topbar-brand" id="home-brand">كارُوتا</span>
+    <span class="topbar-brand" id="home-brand">كاروتا</span>
     <div class="topbar-right">
       <span class="nav-link" id="nav-cards-browser">مكتبة 📖</span>
       <span class="nav-link" id="nav-friends">أصدقاء 👥</span>
@@ -80,8 +80,8 @@
       <div class="corner tl"></div><div class="corner tr"></div>
       <div class="corner bl"></div><div class="corner br"></div>
       <div class="hero-seal">م</div>
-      <h1 class="hero-title">كارُوتا المُعَلَّقات</h1>
-      <p class="hero-sub">ARABIC KARUTA · POETRY CARD GAME</p>
+      <h1 class="hero-title">لكاروتا العربية</h1>
+      <p class="hero-sub">ARABIC KARUTA ·</p>
     </div>
     <div class="btn-group">
       <button class="btn danger"   id="btn-create">إنشاء غرفة — Create Room</button>
@@ -143,7 +143,7 @@
 ══════════════════════════════════════ -->
 <div id="screen-cards-browser" class="screen">
   <div class="topbar">
-    <span class="topbar-brand" id="browser-back">← كارُوتا</span>
+    <span class="topbar-brand" id="browser-back">← كاروتا</span>
     <div class="topbar-right" style="font-size:13px;color:var(--ink-dim);">📖 مكتبة البطاقات</div>
   </div>
   <div class="scroll">
@@ -162,7 +162,7 @@
 ══════════════════════════════════════ -->
 <div id="screen-profile" class="screen">
   <div class="topbar">
-    <span class="topbar-brand" id="profile-back">← كارُوتا</span>
+    <span class="topbar-brand" id="profile-back">← كاروتا</span>
     <div class="topbar-right">
       <span class="nav-link" id="profile-logout">خروج</span>
     </div>
@@ -218,7 +218,7 @@
 ══════════════════════════════════════ -->
 <div id="screen-friends" class="screen">
   <div class="topbar">
-    <span class="topbar-brand" id="friends-back">← كارُوتا</span>
+    <span class="topbar-brand" id="friends-back">← كاروتا</span>
     <div class="topbar-right" style="font-size:13px;color:var(--ink-dim);">الأصدقاء</div>
   </div>
   <div class="scroll">
@@ -245,7 +245,7 @@
      Edit js/app.js  §MATCHMAKING
 ══════════════════════════════════════ -->
 <div id="screen-matchmaking" class="screen">
-  <div class="topbar"><span class="topbar-brand" id="mm-back">← كارُوتا</span></div>
+  <div class="topbar"><span class="topbar-brand" id="mm-back">← كاروتا</span></div>
   <div class="scroll">
     <div class="mm-wrap">
       <div class="section-title">🎲 مباراة عشوائية</div>
@@ -264,7 +264,7 @@
      Edit js/app.js  §LOBBY
 ══════════════════════════════════════ -->
 <div id="screen-lobby" class="screen">
-  <div class="topbar"><span class="topbar-brand" id="lobby-back">← كارُوتا</span></div>
+  <div class="topbar"><span class="topbar-brand" id="lobby-back">← كاروتا</span></div>
   <div class="scroll">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;">
       <strong>رمز الغرفة — Room Code</strong>
@@ -292,8 +292,8 @@
 ══════════════════════════════════════ -->
 <div id="screen-intro" class="screen">
   <div class="intro-box">
-    <div class="intro-num" id="intro-num">🏜️</div>
-    <div class="intro-label" id="intro-lbl">المعلقات<br><small>استمع إلى القصيدة الافتتاحية…</small></div>
+    <div class="intro-num" id="intro-num"></div>
+    <div class="intro-label" id="intro-lbl">المختارات<br><small>استمع إلى القصيدة الافتتاحية…</small></div>
     <div class="wave" id="wave">
       <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
     </div>
@@ -340,7 +340,7 @@
   </div>
   <div class="btn-group">
     <button class="btn danger" id="again-btn">العب مجدداً</button>
-    <button class="btn" id="result-lobby-btn">← اللوبي</button>
+    <button class="btn" id="result-lobby-btn">← القائمة الرئيسية</button>
   </div>
 </div>
 
@@ -350,7 +350,7 @@
 ══════════════════════════════════════ -->
 <div id="screen-admin" class="screen">
   <div class="topbar">
-    <span class="topbar-brand" id="admin-back">← كارُوتا</span>
+    <span class="topbar-brand" id="admin-back">← كاروتا</span>
     <div class="admin-badge">ADMIN PANEL</div>
   </div>
   <div class="scroll">

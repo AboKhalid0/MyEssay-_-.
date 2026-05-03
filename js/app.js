@@ -262,9 +262,11 @@ const BACKGROUNDS = [
   { id:'marble',  name:'الرخام',        nameEn:'Marble',          emoji:'🌫️' },
   { id:'forest',  name:'الغابة',        nameEn:'Dark Forest',     emoji:'🌿' },
   // ── Image backgrounds — place your photo at the listed path ──
-  { id:'photo1',  name:'صورة ١',         nameEn:'Photo 1',         emoji:'🖼️', isPhoto:true, src:'img/bg-1.jpg' },
-  { id:'photo2',  name:'صورة ٢',         nameEn:'Photo 2',         emoji:'🖼️', isPhoto:true, src:'img/bg-2.jpg' },
-  { id:'photo3',  name:'صورة ٣',         nameEn:'Photo 3',         emoji:'🖼️', isPhoto:true, src:'img/bg-3.jpg' },
+  { id:'photo1',  name:'صورة ١',         nameEn:'Photo 1',         emoji:'🖼️', isPhoto:true },
+  { id:'photo2',  name:'صورة ٢',         nameEn:'Photo 2',         emoji:'🖼️', isPhoto:true },
+  { id:'photo3',  name:'صورة ٣',         nameEn:'Photo 3',         emoji:'🖼️', isPhoto:true },
+  { id:'photo4',  name:'باسكال',         nameEn:'Photo 3',         emoji:'🖼️', isPhoto:true },
+  { id:'photo5',  name:'صورة ٣',         nameEn:'Photo 3',         emoji:'🖼️', isPhoto:true },
 ];
 
 

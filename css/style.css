@@ -398,3 +398,240 @@ textarea{resize:vertical;min-height:70px;}
 .empty-state{text-align:center;padding:2rem;color:var(--ink-dim);font-size:14px;}
 .search-box{position:relative;margin-bottom:1rem;}
 .search-icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--ink-dim);font-size:16px;}
+
+
+/* ════════════════════════════════════════════
+   THEMES — 4 color palettes
+   body.theme-{id} overrides CSS custom properties.
+   To add a theme: add a new body.theme-X block here
+   and a matching entry in THEMES[] in app.js.
+════════════════════════════════════════════ */
+
+/* Default = emerald (no class needed, matches :root) */
+body.theme-emerald{
+  --paper:#f7eed8;--paper2:#ede0c4;--paper3:#dfd0ad;
+  --ink:#1a1208;--ink-dim:#6b5230;
+  --green:#2d5a27;--green2:#3d7a34;
+  --red:#8b1a1a;--red2:#b52222;
+  --gold:#c8962a;--gold2:#e8c97a;
+  --bg:#1e1205;--blue:#1a3a6b;--blue2:#2a5ba8;
+}
+
+/* اللازورد — deep navy + gold */
+body.theme-lapis{
+  --paper:#eeeae0;--paper2:#e3ddd3;--paper3:#d4ccbf;
+  --ink:#0d1f3a;--ink-dim:#3a4f72;
+  --green:#1a3564;--green2:#274d8a;
+  --red:#b8860b;--red2:#d4a017;
+  --gold:#c8962a;--gold2:#e8c97a;
+  --bg:#070f22;--blue:#6b1a3a;--blue2:#8b2252;
+}
+
+/* العقيق — warm burgundy + amber */
+body.theme-ruby{
+  --paper:#faf5e8;--paper2:#f2e9d2;--paper3:#e8dbbf;
+  --ink:#2a0808;--ink-dim:#7a4030;
+  --green:#7a1f1f;--green2:#9a2828;
+  --red:#c8962a;--red2:#e8b030;
+  --gold:#c8962a;--gold2:#e8c97a;
+  --bg:#1a0808;--blue:#2d5a27;--blue2:#3d7a34;
+}
+
+/* الليل — dark mode, gold on near-black */
+body.theme-night{
+  --paper:#2a2520;--paper2:#332e28;--paper3:#3d3830;
+  --ink:#f0ead8;--ink-dim:#b8a880;
+  --green:#c8962a;--green2:#e8b030;
+  --red:#e8c97a;--red2:#f5d87a;
+  --gold:#c8962a;--gold2:#e8c97a;
+  --bg:#0d0b08;--blue:#4a6fa5;--blue2:#6a8fc5;
+}
+/* Night mode: topbar/scroll borders use gold */
+body.theme-night .topbar{border-color:var(--gold);}
+body.theme-night .scroll{border-color:var(--gold);}
+
+/* Smooth color transitions when switching themes */
+body,body *{transition:background-color .35s,border-color .35s,color .2s;}
+/* But not animations, transforms, or opacity */
+body *{transition-property:background-color,border-color,color;}
+
+
+/* ════════════════════════════════════════════
+   BACKGROUNDS — 5 CSS background styles for body::before
+   body.bg-{id}::before overrides the background pattern.
+   To add a background: add a new body.bg-X::before block
+   and a matching entry in BACKGROUNDS[] in app.js.
+════════════════════════════════════════════ */
+
+/* Default grid (matches original :root style — always applied via .bg-grid) */
+body.bg-grid::before{
+  background:
+    repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(200,150,42,.06) 59px,rgba(200,150,42,.06) 60px),
+    repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(200,150,42,.06) 59px,rgba(200,150,42,.06) 60px),
+    var(--bg);
+}
+
+/* الصحراء — warm sandy dunes */
+body.bg-desert::before{
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 90%, rgba(200,140,50,.18) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 10%, rgba(160,100,30,.14) 0%, transparent 55%),
+    radial-gradient(ellipse 100% 50% at 50% 100%, rgba(180,110,20,.12) 0%, transparent 50%),
+    var(--bg);
+}
+
+/* السماء الليلية — deep night with subtle stars */
+body.bg-night::before{
+  background:
+    radial-gradient(1px 1px at 15% 20%, rgba(232,201,122,.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 40% 5%,  rgba(232,201,122,.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 65% 35%, rgba(232,201,122,.8) 0%, transparent 100%),
+    radial-gradient(1px 1px at 85% 15%, rgba(232,201,122,.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 30% 60%, rgba(232,201,122,.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 75% 70%, rgba(232,201,122,.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 10% 80%, rgba(232,201,122,.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 55% 90%, rgba(232,201,122,.6) 0%, transparent 100%),
+    radial-gradient(ellipse 100% 60% at 50% 100%, rgba(26,53,100,.4) 0%, transparent 60%),
+    var(--bg);
+}
+
+/* الرخام — cool marble veins */
+body.bg-marble::before{
+  background:
+    repeating-linear-gradient(
+      128deg,
+      transparent 0px, transparent 40px,
+      rgba(200,150,42,.04) 40px, rgba(200,150,42,.04) 41px
+    ),
+    repeating-linear-gradient(
+      38deg,
+      transparent 0px, transparent 70px,
+      rgba(200,150,42,.03) 70px, rgba(200,150,42,.03) 71px
+    ),
+    radial-gradient(ellipse 120% 80% at 30% 40%, rgba(180,160,140,.08) 0%, transparent 60%),
+    var(--bg);
+}
+
+/* الغابة — deep forest, rich dark greens */
+body.bg-forest::before{
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px, transparent 28px,
+      rgba(45,90,39,.12) 28px, rgba(45,90,39,.12) 29px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px, transparent 44px,
+      rgba(45,90,39,.08) 44px, rgba(45,90,39,.08) 45px
+    ),
+    radial-gradient(ellipse 80% 60% at 10% 20%, rgba(45,90,39,.2) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 80% at 90% 80%, rgba(45,90,39,.18) 0%, transparent 55%),
+    var(--bg);
+}
+
+
+/* ════════════════════════════════════════════
+   SETTINGS SCREEN — theme + background pickers
+════════════════════════════════════════════ */
+.settings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:.5rem;}
+
+/* Theme swatch card */
+.theme-swatch{
+  background:var(--paper);border:2.5px solid var(--green);border-radius:4px;
+  padding:.9rem;cursor:pointer;transition:all .18s;text-align:center;
+  box-shadow:3px 3px 0 var(--green);font-family:'Noto Naskh Arabic',serif;
+}
+.theme-swatch:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--green);}
+.theme-swatch.selected{border-color:var(--red);box-shadow:4px 4px 0 var(--red);}
+.swatch-colors{display:flex;justify-content:center;gap:6px;margin-bottom:.6rem;}
+.swatch-colors span{width:26px;height:26px;border-radius:50%;border:2px solid rgba(255,255,255,.3);}
+.swatch-name{font-family:'Amiri',serif;font-size:16px;color:var(--ink);font-weight:700;}
+.swatch-desc{font-size:11px;color:var(--ink-dim);margin-top:.2rem;line-height:1.5;}
+
+/* Background swatch card */
+.bg-swatch{
+  background:var(--paper);border:2.5px solid var(--green);border-radius:4px;
+  padding:.75rem;cursor:pointer;transition:all .18s;text-align:center;
+  box-shadow:3px 3px 0 var(--green);font-family:'Noto Naskh Arabic',serif;
+}
+.bg-swatch:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--green);}
+.bg-swatch.selected{border-color:var(--red);box-shadow:4px 4px 0 var(--red);}
+.bg-preview{
+  width:100%;height:50px;border-radius:2px;margin-bottom:.5rem;
+  border:1px solid var(--paper3);
+}
+/* Background preview thumbnails (same CSS as full backgrounds, scaled down) */
+.bg-preview-grid{background:repeating-linear-gradient(0deg,transparent,transparent 9px,rgba(200,150,42,.15) 9px,rgba(200,150,42,.15) 10px),repeating-linear-gradient(90deg,transparent,transparent 9px,rgba(200,150,42,.15) 9px,rgba(200,150,42,.15) 10px),#1e1205;}
+.bg-preview-desert{background:radial-gradient(ellipse 80% 60% at 20% 90%,rgba(200,140,50,.4) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 80% 10%,rgba(160,100,30,.35) 0%,transparent 55%),#1e1205;}
+.bg-preview-night{background:radial-gradient(2px 2px at 25% 30%,rgba(232,201,122,.9) 0%,transparent 100%),radial-gradient(2px 2px at 60% 15%,rgba(232,201,122,.8) 0%,transparent 100%),radial-gradient(2px 2px at 80% 60%,rgba(232,201,122,.9) 0%,transparent 100%),#070a14;}
+.bg-preview-marble{background:repeating-linear-gradient(128deg,transparent 0px,transparent 10px,rgba(200,150,42,.12) 10px,rgba(200,150,42,.12) 11px),repeating-linear-gradient(38deg,transparent 0px,transparent 18px,rgba(200,150,42,.09) 18px,rgba(200,150,42,.09) 19px),#1e1a16;}
+.bg-preview-forest{background:repeating-linear-gradient(90deg,transparent 0px,transparent 8px,rgba(45,90,39,.25) 8px,rgba(45,90,39,.25) 9px),repeating-linear-gradient(0deg,transparent 0px,transparent 12px,rgba(45,90,39,.2) 12px,rgba(45,90,39,.2) 13px),#0a1208;}
+
+
+/* ════════════════════════════════════════════
+   LIBRARY CARD IMAGE — card.png template layout
+   Place your card images in img/card.png (and per-poem images in img/cards/)
+   The card.png has: ornate border ~9% each side, cream text area top 75%,
+   two corner circles + center label at the bottom.
+════════════════════════════════════════════ */
+
+/* Wide modal for two cards side by side */
+.modal-bg.modal-wide .modal{max-width:720px;width:95vw;padding:1rem 1.25rem;}
+
+/* Row holding both cards */
+.lib-cards-row{
+  display:grid;grid-template-columns:1fr 1fr;gap:16px;
+  margin-top:.5rem;direction:rtl;
+}
+@media(max-width:520px){.lib-cards-row{grid-template-columns:1fr;}}
+
+.lib-card-wrap{display:flex;flex-direction:column;align-items:center;gap:.4rem;}
+
+.lib-card-type{
+  font-size:11px;color:var(--ink-dim);letter-spacing:1px;
+  border:1px solid var(--paper3);border-radius:2px;padding:2px 10px;
+  background:var(--paper2);direction:ltr;
+}
+
+/* The card image container — card.png is the background */
+.lib-card-img{
+  width:100%;
+  aspect-ratio:750 / 980;       /* matches card.png proportions */
+  background-size:100% 100%;    /* stretch to fill exactly */
+  background-repeat:no-repeat;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  /* Verse sits in the upper cream area of the card */
+  justify-content:flex-start;
+  padding:14% 14% 32% 14%;      /* top | sides | bottom (leaves room for circles + label) */
+}
+
+/* Poem verse overlaid on the card */
+.lib-card-verse{
+  font-family:'Amiri',serif;
+  font-size:clamp(13px, 2.2vw, 20px);
+  line-height:2.2;
+  color:#1a1208;
+  text-align:center;
+  width:100%;
+  /* Soft text shadow so it reads over the parchment texture */
+  text-shadow:0 1px 3px rgba(255,255,255,.6);
+}
+
+/* Poet name in the label rectangle at bottom center of card.png */
+.lib-card-poet{
+  position:absolute;
+  bottom:17%;           /* aligns with the rectangular label in card.png */
+  left:50%;
+  transform:translateX(-50%);
+  font-family:'Noto Naskh Arabic',serif;
+  font-size:clamp(9px, 1.4vw, 12px);
+  color:#4a3010;
+  white-space:nowrap;
+  text-align:center;
+  font-weight:600;
+  letter-spacing:.5px;
+}

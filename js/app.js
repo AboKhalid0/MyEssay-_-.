@@ -49,34 +49,48 @@ const DECKS = [
 
   /* 1 ── المعلقات */
   {
-    id:'muallaqat', name:'مختارات', nameEn:'',
-    desc:'قصائد مختارة',
-    color:'#2d5a27', icon:'',
-    introAudio:['audio/intro-1.mp3','audio/intro-2.mp3','audio/intro-3.mp3','audio/intro-4.mp3'],
+    id:'muallaqat', name:'المعلقات', nameEn:'The Muallaqat',
+    desc:'القصائد السبع المعلقة — أشهر روائع الشعر الجاهلي',
+    color:'#2d5a27', icon:'🏜️',
+    introAudio:['audio/muallaqat/intro-1.mp3','audio/muallaqat/intro-2.mp3','audio/muallaqat/intro-3.mp3','audio/muallaqat/intro-4.mp3'],
     poems:[
-  {poet:"",      read:"القارئ يقرأ الشطر",       card:"بِسِقطِ اللِّوى بَينَ الدَّخولِ فَحَومَلِ",       audio:"audio/poem-01.mp3"},
-  {poet:"",      read:"القارئ يقرأ الشطر",    card:"بِصُبحٍ وَما الإِصباحُ مِنكَ بِأَمثَلِ",         audio:"audio/poem-02.mp3"},
-  {poet:"",      read:"القارئ يقرأ الشطر",         card:"كَجُلمودِ صَخرٍ حَطَّهُ السَّيلُ مِن عَلِ",      audio:"audio/poem-03.mp3"},
-  {poet:"",   read:"القارئ يقرأ الشطر",       card:"وَيَأتيكَ بِالأَخبارِ مَن لَم تُزَوِّدِ",         audio:"audio/poem-04.mp3"},
-  {poet:"",   read:"القارئ يقرأ الشطر",     card:"لَكَالطِّوَلِ المُرخى وَثِنياهُ باليَدِ",         audio:"audio/poem-05.mp3"},
-  {poet:"",   read:"القارئ يقرأ الشطر",        card:"ثَمانينَ حَولاً لا أَبا لَكَ يَسأَمِ",            audio:"audio/poem-06.mp3"},
-  {poet:"",   read:"القارئ يقرأ الشطر",       card:"وَكُلُّ نَعيمٍ لا مَحالَةَ زائِلُ",               audio:"audio/poem-07.mp3"},
-  {poet:"",   read:"القارئ يقرأ الشطر",     card:"يَحورُ رَماداً بَعدَ إِذ هُوَ ساطِعُ",            audio:"audio/poem-08.mp3"},
-  {poet:"",   read:"القارئ يقرأ الشطر",          card:"عَصافيرُ مِن هَذا الأَنامِ المُسَرَّحِ",          audio:"audio/poem-09.mp3"},
-  {poet:"",   read:"القارئ يقرأ الشطر",        card:"أَم هَل عَرَفتَ الدارَ بَعدَ تَوَهُّمِ",          audio:"audio/poem-10.mp3"},
-  {poet:"",   read:"القارئ يقرأ الشطر",           card:"وَعِمي صَباحاً دارَ عَبلَةَ وَاسلَمي",            audio:"audio/poem-11.mp3"},
-  {poet:"",   read:"القارئ يقرأ الشطر",        card:"مِنّي وَبيضُ الهِندِ تَقطُرُ مِن دَمي",           audio:"audio/poem-12.mp3"},
-  {poet:"",   read:"القارئ يقرأ الشطر",          card:"صوالج صدغيها بتفاح خدها",          audio:"audio/poem-13.mp3"},
-  {poet:"",   read:"القارئ يقرأ الشطر",               card:"فَنَجهَلَ فَوقَ جَهلِ الجاهِلينا",                audio:"audio/poem-14.mp3"},
+      {poet:"امرؤ القيس",      read:"قِفَا نَبْكِ مِن ذِكرى حَبيبٍ وَمَنزِلِ",       card:"بِسِقطِ اللِّوى بَينَ الدَّخولِ فَحَومَلِ",       audio:"audio/muallaqat/poem-01.mp3"},
+      {poet:"امرؤ القيس",      read:"وَقوفاً بِها صَحبي عَلَيَّ مَطِيَّهُم",          card:"يَقولونَ لا تَهلِك أَسىً وَتَجَمَّلِ",            audio:"audio/muallaqat/poem-02.mp3"},
+      {poet:"امرؤ القيس",      read:"أَلا أَيُّها اللَّيلُ الطَّويلُ أَلا انجَلِ",    card:"بِصُبحٍ وَما الإِصباحُ مِنكَ بِأَمثَلِ",         audio:"audio/muallaqat/poem-03.mp3"},
+      {poet:"امرؤ القيس",      read:"كَأَنَّ قُلوبَ الطَّيرِ رَطباً وَيابِساً",       card:"لَدى وَكرِها العُنّابُ وَالحَشَفُ البالي",        audio:"audio/muallaqat/poem-04.mp3"},
+      {poet:"امرؤ القيس",      read:"مِكَرٍّ مِفَرٍّ مُقبِلٍ مُدبِرٍ مَعاً",         card:"كَجُلمودِ صَخرٍ حَطَّهُ السَّيلُ مِن عَلِ",      audio:"audio/muallaqat/poem-05.mp3"},
+      {poet:"طرفة بن العبد",   read:"لِخَولَةَ أَطلالٌ بِبُرقَةِ ثَهمَدِ",           card:"تَلوحُ كَباقي الوَشمِ في ظاهِرِ اليَدِ",          audio:"audio/muallaqat/poem-06.mp3"},
+      {poet:"طرفة بن العبد",   read:"سَتُبدي لَكَ الأَيّامُ ما كُنتَ جاهِلاً",       card:"وَيَأتيكَ بِالأَخبارِ مَن لَم تُزَوِّدِ",         audio:"audio/muallaqat/poem-07.mp3"},
+      {poet:"طرفة بن العبد",   read:"لَعَمرُكَ إِنَّ المَوتَ ما أَخطَأَ الفَتى",     card:"لَكَالطِّوَلِ المُرخى وَثِنياهُ باليَدِ",         audio:"audio/muallaqat/poem-08.mp3"},
+      {poet:"طرفة بن العبد",   read:"نَحنُ في المَشتاةِ نَدعو الجَفَلى",              card:"لا تَرى الآدِبَ فينا يَنتَقِر",                   audio:"audio/muallaqat/poem-09.mp3"},
+      {poet:"طرفة بن العبد",   read:"إِذا القَومُ قالوا مَن فَتىً خِلتُ أَنَّني",    card:"عُنيتُ فَلَم أَكسَل وَلَم أَتَبَلَّدِ",          audio:"audio/muallaqat/poem-10.mp3"},
+      {poet:"زهير بن أبي سلمى",read:"أَمِن أُمِّ أَوفى دِمنَةٌ لَم تَكَلَّمِ",      card:"بِحَومانَةِ الدَّرّاجِ فَالمُتَثَلَّمِ",          audio:"audio/muallaqat/poem-11.mp3"},
+      {poet:"زهير بن أبي سلمى",read:"سَئِمتُ تَكاليفَ الحَياةِ وَمَن يَعِش",        card:"ثَمانينَ حَولاً لا أَبا لَكَ يَسأَمِ",            audio:"audio/muallaqat/poem-12.mp3"},
+      {poet:"زهير بن أبي سلمى",read:"وَما الحَربُ إِلّا ما عَلِمتُم وَذُقتُمُ",     card:"وَما هُوَ عَنها بِالحَديثِ المُرَجَّمِ",          audio:"audio/muallaqat/poem-13.mp3"},
+      {poet:"زهير بن أبي سلمى",read:"فَتَنتِج لَكُم غِلمانَ أَشأَمَ كُلُّهُم",      card:"كَأَحمَرِ عادٍ ثُمَّ تُرضِعُ فَتَفطِمِ",         audio:"audio/muallaqat/poem-14.mp3"},
+      {poet:"زهير بن أبي سلمى",read:"وَمَن يَجعَلِ المَعروفَ مِن دونِ عِرضِهِ",    card:"يَفِرهُ وَمَن لا يَتَّقِ الشَّتمَ يُشتَمِ",       audio:"audio/muallaqat/poem-15.mp3"},
+      {poet:"لبيد بن ربيعة",   read:"عَفَت الدِّيارُ مَحَلُّها فَمُقامُها",           card:"بِمِنىً تَأَبَّدَ غَولُها فَرِجامُها",             audio:"audio/muallaqat/poem-16.mp3"},
+      {poet:"لبيد بن ربيعة",   read:"وَجَلا السُّيولُ عَنِ الطُّلولِ كَأَنَّها",     card:"زُبُرٌ تَجِدُّ مُتونَها أَقلامُها",               audio:"audio/muallaqat/poem-17.mp3"},
+      {poet:"لبيد بن ربيعة",   read:"أَلا كُلُّ شَيءٍ ما خَلا اللَهَ باطِلُ",       card:"وَكُلُّ نَعيمٍ لا مَحالَةَ زائِلُ",               audio:"audio/muallaqat/poem-18.mp3"},
+      {poet:"لبيد بن ربيعة",   read:"وَما المَرءُ إِلّا كَالشِّهابِ وَضَوئِهِ",     card:"يَحورُ رَماداً بَعدَ إِذ هُوَ ساطِعُ",            audio:"audio/muallaqat/poem-19.mp3"},
+      {poet:"لبيد بن ربيعة",   read:"فَإِن تَسأَلينا فيمَ نَحنُ فَإِنَّنا",          card:"عَصافيرُ مِن هَذا الأَنامِ المُسَرَّحِ",          audio:"audio/muallaqat/poem-20.mp3"},
+      {poet:"عنترة بن شداد",   read:"هَل غادَرَ الشُّعَراءُ مِن مُتَرَدَّمِ",        card:"أَم هَل عَرَفتَ الدارَ بَعدَ تَوَهُّمِ",          audio:"audio/muallaqat/poem-21.mp3"},
+      {poet:"عنترة بن شداد",   read:"يا دارَ عَبلَةَ بِالجِواءِ تَكَلَّمي",           card:"وَعِمي صَباحاً دارَ عَبلَةَ وَاسلَمي",            audio:"audio/muallaqat/poem-22.mp3"},
+      {poet:"عنترة بن شداد",   read:"وَلَقَد شَرِبتُ مِنَ المُدامَةِ بَعدَما",       card:"رَكَدَ الهَواجِرُ بِالمَشوفِ المُعلَمِ",          audio:"audio/muallaqat/poem-23.mp3"},
+      {poet:"عنترة بن شداد",   read:"وَلَقَد ذَكَرتُكِ وَالرِّماحُ نَواهِلٌ",        card:"مِنّي وَبيضُ الهِندِ تَقطُرُ مِن دَمي",           audio:"audio/muallaqat/poem-24.mp3"},
+      {poet:"عنترة بن شداد",   read:"عُلِّقتُها عَرَضاً وَأَقتُلُ قَومَها",          card:"زَعماً لَعَمرُ أَبيكَ لَيسَ بِمَزعَمِ",          audio:"audio/muallaqat/poem-25.mp3"},
+      {poet:"الحارث بن حلزة",  read:"آذَنَتنا بِبَينِها أَسماءُ",                    card:"رُبَّ ثاوٍ يَمَلُّ مِنهُ الثَّواءُ",               audio:"audio/muallaqat/poem-26.mp3"},
+      {poet:"عمرو بن كلثوم",   read:"أَلا هُبّي بِصَحنِكِ فَاصبَحينا",               card:"وَلا تُبقي خُمورَ الأَندَرينا",                   audio:"audio/muallaqat/poem-27.mp3"},
+      {poet:"عمرو بن كلثوم",   read:"أَلا لا يَجهَلَن أَحَدٌ عَلَينا",               card:"فَنَجهَلَ فَوقَ جَهلِ الجاهِلينا",                audio:"audio/muallaqat/poem-28.mp3"},
     ],
   },
 
   /* 2 ── الشعر العباسي */
   {
-    id:'abbasid', name:'الشعر العباسي', nameEn:'',
+    id:'abbasid', name:'الشعر العباسي', nameEn:'Abbasid Poetry',
     desc:'روائع المتنبي وأبي تمام والبحتري وفحول الشعر العباسي',
-    color:'#1a3a6b', icon:'',
-    introAudio:['audio/intro-1.mp3'],
+    color:'#1a3a6b', icon:'📜',
+    introAudio:['audio/abbasid/intro-1.mp3'],
     poems:[
       {poet:"المتنبي", read:"عَلى قَدرِ أَهلِ العَزمِ تَأتي العَزائِمُ",    card:"وَتَأتي عَلى قَدرِ الكِرامِ المَكارِمُ",      audio:"audio/abbasid/poem-01.mp3"},
       {poet:"المتنبي", read:"الخَيلُ وَاللَّيلُ وَالبَيداءُ تَعرِفُني",     card:"وَالسَّيفُ وَالرُّمحُ وَالقِرطاسُ وَالقَلَمُ",audio:"audio/abbasid/poem-02.mp3"},
@@ -95,10 +109,10 @@ const DECKS = [
 
   /* 3 ── الشعر الأندلسي */
   {
-    id:'andalusian', name:'الشعر الأندلسي', nameEn:'',
+    id:'andalusian', name:'الشعر الأندلسي', nameEn:'Andalusian Poetry',
     desc:'جمال الأندلس في أشعار ابن زيدون وابن عربي والمعتمد',
-    color:'#6b1a3a', icon:'',
-    introAudio:['audio/intro-1.mp3'],
+    color:'#6b1a3a', icon:'🌹',
+    introAudio:['audio/andalusian/intro-1.mp3'],
     poems:[
       {poet:"ابن زيدون",          read:"أَضحى التَّنائي بَديلاً مِن تَدانينا",        card:"وَنابَ عَن طيبِ لُقيانا تَجافينا",             audio:"audio/andalusian/poem-01.mp3"},
       {poet:"ابن زيدون",          read:"إِنّي ذَكَرتُكِ بِالزَّهراءِ مُشتاقاً",      card:"وَالأُفقُ طَلقٌ وَمَرأى الأَرضِ قَد راقا",   audio:"audio/andalusian/poem-02.mp3"},
@@ -113,10 +127,10 @@ const DECKS = [
 
   /* 4 ── الشعر الحديث */
   {
-    id:'modern', name:'الشعر الحديث', nameEn:'',
+    id:'modern', name:'الشعر الحديث', nameEn:'Modern Arabic Poetry',
     desc:'شوقي ودرويش وأبو ماضي وحافظ — روائع الشعر العربي الحديث',
-    color:'#1a6b5a', icon:'',
-    introAudio:['audio/intro-1.mp3'],
+    color:'#1a6b5a', icon:'🌊',
+    introAudio:['audio/modern/intro-1.mp3'],
     poems:[
       {poet:"أحمد شوقي",    read:"وُلِدَ الهُدى فَالكائِناتُ ضِياءُ",           card:"وَفَمُ الزَّمانِ تَبَسُّمٌ وَثَناءُ",          audio:"audio/modern/poem-01.mp3"},
       {poet:"أحمد شوقي",    read:"رِيمٌ عَلى القاعِ بَينَ البانِ وَالعَلَمِ",   card:"أَحَلَّ سَفكَ دَمي في الأَشهُرِ الحُرُمِ",   audio:"audio/modern/poem-02.mp3"},
@@ -149,20 +163,20 @@ const LIBRARY_DECKS = [
       {poet:"امرؤ القيس",      read:"قِفَا نَبْكِ مِن ذِكرى حَبيبٍ وَمَنزِلِ",       card:"بِسِقطِ اللِّوى بَينَ الدَّخولِ فَحَومَلِ"},
       {poet:"امرؤ القيس",      read:"أَلا أَيُّها اللَّيلُ الطَّويلُ أَلا انجَلِ",    card:"بِصُبحٍ وَما الإِصباحُ مِنكَ بِأَمثَلِ"},
       {poet:"امرؤ القيس",      read:"أَلا كُلُّ شَيءٍ ما خَلا اللَهَ باطِلُ",        card:"وَكُلُّ نَعيمٍ لا مَحالَةَ زائِلُ"},
+      {poet:"طرفة بن العبد",   read:"لِخَولَةَ أَطلالٌ بِبُرقَةِ ثَهمَدِ",           card:"تَلوحُ كَباقي الوَشمِ في ظاهِرِ اليَدِ"},
       {poet:"طرفة بن العبد",   read:"سَتُبدي لَكَ الأَيّامُ ما كُنتَ جاهِلاً",       card:"وَيَأتيكَ بِالأَخبارِ مَن لَم تُزَوِّدِ"},
       {poet:"طرفة بن العبد",   read:"لَعَمرُكَ إِنَّ المَوتَ ما أَخطَأَ الفَتى",     card:"لَكَالطِّوَلِ المُرخى وَثِنياهُ باليَدِ"},
       {poet:"زهير بن أبي سلمى",read:"سَئِمتُ تَكاليفَ الحَياةِ وَمَن يَعِش",        card:"ثَمانينَ حَولاً لا أَبا لَكَ يَسأَمِ"},
+      {poet:"زهير بن أبي سلمى",read:"وَما الحَربُ إِلّا ما عَلِمتُم وَذُقتُمُ",     card:"وَما هُوَ عَنها بِالحَديثِ المُرَجَّمِ"},
+      {poet:"زهير بن أبي سلمى",read:"وَمَن يَجعَلِ المَعروفَ مِن دونِ عِرضِهِ",    card:"يَفِرهُ وَمَن لا يَتَّقِ الشَّتمَ يُشتَمِ"},
+      {poet:"لبيد بن ربيعة",   read:"عَفَت الدِّيارُ مَحَلُّها فَمُقامُها",           card:"بِمِنىً تَأَبَّدَ غَولُها فَرِجامُها"},
       {poet:"لبيد بن ربيعة",   read:"أَلا كُلُّ شَيءٍ ما خَلا اللَهَ باطِلُ",       card:"وَكُلُّ نَعيمٍ لا مَحالَةَ زائِلُ"},
       {poet:"عنترة بن شداد",   read:"هَل غادَرَ الشُّعَراءُ مِن مُتَرَدَّمِ",        card:"أَم هَل عَرَفتَ الدارَ بَعدَ تَوَهُّمِ"},
       {poet:"عنترة بن شداد",   read:"يا دارَ عَبلَةَ بِالجِواءِ تَكَلَّمي",           card:"وَعِمي صَباحاً دارَ عَبلَةَ وَاسلَمي"},
       {poet:"عنترة بن شداد",   read:"وَلَقَد ذَكَرتُكِ وَالرِّماحُ نَواهِلٌ",        card:"مِنّي وَبيضُ الهِندِ تَقطُرُ مِن دَمي"},
+      {poet:"الحارث بن حلزة",  read:"آذَنَتنا بِبَينِها أَسماءُ",                    card:"رُبَّ ثاوٍ يَمَلُّ مِنهُ الثَّواءُ"},
+      {poet:"عمرو بن كلثوم",   read:"أَلا هُبّي بِصَحنِكِ فَاصبَحينا",               card:"وَلا تُبقي خُمورَ الأَندَرينا"},
       {poet:"عمرو بن كلثوم",   read:"أَلا لا يَجهَلَن أَحَدٌ عَلَينا",               card:"فَنَجهَلَ فَوقَ جَهلِ الجاهِلينا"},
-      {poet:"امرؤ القيس",   read:"مِكَرٍّ مِفَرٍّ مُقبِلٍ مُدبِرٍ مَعاً",               card:"كَجُلمودِ صَخرٍ حَطَّهُ السَّيلُ مِن عَلِ"},
-      {poet:"لبيد بن ربيعة",   read:"وَما المَرءُ إِلّا كَالشِّهابِ وَضَوئِهِ",               card:"يَحورُ رَماداً بَعدَ إِذ هُوَ ساطِعُ"},
-      {poet:"لبيد بن ربيعة",   read:"فَإِن تَسأَلينا فيمَ نَحنُ فَإِنَّنا",               card:"عَصافيرُ مِن هَذا الأَنامِ المُسَرَّحِ"},
-      {poet:"لبيد بن ربيعة",   read:"وَلَقَد ذَكَرتُكِ وَالرِّماحُ نَواهِلٌ",               card:"مِنّي وَبيضُ الهِندِ تَقطُرُ مِن دَمي"},
-      {poet:"الوأواء الدمشقي",   read:"تَعَلَّقَهَا قَلْبِي كَمَا قَدْ تَعَلَّقَتْ",               card:"صَوَالِجُ صُدْغَيْهَا بِتُفَّاحِ خَدِّهَا"},
-
     ],
   },
 
@@ -219,11 +233,51 @@ const LIBRARY_DECKS = [
 
 // Library helpers — use these in the browser, never in game logic
 function getLibraryDeck(id){
-  // Falls back to matching game deck's meta (icon/color/name) but uses library poems
   const lib = LIBRARY_DECKS.find(d=>d.id===id) || LIBRARY_DECKS[0];
-  const meta = getDeck(lib.id); // borrow icon/color/name from game deck
+  const meta = getDeck(lib.id);
   return { ...meta, poems: lib.poems };
 }
+
+/* ── THEMES ──────────────────────────────────────────────────────
+   Add more themes by appending to this array.
+   Each theme overrides CSS custom properties on <body>.
+   id must match a CSS class: body.theme-{id}
+──────────────────────────────────────────────────────────────── */
+const THEMES = [
+  {
+    id:'emerald', name:'الزمرد', nameEn:'Emerald',
+    swatch:['#2d5a27','#8b1a1a','#f7eed8'],
+    desc:'المظهر الكلاسيكي الأخضر',
+  },
+  {
+    id:'lapis', name:'اللازورد', nameEn:'Lapis',
+    swatch:['#1a3564','#c8962a','#eeeae0'],
+    desc:'أزرق ملكي بلمسات ذهبية',
+  },
+  {
+    id:'ruby', name:'العقيق', nameEn:'Ruby',
+    swatch:['#6b1a1a','#c8962a','#faf5e8'],
+    desc:'دفء الأحمر العميق والذهب',
+  },
+  {
+    id:'night', name:'الليل', nameEn:'Night',
+    swatch:['#c8962a','#e8d9a0','#2a2520'],
+    desc:'وضع الليل — ذهب على عتمة',
+  },
+];
+
+/* ── BACKGROUNDS ─────────────────────────────────────────────────
+   5 hardcoded CSS backgrounds for body::before.
+   Add more by appending to this array.
+   id must match a CSS class: body.bg-{id}
+──────────────────────────────────────────────────────────────── */
+const BACKGROUNDS = [
+  { id:'grid',    name:'الشبكة',        nameEn:'Classic Grid',    emoji:'⊞' },
+  { id:'desert',  name:'الصحراء',       nameEn:'Desert Dunes',    emoji:'🏜️' },
+  { id:'night',   name:'السماء الليلية',nameEn:'Starry Night',    emoji:'✨' },
+  { id:'marble',  name:'الرخام',        nameEn:'Marble',          emoji:'🌫️' },
+  { id:'forest',  name:'الغابة',        nameEn:'Dark Forest',     emoji:'🌿' },
+];
 
 
 /* ═══════════════════════════════════════
@@ -410,7 +464,7 @@ async function saveProfile(){
   if(G.pendingPhotoURL!==null)G.myProfile.photoURL=G.pendingPhotoURL;
   G.pendingPhotoURL=null;toast('✓ تم حفظ الملف');updateNavAvatar();goHome();
 }
-function closeModal(){document.getElementById('modal-bg').classList.remove('open');}
+function closeModal(){const mb=document.getElementById('modal-bg');mb.classList.remove('open','modal-wide');}
 
 
 /* ═══════════════════════════════════════
@@ -957,25 +1011,33 @@ function _renderBrowserCards(deckId){
   container.appendChild(grid);
 }
 
-// Opens a modal showing the two game cards (reading + playing) side by side
+// Opens a full-width modal showing both game cards using card.png as the card template.
+// Each poem can have its own cardImg path — falls back to img/card.png.
 function _openPoemDetail(p, deck){
+  const cardImg = p.cardImg || 'img/card.png';
+
+  // Make the modal wide enough for two portrait cards side by side
+  document.getElementById('modal-bg').classList.add('open', 'modal-wide');
   document.getElementById('modal-title').textContent = '— ' + p.poet;
   document.getElementById('modal-body').innerHTML =
-    '<div class="poem-detail-grid">' +
-      // Reading card (yomifuda)
-      '<div class="poem-detail-card poem-detail-read" style="--deck-color:' + deck.color + '">' +
-        '<div class="poem-detail-label">بطاقة القراءة</div>' +
-        '<div class="poem-detail-verse amiri">' + p.read + '</div>' +
-        '<div class="poem-detail-sub">Reading card · تُقرأ بصوت عالٍ</div>' +
+    '<div class="lib-cards-row">' +
+      // Reading card (right — يمين — shown first in RTL)
+      '<div class="lib-card-wrap">' +
+        '<div class="lib-card-type">بطاقة القراءة</div>' +
+        '<div class="lib-card-img" style="background-image:url(\"' + cardImg + '\")">' +
+          '<div class="lib-card-verse amiri">' + p.read + '</div>' +
+          '<div class="lib-card-poet">' + p.poet + '</div>' +
+        '</div>' +
       '</div>' +
-      // Playing card (torifuda)
-      '<div class="poem-detail-card poem-detail-play">' +
-        '<div class="poem-detail-label">بطاقة اللعب</div>' +
-        '<div class="poem-detail-verse amiri">' + p.card + '</div>' +
-        '<div class="poem-detail-sub">Playing card · تُلتقط من الطاولة</div>' +
+      // Playing card (left)
+      '<div class="lib-card-wrap">' +
+        '<div class="lib-card-type">بطاقة اللعب</div>' +
+        '<div class="lib-card-img" style="background-image:url(\"' + cardImg + '\")">' +
+          '<div class="lib-card-verse amiri">' + p.card + '</div>' +
+          '<div class="lib-card-poet">' + p.poet + '</div>' +
+        '</div>' +
       '</div>' +
     '</div>';
-  document.getElementById('modal-bg').classList.add('open');
 }
 
 function onBrowserSearch(){ _renderBrowserCards(_browseDeckId); }
@@ -1068,6 +1130,80 @@ function filterAdminTable(){const q=document.getElementById('admin-search').valu
 
 
 /* ═══════════════════════════════════════
+   §SETTINGS  —  themes, backgrounds, persistence
+═══════════════════════════════════════ */
+
+function showSettings(){
+  _renderThemeOptions();
+  _renderBgOptions();
+  show('settings');
+}
+
+function _renderThemeOptions(){
+  const wrap = document.getElementById('theme-options');
+  if(!wrap) return;
+  wrap.innerHTML = '';
+  const saved = localStorage.getItem('karuta-theme') || 'emerald';
+  THEMES.forEach(t=>{
+    const btn = document.createElement('button');
+    btn.className = 'theme-swatch' + (t.id === saved ? ' selected' : '');
+    btn.title = t.nameEn;
+    btn.innerHTML =
+      '<div class="swatch-colors">' +
+        t.swatch.map(col=>'<span style="background:'+col+'"></span>').join('') +
+      '</div>' +
+      '<div class="swatch-name">' + t.name + '</div>' +
+      '<div class="swatch-desc">' + t.desc + '</div>';
+    btn.addEventListener('click', ()=>{
+      applyTheme(t.id);
+      wrap.querySelectorAll('.theme-swatch').forEach(b=>b.classList.toggle('selected', b===btn));
+      localStorage.setItem('karuta-theme', t.id);
+    });
+    wrap.appendChild(btn);
+  });
+}
+
+function _renderBgOptions(){
+  const wrap = document.getElementById('bg-options');
+  if(!wrap) return;
+  wrap.innerHTML = '';
+  const saved = localStorage.getItem('karuta-bg') || 'grid';
+  BACKGROUNDS.forEach(bg=>{
+    const btn = document.createElement('button');
+    btn.className = 'bg-swatch' + (bg.id === saved ? ' selected' : '');
+    btn.innerHTML =
+      '<div class="bg-preview bg-preview-' + bg.id + '"></div>' +
+      '<div class="swatch-name">' + bg.emoji + ' ' + bg.name + '</div>';
+    btn.addEventListener('click', ()=>{
+      applyBackground(bg.id);
+      wrap.querySelectorAll('.bg-swatch').forEach(b=>b.classList.toggle('selected', b===btn));
+      localStorage.setItem('karuta-bg', bg.id);
+    });
+    wrap.appendChild(btn);
+  });
+}
+
+function applyTheme(id){
+  // Remove all theme classes, add the chosen one
+  document.body.classList.remove(...THEMES.map(t=>'theme-'+t.id));
+  document.body.classList.add('theme-'+id);
+}
+
+function applyBackground(id){
+  // Remove all bg classes, add the chosen one
+  document.body.classList.remove(...BACKGROUNDS.map(b=>'bg-'+b.id));
+  document.body.classList.add('bg-'+id);
+}
+
+function loadSavedPreferences(){
+  const theme = localStorage.getItem('karuta-theme') || 'emerald';
+  const bg    = localStorage.getItem('karuta-bg')    || 'grid';
+  applyTheme(theme);
+  applyBackground(bg);
+}
+
+
+/* ═══════════════════════════════════════
    §MAIN  —  entry point
    loadPartials() fetches html/*.html and
    injects them before wiring any buttons.
@@ -1078,11 +1214,15 @@ function goHome(){
   document.getElementById('join-panel').style.display='none';
   updateNavAvatar();
   document.getElementById('nav-admin').style.display=G.myProfile.isAdmin?'inline':'none';
+  // Settings icon always visible once logged in
   listenForInvites();
   show('home');
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
+
+  // 0. Apply saved theme + background immediately (before Firebase)
+  loadSavedPreferences();
 
   // 1. Init Firebase
   try{
@@ -1124,6 +1264,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('nav-avatar').addEventListener('click',()=>showProfile());
   document.getElementById('nav-logout').addEventListener('click',doLogout);
   document.getElementById('nav-cards-browser').addEventListener('click',showCardsBrowser);
+  document.getElementById('nav-settings').addEventListener('click',showSettings);
 
   // HOME GAME BUTTONS
   document.getElementById('btn-create').addEventListener('click',openCreate);
@@ -1182,6 +1323,9 @@ document.addEventListener('DOMContentLoaded',()=>{
   // RESULT
   document.getElementById('again-btn').addEventListener('click',hostRestart);
   document.getElementById('result-lobby-btn').addEventListener('click',leaveLobby);
+
+  // SETTINGS
+  document.getElementById('settings-back').addEventListener('click',goHome);
 
   // ADMIN
   document.getElementById('admin-back').addEventListener('click',goHome);

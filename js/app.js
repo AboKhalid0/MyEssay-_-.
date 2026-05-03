@@ -73,9 +73,9 @@ const DECKS = [
 
   /* 2 ── الشعر العباسي */
   {
-    id:'abbasid', name:'الشعر العباسي', nameEn:'Abbasid Poetry',
+    id:'abbasid', name:'الشعر العباسي', nameEn:'',
     desc:'روائع المتنبي وأبي تمام والبحتري وفحول الشعر العباسي',
-    color:'#1a3a6b', icon:'📜',
+    color:'#1a3a6b', icon:'',
     introAudio:['audio/abbasid/intro-1.mp3'],
     poems:[
       {poet:"المتنبي", read:"عَلى قَدرِ أَهلِ العَزمِ تَأتي العَزائِمُ",    card:"وَتَأتي عَلى قَدرِ الكِرامِ المَكارِمُ",      audio:"audio/abbasid/poem-01.mp3"},
@@ -95,9 +95,9 @@ const DECKS = [
 
   /* 3 ── الشعر الأندلسي */
   {
-    id:'andalusian', name:'الشعر الأندلسي', nameEn:'Andalusian Poetry',
+    id:'andalusian', name:'الشعر الأندلسي', nameEn:'',
     desc:'جمال الأندلس في أشعار ابن زيدون وابن عربي والمعتمد',
-    color:'#6b1a3a', icon:'🌹',
+    color:'#6b1a3a', icon:'',
     introAudio:['audio/andalusian/intro-1.mp3'],
     poems:[
       {poet:"ابن زيدون",          read:"أَضحى التَّنائي بَديلاً مِن تَدانينا",        card:"وَنابَ عَن طيبِ لُقيانا تَجافينا",             audio:"audio/andalusian/poem-01.mp3"},
@@ -113,9 +113,9 @@ const DECKS = [
 
   /* 4 ── الشعر الحديث */
   {
-    id:'modern', name:'الشعر الحديث', nameEn:'Modern Arabic Poetry',
+    id:'modern', name:'الشعر الحديث', nameEn:'',
     desc:'شوقي ودرويش وأبو ماضي وحافظ — روائع الشعر العربي الحديث',
-    color:'#1a6b5a', icon:'🌊',
+    color:'#1a6b5a', icon:'',
     introAudio:['audio/modern/intro-1.mp3'],
     poems:[
       {poet:"أحمد شوقي",    read:"وُلِدَ الهُدى فَالكائِناتُ ضِياءُ",           card:"وَفَمُ الزَّمانِ تَبَسُّمٌ وَثَناءُ",          audio:"audio/modern/poem-01.mp3"},

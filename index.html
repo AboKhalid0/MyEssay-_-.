@@ -1,420 +1,366 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>الكاروتا العربية</title>
-<meta name="description" content="لعبة الكاروتا العربية"/>
-<meta name="theme-color" content="#1e1205"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎴</text></svg>"/>
-<link rel="stylesheet" href="css/style.css"/>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <title>الكاروتا العربية</title>
+    <meta name="description" content="لعبة الكاروتا العربية"/>
+    <meta name="theme-color" content="#1e1205"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎴</text></svg>"/>
+    <link rel="stylesheet" href="css/style.css"/>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 </head>
 <body>
-<div id="app">
 
-<!-- ══════════════════════════════════════
-     AUTH — login / register
-     Edit js/app.js  §AUTH to change logic
-══════════════════════════════════════ -->
-<div id="screen-auth" class="screen active">
-  <div class="auth-wrap">
-    <div class="auth-hero">
-      <div class="auth-seal">ض</div>
-      <h1 class="auth-title">الكاروتا العربية</h1>
-      <p class="auth-sub" style="direction:ltr;">الكاروتا العربية</p>
-    </div>
-    <div class="tab-bar">
-      <button class="tab-btn active" id="tab-login">تسجيل دخول</button>
-      <button class="tab-btn" id="tab-register">إنشاء حساب</button>
-    </div>
-    <div id="form-login" class="scroll">
-      <div class="field">
-        <label>البريد الإلكتروني</label>
-        <input id="l-email" type="email" placeholder="example@email.com" style="direction:ltr;"/>
-      </div>
-      <div class="field">
-        <label>كلمة المرور</label>
-        <input id="l-pass" type="password" placeholder="••••••••" style="direction:ltr;"/>
-      </div>
-      <div class="err-msg" id="l-err"></div>
-      <button class="btn primary" style="width:100%;margin-top:.5rem;" id="login-btn">دخول ←</button>
-    </div>
-    <div id="form-register" class="scroll" style="display:none;">
-      <div class="field">
-        <label>اسم المستخدم</label>
-        <input id="r-name" type="text" placeholder="اسمك في اللعبة" maxlength="20"/>
-      </div>
-      <div class="field">
-        <label>البريد الإلكتروني</label>
-        <input id="r-email" type="email" placeholder="example@email.com" style="direction:ltr;"/>
-      </div>
-      <div class="field">
-        <label>كلمة المرور (٦ أحرف على الأقل)</label>
-        <input id="r-pass" type="password" placeholder="••••••••" style="direction:ltr;"/>
-      </div>
-      <div class="err-msg" id="r-err"></div>
-      <button class="btn primary" style="width:100%;margin-top:.5rem;" id="register-btn">إنشاء الحساب ←</button>
-    </div>
-  </div>
-</div>
+<div id="app" class="diwan-app-container">
 
-<!-- ══════════════════════════════════════
-     HOME
-     Edit js/app.js  §HOME / §LOBBY
-══════════════════════════════════════ -->
-<div id="screen-home" class="screen">
-  <div class="topbar">
-    <span class="topbar-brand" id="home-brand">الكاروتا العربية</span>
-    <div class="topbar-right">
-      <span class="nav-link" id="nav-cards-browser">المكتبة 📖</span>
-      <span class="nav-link" id="nav-friends">الأصدقاء 👥</span>
-      <span class="nav-link" id="nav-profile">الملف الشخصي 📜</span>
-      <span class="nav-link" id="nav-settings">🎨 المظهر</span>
-      <span class="nav-link" id="nav-admin" style="display:none;color:var(--red);">الإدارة ⚙️</span>
-      <div class="avatar-sm" id="nav-avatar">🦁</div>
-      <span class="nav-link" id="nav-logout">خروج</span>
-    </div>
-  </div>
-  <div class="home-hero">
-    <div class="hero-frame">
-      <div class="corner tl"></div><div class="corner tr"></div>
-      <div class="corner bl"></div><div class="corner br"></div>
-      <div class="hero-seal">ض</div>
-      <h1 class="hero-title">الكاروتا العربية</h1>
-      <p class="hero-sub">الكاروتا العربية</p>
-    </div>
-    <div class="btn-group">
-      <button class="btn danger"   id="btn-create">إنشاء غرفة</button>
-      <button class="btn primary"  id="btn-join-toggle">إنضمام</button>
-      <button class="btn blue-btn" id="btn-matchmake">🎲 مباراة عشوائية</button>
-     <button class="btn"          id="btn-solo">بشيله</button>
-    </div>
-  </div>
-  <div id="join-panel" style="display:none;margin-bottom:1rem;">
-    <div class="scroll">
-      <label>رمز الغرفة</label>
-      <div class="share-row">
-        <input id="join-code" type="text" placeholder="ABCD" maxlength="4"
-               style="text-transform:uppercase;letter-spacing:8px;font-size:20px;text-align:center;" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"/>
-        <button class="btn primary" id="btn-do-join">دخول ←</button>
-      </div>
-    </div>
-  </div>
-  <div id="invites-panel" style="display:none;margin-bottom:1rem;">
-    <div class="scroll" style="border-color:var(--gold);">
-      <div class="section-title" style="color:var(--gold);">📩 دعوات للعب</div>
-      <div id="invites-list"></div>
-    </div>
-  </div>
-  <div class="info-box">
-    <strong>طريقة اللعب:</strong> تُقرأ المقدمة في البداية ثم تبدأ اللعبة, يقرأ القارئ الشطر الأول ثم يتسابق اللاعبون على من يستطيع معرفة الشطر الثاني من القصيدة أولًا ومن يجمع أكبر عدد من البطاقات يفوز<br><br>
-    <strong>الأوراق:</strong> المعلقات · الشعر العباسي · الشعر الأندلسي · الشعر الحديث
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════
-     DECK SELECT — pick deck + card count
-     Edit js/app.js  §DECK SELECT
-══════════════════════════════════════ -->
-<div id="screen-deck-select" class="screen">
-  <div class="topbar">
-    <span class="topbar-brand" id="deck-select-back">← رجوع</span>
-    <div class="topbar-right" style="font-size:13px;color:var(--ink-dim);">اختر المجموعة</div>
-  </div>
-  <div class="scroll">
-    <div class="section-title">مجموعة الشعر</div>
-    <p style="font-size:13px;color:var(--ink-dim);margin-bottom:1rem;">اختر ديواناً شعرياً. سيستخدم جميع اللاعبين نفس المجموعة.</p>
-    <div id="deck-options"></div>
-  </div>
-  <div class="scroll">
-    <div class="section-title">عدد البطاقات</div>
-    <div id="count-options"></div>
-  </div>
-  <div class="btn-row" style="margin-top:.5rem;">
-    <button class="btn primary" id="deck-confirm-btn">التالي ← ابدأ</button>
-    <button class="btn"         id="deck-cancel-btn">إلغاء</button>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════
-     CARDS BROWSER — view all poem pairs
-     Edit js/app.js  §CARDS BROWSER
-══════════════════════════════════════ -->
-<div id="screen-cards-browser" class="screen">
-  <div class="topbar">
-    <span class="topbar-brand" id="browser-back">← الكاروتا</span>
-    <div class="topbar-right" style="font-size:13px;color:var(--ink-dim);">📖 مكتبة البطاقات</div>
-  </div>
-  <div class="scroll">
-    <div class="browser-tabs-wrap" id="browser-tabs"></div>
-    <div class="browser-search-wrap">
-      <input id="browser-search" type="text" placeholder="ابحث عن شاعر أو بيت شعري…"/>
-      <span class="browser-search-icon">🔍</span>
-    </div>
-  </div>
-  <div id="browser-cards"></div>
-</div>
-
-<!-- ══════════════════════════════════════
-     PROFILE — view & edit own profile
-     Edit js/app.js  §PROFILE
-══════════════════════════════════════ -->
-<div id="screen-profile" class="screen">
-  <div class="topbar">
-    <span class="topbar-brand" id="profile-back">← الكاروتا</span>
-    <div class="topbar-right">
-      <span class="nav-link" id="profile-logout">خروج</span>
-    </div>
-  </div>
-  <div class="scroll">
-    <div class="profile-header">
-      <div class="avatar-lg" id="p-avatar">🦁</div>
-      <div class="profile-info">
-        <h2 id="p-name">—</h2>
-        <p id="p-email" style="direction:ltr;font-size:12px;color:var(--ink-dim);"></p>
-        <p id="p-bio" style="font-size:13px;color:var(--ink-dim);margin-top:.25rem;"></p>
-      </div>
-    </div>
-    <div class="stats-row">
-      <div class="stat-box"><div class="stat-num" id="st-games">0</div><div class="stat-lbl">مباريات</div></div>
-      <div class="stat-box"><div class="stat-num" id="st-wins">0</div><div class="stat-lbl">انتصارات</div></div>
-      <div class="stat-box"><div class="stat-num" id="st-cards">0</div><div class="stat-lbl">بطاقات</div></div>
-    </div>
-  </div>
-  <div class="scroll">
-    <div class="section-title">تعديل الملف الشخصي</div>
-    <div class="field">
-      <label>اسم المستخدم</label>
-      <input id="edit-name" type="text" maxlength="20"/>
-    </div>
-    <div class="field">
-      <label>نبذة قصيرة</label>
-      <textarea id="edit-bio" maxlength="100" placeholder="اكتب نبذة عنك…"></textarea>
-    </div>
-    <div class="field">
-      <label>صورة الملف الشخصي (تُضغط تلقائياً إلى 120×120)</label>
-      <div style="display:flex;align-items:center;gap:14px;margin:.5rem 0;">
-        <div class="avatar-lg" id="p-photo-preview" style="width:64px;height:64px;font-size:32px;">🦁</div>
-        <div>
-          <label class="btn sm" for="photo-input" style="display:inline-block;cursor:pointer;">📷 اختر صورة</label>
-          <input type="file" id="photo-input" accept="image/*" style="display:none;"/>
-          <div style="font-size:11px;color:var(--ink-dim);margin-top:4px;">JPG · PNG · WebP</div>
-          <button class="btn sm danger" id="remove-photo-btn" style="margin-top:6px;display:none;">حذف الصورة</button>
+    <aside class="sidebar-dock">
+        <div class="avatar-sm" id="nav-avatar">🦁</div>
+        
+        <div class="sidebar-menu">
+            <span class="sidebar-link active" id="home-brand" title="الرئيسية">🏠</span>
+            <span class="sidebar-link" id="nav-cards-browser" title="المكتبة">📖</span>
+            <span class="sidebar-link" id="nav-friends" title="الأصدقاء">👥</span>
+            <span class="sidebar-link" id="nav-profile" title="الملف الشخصي">📜</span>
+            <span class="sidebar-link" id="nav-settings" title="المظهر وتخصيص الألوان">🎨</span>
+            <span class="sidebar-link" id="nav-admin" style="display:none;" title="الإدارة">⚙️</span>
         </div>
-      </div>
-    </div>
-    <div class="field">
-      <label>أو اختر رمزاً تعبيرياً (يُستخدم إن لم تكن هناك صورة)</label>
-      <div class="avatar-grid" id="avatar-grid"></div>
-    </div>
-    <button class="btn primary" id="save-profile-btn">حفظ التغييرات ✓</button>
-  </div>
+
+        <span class="sidebar-link logout-btn" id="nav-logout" title="خروج">🚪</span>
+    </aside>
+
+    <main class="main-workspace">
+
+        <div id="screen-auth" class="screen active">
+          <div class="auth-wrap">
+            <div class="auth-hero">
+              <div class="auth-seal">ض</div>
+              <h1 class="auth-title">الكاروتا العربية</h1>
+              <p class="auth-sub" style="direction:ltr;">AL-KARUTA AL-ARABIYA</p>
+            </div>
+            <div class="tab-bar">
+              <button class="tab-btn active" id="tab-login">تسجيل دخول</button>
+              <button class="tab-btn" id="tab-register">إنشاء حساب</button>
+            </div>
+            <div id="form-login" class="scroll">
+              <div class="field">
+                <label>البريد الإلكتروني</label>
+                <input id="l-email" type="email" placeholder="example@email.com" style="direction:ltr;"/>
+              </div>
+              <div class="field">
+                <label>كلمة المرور</label>
+                <input id="l-pass" type="password" placeholder="••••••••" style="direction:ltr;"/>
+              </div>
+              <div class="err-msg" id="l-err"></div>
+              <button class="btn primary" style="width:100%;margin-top:.5rem;" id="login-btn">دخول ←</button>
+            </div>
+            <div id="form-register" class="scroll" style="display:none;">
+              <div class="field">
+                <label>اسم المستخدم</label>
+                <input id="r-name" type="text" placeholder="اسمك في اللعبة" maxlength="20"/>
+              </div>
+              <div class="field">
+                <label>البريد الإلكتروني</label>
+                <input id="r-email" type="email" placeholder="example@email.com" style="direction:ltr;"/>
+              </div>
+              <div class="field">
+                <label>كلمة المرور (٦ أحرف على الأقل)</label>
+                <input id="r-pass" type="password" placeholder="••••••••" style="direction:ltr;"/>
+              </div>
+              <div class="err-msg" id="r-err"></div>
+              <button class="btn primary" style="width:100%;margin-top:.5rem;" id="register-btn">إنشاء الحساب ←</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="screen-home" class="screen">
+          <div class="topbar">
+            <span class="topbar-section-title">لوحة التحكم الرئيسية</span>
+            <div class="window-controls-decor"><span></span><span></span><span></span></div>
+          </div>
+          <div class="home-hero">
+            <div class="hero-frame">
+              <div class="corner tl"></div><div class="corner tr"></div>
+              <div class="corner bl"></div><div class="corner br"></div>
+              <div class="hero-seal">ض</div>
+              <h1 class="hero-title">الكاروتا العربية</h1>
+              <p class="hero-sub">AL-KARUTA AL-ARABIYA</p>
+            </div>
+            <div class="btn-group">
+              <button class="btn danger"   id="btn-create">إنشاء غرفة</button>
+              <button class="btn primary"  id="btn-join-toggle">إنضمام</button>
+              <button class="btn blue-btn" id="btn-matchmake">🎲 مباراة عشوائية</button>
+              <button class="btn"          id="btn-solo">بشيله</button>
+            </div>
+          </div>
+          <div id="join-panel" style="display:none;margin-bottom:1rem;">
+            <div class="scroll">
+              <label>رمز الغرفة</label>
+              <div class="share-row">
+                <input id="join-code" type="text" placeholder="ABCD" maxlength="4"
+                       style="text-transform:uppercase;letter-spacing:8px;font-size:20px;text-align:center;" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"/>
+                <button class="btn primary" id="btn-do-join">دخول ←</button>
+              </div>
+            </div>
+          </div>
+          <div id="invites-panel" style="display:none;margin-bottom:1rem;">
+            <div class="scroll" style="border-color:var(--cyber-primary);">
+              <div class="section-title" style="color:var(--cyber-primary);">📩 دعوات للعب</div>
+              <div id="invites-list"></div>
+            </div>
+          </div>
+          <div class="info-box">
+            <strong>طريقة اللعب:</strong> تُقرأ المقدمة في البداية ثم تبدأ اللعبة، يقرأ القارئ الشطر الأول ثم يتسابق اللاعبون على من يستطيع معرفة الشطر الثاني من القصيدة أولًا ومن يجمع أكبر عدد من البطاقات يفوز<br><br>
+            <strong>الأوراق:</strong> المعلقات · الشعر العباسي · الشعر الأندلسي · الشعر الحديث
+          </div>
+        </div>
+
+        <div id="screen-deck-select" class="screen">
+          <div class="topbar">
+            <span class="topbar-brand" id="deck-select-back">← رجوع القائمة</span>
+            <div class="window-controls-decor"><span></span><span></span><span></span></div>
+          </div>
+          <div class="scroll">
+            <div class="section-title">مجموعة الشعر</div>
+            <p style="font-size:13px;opacity:0.7;margin-bottom:1rem;">اختر ديواناً شعرياً. سيستخدم جميع اللاعبين نفس المجموعة.</p>
+            <div id="deck-options"></div>
+          </div>
+          <div class="scroll">
+            <div class="section-title">عدد البطاقات</div>
+            <div id="count-options"></div>
+          </div>
+          <div class="btn-row" style="margin-top:.5rem;">
+            <button class="btn primary" id="deck-confirm-btn">التالي ← ابدأ</button>
+            <button class="btn"          id="deck-cancel-btn">إلغاء</button>
+          </div>
+        </div>
+
+        <div id="screen-cards-browser" class="screen">
+          <div class="topbar">
+            <span class="topbar-brand" id="browser-back">← العودة للميدان</span>
+            <span class="topbar-section-title">📖 مكتبة القصائد والبطاقات</span>
+          </div>
+          <div class="scroll">
+            <div class="browser-tabs-wrap" id="browser-tabs"></div>
+            <div class="browser-search-wrap">
+              <input id="browser-search" type="text" placeholder="ابحث عن شاعر أو بيت شعري…"/>
+              <span class="browser-search-icon">🔍</span>
+            </div>
+          </div>
+          <div id="browser-cards"></div>
+        </div>
+
+        <div id="screen-profile" class="screen">
+          <div class="topbar">
+            <span class="topbar-brand" id="profile-back">← العودة للميدان</span>
+            <span class="nav-link" id="profile-logout" style="color:var(--cyber-secondary);">خروج الحساب</span>
+          </div>
+          <div class="scroll">
+            <div class="profile-header">
+              <div class="avatar-lg" id="p-avatar">🦁</div>
+              <div class="profile-info">
+                <h2 id="p-name">—</h2>
+                <p id="p-email" style="direction:ltr;font-size:12px;opacity:0.6;text-align:right;"></p>
+                <p id="p-bio" style="font-size:13px;opacity:0.8;margin-top:.25rem;"></p>
+              </div>
+            </div>
+            <div class="stats-row">
+              <div class="stat-box"><div class="stat-num" id="st-games">0</div><div class="stat-lbl">مباريات</div></div>
+              <div class="stat-box"><div class="stat-num" id="st-wins">0</div><div class="stat-lbl">انتصارات</div></div>
+              <div class="stat-box"><div class="stat-num" id="st-cards">0</div><div class="stat-lbl">بطاقات</div></div>
+            </div>
+          </div>
+          <div class="scroll">
+            <div class="section-title">تعديل الملف الشخصي</div>
+            <div class="field">
+              <label>اسم المستخدم</label>
+              <input id="edit-name" type="text" maxlength="20"/>
+            </div>
+            <div class="field">
+              <label>نبذة قصيرة</label>
+              <textarea id="edit-bio" maxlength="100" placeholder="اكتب نبذة عنك…"></textarea>
+            </div>
+            <div class="field">
+              <label>صورة الملف الشخصي</label>
+              <div style="display:flex;align-items:center;gap:14px;margin:.5rem 0;">
+                <div class="avatar-lg" id="p-photo-preview" style="width:64px;height:64px;font-size:32px;">🦁</div>
+                <div>
+                  <label class="btn sm" for="photo-input" style="display:inline-block;cursor:pointer;">📷 اختر صورة</label>
+                  <input type="file" id="photo-input" accept="image/*" style="display:none;"/>
+                  <div style="font-size:11px;opacity:0.6;margin-top:4px;">JPG · PNG · WebP</div>
+                  <button class="btn sm danger" id="remove-photo-btn" style="margin-top:6px;display:none;">حذف الصورة</button>
+                </div>
+              </div>
+            </div>
+            <div class="field">
+              <label>أو اختر رمزاً تعبيرياً</label>
+              <div class="avatar-grid" id="avatar-grid"></div>
+            </div>
+            <button class="btn primary" id="save-profile-btn">حفظ التغييرات ✓</button>
+          </div>
+        </div>
+
+        <div id="screen-friends" class="screen">
+          <div class="topbar">
+            <span class="topbar-brand" id="friends-back">← العودة للميدان</span>
+            <span class="topbar-section-title">👥 قائمة رفقاء السلاح</span>
+          </div>
+          <div class="scroll">
+            <div class="section-title">البحث عن لاعب</div>
+            <div class="search-box">
+              <input id="friend-search" type="text" placeholder="اكتب اسم المستخدم…" maxlength="20"/>
+              <span class="search-icon">🔍</span>
+            </div>
+            <button class="btn primary sm" id="search-btn">بحث</button>
+            <div id="search-result" style="margin-top:1rem;"></div>
+          </div>
+          <div class="scroll">
+            <div class="section-title">طلبات الصداقة المعلقة</div>
+            <div id="pending-list"><div class="empty-state">لا توجد طلبات معلقة</div></div>
+          </div>
+          <div class="scroll">
+            <div class="section-title">أصدقائي</div>
+            <div id="friends-list"><div class="empty-state">لا يوجد أصدقاء بعد — ابحث وأضف!</div></div>
+          </div>
+        </div>
+
+        <div id="screen-matchmaking" class="screen">
+          <div class="topbar"><span class="topbar-brand" id="mm-back">← إلغاء الميدان</span></div>
+          <div class="scroll">
+            <div class="mm-wrap">
+              <div class="section-title">🎲 مباراة عشوائية</div>
+              <div class="mm-spinner"></div>
+              <div class="mm-count" id="mm-count">—</div>
+              <div class="mm-status" id="mm-status">جاري البحث عن لاعبين…</div>
+              <div class="btn-group">
+                <button class="btn danger" id="btn-cancel-mm">إلغاء البحث</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="screen-lobby" class="screen">
+          <div class="topbar"><span class="topbar-brand" id="lobby-back">← مغادرة الحجرة</span></div>
+          <div class="scroll">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;">
+              <strong>رمز الغرفة — Room Code</strong>
+              <button class="btn sm" id="copy-invite-btn">📋 نسخ الرابط</button>
+            </div>
+            <div class="room-code-box" id="room-code-show">----</div>
+            <div id="lobby-deck-info" class="lobby-deck-badge">المختارات</div>
+            <p style="font-size:11px;opacity:0.6;text-align:center;direction:ltr;">يسمح بوجود لاعبين فقط</p>
+          </div>
+          <div class="scroll">
+            <strong style="font-size:14px;">اللاعبون الحاليون</strong>
+            <div class="player-list" id="player-list"></div>
+            <div id="wait-msg" class="wait-msg" style="display:none;">في انتظار الاعبين<span>.</span><span>.</span><span>.</span></div>
+          </div>
+          <div class="btn-row">
+            <button class="btn danger" id="start-btn">▶ ابدأ اللعبة</button>
+            <button class="btn"        id="leave-lobby-btn">← رجوع</button>
+          </div>
+          <p id="host-hint" style="font-size:12px;opacity:0.6;margin-top:.75rem;direction:ltr;"></p>
+        </div>
+
+        <div id="screen-intro" class="screen">
+          <div class="intro-box">
+            <div class="intro-num" id="intro-num"></div>
+            <div class="intro-label" id="intro-lbl">المختارات<br><small>استمع إلى القصيدة الافتتاحية…</small></div>
+            <div class="wave" id="wave">
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <div class="intro-status" id="intro-status">جاري التحميل…</div>
+            <div class="countdown" id="countdown"></div>
+            <button class="tap-play-btn" id="tap-play-btn">▶ اضغط للاستماع</button>
+            <button class="btn sm" id="skip-intro-btn" style="margin-top:1.5rem;">تخطى ←</button>
+          </div>
+        </div>
+
+        <div id="screen-game" class="screen">
+          <div class="game-header">
+            <div class="scores" id="scores"></div>
+            <div class="round-tag" id="round-tag">بيت ١ / ٢٨</div>
+          </div>
+          <div class="yomifuda">
+            <div class="yomi-left"><span class="yomi-lbl">READING CARD</span></div>
+            <div class="yomi-right">
+              <div class="reading-now" id="reading-now"><div class="rdot"></div><span>الشطر يُقرأ الآن…</span></div>
+              <div class="yomi-verse" id="reader-verse">…</div>
+              <div class="yomi-poet"  id="reader-poet"></div>
+            </div>
+          </div>
+          <div class="cards-grid-target" id="cards-grid"></div>
+          <div class="btn-row" style="margin-top:1rem;">
+            <button class="btn primary" id="skip-btn" style="display:none;">التالي ←</button>
+            <button class="btn" id="leave-game-btn">مغادرة اللعبة</button>
+          </div>
+        </div>
+
+        <div id="screen-result" class="screen">
+          <div class="result-scroll">
+            <div class="result-title">🏆 اللعبة انتهت!</div>
+            <div class="result-sub" id="result-sub"></div>
+            <div class="podium" id="podium"></div>
+          </div>
+          <div class="btn-group">
+            <button class="btn danger" id="again-btn">العب مجدداً</button>
+            <button class="btn" id="result-lobby-btn">← القائمة الرئيسية</button>
+          </div>
+        </div>
+
+        <div id="screen-admin" class="screen">
+          <div class="topbar">
+            <span class="topbar-brand" id="admin-back">← الكاروتا</span>
+            <div class="admin-badge">ADMIN PANEL</div>
+          </div>
+          <div class="scroll">
+            <div class="section-title">إدارة المستخدمين</div>
+            <div class="search-box">
+              <input id="admin-search" type="text" placeholder="بحث بالاسم أو البريد الإلكتروني…"/>
+              <span class="search-icon">🔍</span>
+            </div>
+            <div style="overflow-x:auto;">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>المستخدم</th><th>البريد</th><th>مباريات</th>
+                    <th>بطاقات</th><th>الحالة</th><th>إجراء</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="scroll">
+            <div class="section-title">الغرف النشطة</div>
+            <div id="admin-rooms"><div class="empty-state">لا توجد غرف نشطة</div></div>
+          </div>
+        </div>
+
+        <div id="screen-settings" class="screen">
+          <div class="topbar">
+            <span class="topbar-brand" id="settings-back">← الكاروتا</span>
+            <span class="topbar-section-title">🎨 تخصيص نظام المظهر والألوان</span>
+          </div>
+          <div class="scroll">
+            <div class="section-title">لوحة الألوان التناظرية</div>
+            <p style="font-size:13px;opacity:0.7;margin-bottom:1rem;">اختر نظام ألوان يناسب ذوقك السياسي والريترو. يُحفظ اختيارك تلقائياً.</p>
+            <div id="theme-options" class="settings-grid"></div>
+          </div>
+          <div class="scroll">
+            <div class="section-title">خلفية الموقع المدمجة</div>
+            <p style="font-size:13px;opacity:0.7;margin-bottom:1rem;">اختر شبكة خلفية مختلفة للموقع لتعمل بالتوافق مع النيون.</p>
+            <div id="bg-options" class="settings-grid"></div>
+          </div>
+        </div>
+
+    </main>
 </div>
 
-<!-- ══════════════════════════════════════
-     FRIENDS — list, search, requests
-     Edit js/app.js  §FRIENDS
-══════════════════════════════════════ -->
-<div id="screen-friends" class="screen">
-  <div class="topbar">
-    <span class="topbar-brand" id="friends-back">← الكاروتا</span>
-    <div class="topbar-right" style="font-size:13px;color:var(--ink-dim);">الأصدقاء</div>
-  </div>
-  <div class="scroll">
-    <div class="section-title">البحث عن لاعب</div>
-    <div class="search-box">
-      <input id="friend-search" type="text" placeholder="اكتب اسم المستخدم…" maxlength="20"/>
-      <span class="search-icon">🔍</span>
-    </div>
-    <button class="btn primary sm" id="search-btn">بحث</button>
-    <div id="search-result" style="margin-top:1rem;"></div>
-  </div>
-  <div class="scroll">
-    <div class="section-title">طلبات الصداقة المعلقة</div>
-    <div id="pending-list"><div class="empty-state">لا توجد طلبات معلقة</div></div>
-  </div>
-  <div class="scroll">
-    <div class="section-title">أصدقائي</div>
-    <div id="friends-list"><div class="empty-state">لا يوجد أصدقاء بعد — ابحث وأضف!</div></div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════
-     MATCHMAKING — random opponent queue
-     Edit js/app.js  §MATCHMAKING
-══════════════════════════════════════ -->
-<div id="screen-matchmaking" class="screen">
-  <div class="topbar"><span class="topbar-brand" id="mm-back">← الكاروتا</span></div>
-  <div class="scroll">
-    <div class="mm-wrap">
-      <div class="section-title">🎲 مباراة عشوائية</div>
-      <div class="mm-spinner"></div>
-      <div class="mm-count" id="mm-count">—</div>
-      <div class="mm-status" id="mm-status">جاري البحث عن لاعبين…</div>
-      <div class="btn-group">
-        <button class="btn danger" id="btn-cancel-mm">إلغاء البحث</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════
-     LOBBY — room code, player list
-     Edit js/app.js  §LOBBY
-══════════════════════════════════════ -->
-<div id="screen-lobby" class="screen">
-  <div class="topbar"><span class="topbar-brand" id="lobby-back">← الكاروتا</span></div>
-  <div class="scroll">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;">
-      <strong>رمز الغرفة — Room Code</strong>
-      <button class="btn sm" id="copy-invite-btn">📋 نسخ الرابط</button>
-    </div>
-    <div class="room-code-box" id="room-code-show">----</div>
-    <div id="lobby-deck-info" class="lobby-deck-badge">المختارات</div>
-    <p style="font-size:11px;color:var(--ink-dim);text-align:center;direction:ltr;">يسمح بوجود لاعبين فقط</p>
-  </div>
-  <div class="scroll">
-    <strong style="font-size:14px;">اللاعبون</strong>
-    <div class="player-list" id="player-list"></div>
-    <div id="wait-msg" class="wait-msg" style="display:none;">في انتظار الاعبين<span>.</span><span>.</span><span>.</span></div>
-  </div>
-  <div class="btn-row">
-    <button class="btn danger" id="start-btn">▶ ابدأ اللعبة</button>
-    <button class="btn"        id="leave-lobby-btn">← رجوع</button>
-  </div>
-  <p id="host-hint" style="font-size:12px;color:var(--ink-dim);margin-top:.75rem;direction:ltr;"></p>
-</div>
-
-<!-- ══════════════════════════════════════
-     INTRO — opening poem before game
-     Edit js/app.js  §GAME → renderIntroScreen()
-══════════════════════════════════════ -->
-<div id="screen-intro" class="screen">
-  <div class="intro-box">
-    <div class="intro-num" id="intro-num"></div>
-    <div class="intro-label" id="intro-lbl">المختارات<br><small>استمع إلى القصيدة الافتتاحية…</small></div>
-    <div class="wave" id="wave">
-      <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-    </div>
-    <div class="intro-status" id="intro-status">جاري التحميل…</div>
-    <div class="countdown" id="countdown"></div>
-    <button class="tap-play-btn" id="tap-play-btn">▶ اضغط للاستماع</button>
-    <button class="btn sm" id="skip-intro-btn" style="margin-top:1.5rem;">تخطى ←</button>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════
-     GAME — reading card + playing cards grid
-     Edit js/app.js  §GAME → renderGame()
-══════════════════════════════════════ -->
-<div id="screen-game" class="screen">
-  <div class="game-header">
-    <div class="scores" id="scores"></div>
-    <div class="round-tag" id="round-tag">بيت ١ / ٢٨</div>
-  </div>
-  <div class="yomifuda">
-    <div class="yomi-left"><span class="yomi-lbl">READING CARD · بطاقة القراءة</span></div>
-    <div class="yomi-right">
-      <div class="reading-now" id="reading-now"><div class="rdot"></div><span>الشطر يُقرأ…</span></div>
-      <div class="yomi-verse" id="reader-verse">…</div>
-      <div class="yomi-poet"  id="reader-poet"></div>
-    </div>
-  </div>
-  <div class="cards-grid-target" id="cards-grid"></div>
-  <div class="btn-row" style="margin-top:1rem;">
-    <button class="btn primary" id="skip-btn" style="display:none;">التالي ←</button>
-    <button class="btn" id="leave-game-btn">مغادرة اللعبة</button>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════
-     RESULT — podium + stats
-     Edit js/app.js  §GAME → renderResult()
-══════════════════════════════════════ -->
-<div id="screen-result" class="screen">
-  <div class="result-scroll">
-    <div class="result-title">🏆 اللعبة انتهت!</div>
-    <div class="result-sub" id="result-sub"></div>
-    <div class="podium" id="podium"></div>
-  </div>
-  <div class="btn-group">
-    <button class="btn danger" id="again-btn">العب مجدداً</button>
-    <button class="btn" id="result-lobby-btn">← القائمة الرئيسية</button>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════
-     ADMIN — user management, active rooms
-     Edit js/app.js  §ADMIN
-══════════════════════════════════════ -->
-<div id="screen-admin" class="screen">
-  <div class="topbar">
-    <span class="topbar-brand" id="admin-back">← الكاروتا</span>
-    <div class="admin-badge">ADMIN PANEL</div>
-  </div>
-  <div class="scroll">
-    <div class="section-title">إدارة المستخدمين</div>
-    <div class="search-box">
-      <input id="admin-search" type="text" placeholder="بحث بالاسم أو البريد الإلكتروني…"/>
-      <span class="search-icon">🔍</span>
-    </div>
-    <div style="overflow-x:auto;">
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>المستخدم</th><th>البريد</th><th>مباريات</th>
-            <th>بطاقات</th><th>الحالة</th><th>إجراء</th>
-          </tr>
-        </thead>
-        <tbody id="admin-tbody"></tbody>
-      </table>
-    </div>
-  </div>
-  <div class="scroll">
-    <div class="section-title">الغرف النشطة</div>
-    <div id="admin-rooms"><div class="empty-state">لا توجد غرف نشطة</div></div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════
-     SETTINGS — themes + backgrounds
-     Edit js/app.js  §SETTINGS
-══════════════════════════════════════ -->
-<div id="screen-settings" class="screen">
-  <div class="topbar">
-    <span class="topbar-brand" id="settings-back">← الكاروتا</span>
-    <div class="topbar-right" style="font-size:13px;color:var(--ink-dim);">🎨 تخصيص المظهر</div>
-  </div>
-
-  <!-- Color themes -->
-  <div class="scroll">
-    <div class="section-title">لوحة الألوان</div>
-    <p style="font-size:13px;color:var(--ink-dim);margin-bottom:1rem;">
-      اختر نظام ألوان يناسب ذوقك. يُحفظ اختيارك تلقائياً.
-    </p>
-    <!-- Filled by _renderThemeOptions() -->
-    <div id="theme-options" class="settings-grid"></div>
-  </div>
-
-  <!-- Background styles -->
-  <div class="scroll">
-    <div class="section-title">خلفية الموقع</div>
-    <p style="font-size:13px;color:var(--ink-dim);margin-bottom:1rem;">
-      اختر خلفية مختلفة للموقع. يُحفظ اختيارك تلقائياً.
-    </p>
-    <!-- Filled by _renderBgOptions() -->
-    <div id="bg-options" class="settings-grid"></div>
-  </div>
-</div>
-
-</div><!-- #app -->
-
-<!-- Shared UI — outside screen system -->
 <div class="toast" id="toast"></div>
 <div class="modal-bg" id="modal-bg">
   <div class="modal">
@@ -424,27 +370,6 @@
   </div>
 </div>
 
-<!--
-  ════════════════════════════════════════
-  To edit logic:  js/app.js
-  To edit styles: css/style.css
-  To add a deck:  js/app.js  §CONFIG → DECKS[]
-
-  Firebase Database Rules (paste into Firebase Console):
-  {
-    "rules": {
-      "users":{
-        "$uid":{
-          ".read":"auth != null",
-          ".write":"auth != null && (auth.uid==$uid || root.child('users').child(auth.uid).child('isAdmin').val()==true)"
-        }
-      },
-      "rooms":      {".read":"auth != null",".write":"auth != null"},
-      "matchmaking":{".read":"auth != null","$uid":{".write":"auth != null && auth.uid==$uid"}}
-    }
-  }
-  ════════════════════════════════════════
--->
 <script src="js/app.js"></script>
 </body>
 </html>

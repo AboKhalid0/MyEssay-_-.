@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
     <title>الكاروتا العربية</title>
     <meta name="description" content="لعبة الكاروتا العربية"/>
-    <meta name="theme-color" content="#1e1205"/>
+    <meta name="theme-color" content="#4a665a"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎴</text></svg>"/>
@@ -16,358 +16,330 @@
 </head>
 <body>
 
-<div id="app" class="diwan-app-container">
+<div id="app">
 
-    <aside class="sidebar-dock">
-        <div class="avatar-sm" id="nav-avatar">🦁</div>
-        
-        <div class="sidebar-menu">
-            <span class="sidebar-link active" id="home-brand" title="الرئيسية">🏠</span>
-            <span class="sidebar-link" id="nav-cards-browser" title="المكتبة">📖</span>
-            <span class="sidebar-link" id="nav-friends" title="الأصدقاء">👥</span>
-            <span class="sidebar-link" id="nav-profile" title="الملف الشخصي">📜</span>
-            <span class="sidebar-link" id="nav-settings" title="المظهر وتخصيص الألوان">🎨</span>
-            <span class="sidebar-link" id="nav-admin" style="display:none;" title="الإدارة">⚙️</span>
+    <!-- شريط المهام العلوي العام للنظام (SYSTEM MENUBAR) -->
+    <header class="topbar">
+        <div class="topbar-brand" id="home-brand">⚙️ المنظومة التناظرية v1.0</div>
+        <div class="topbar-section-title"></div>
+        <div class="topbar-right">
+            <span class="nav-link" id="nav-cards-browser">المكتبة 📖</span>
+            <span class="nav-link" id="nav-friends">الرفقاء 👥</span>
+            <span class="nav-link" id="nav-profile">الملف 📜</span>
+            <span class="nav-link" id="nav-settings">المظهر 🎨</span>
+            <span class="nav-link" id="nav-admin" style="display:none;color:#ff3b3b;">الإدارة 🛠️</span>
+            <span class="nav-link" id="nav-logout">خروج</span>
         </div>
+        <div class="avatar-sm" id="nav-avatar" style="margin-right:10px;">🦁</div>
+    </header>
 
-        <span class="sidebar-link logout-btn" id="nav-logout" title="خروج">🚪</span>
-    </aside>
-
-    <main class="main-workspace">
-
-        <div id="screen-auth" class="screen active">
-          <div class="auth-wrap">
+    <!-- شاشة تسجيل الدخول وإنشاء الحساب (AUTH SCREEN) -->
+    <div id="screen-auth" class="screen active">
+        <div class="auth-wrap">
             <div class="auth-hero">
-              <div class="auth-seal">ض</div>
-              <h1 class="auth-title">الكاروتا العربية</h1>
-              <p class="auth-sub" style="direction:ltr;">AL-KARUTA AL-ARABIYA</p>
+                <div class="auth-seal">ض</div>
+                <h1 class="auth-title">الكاروتا العربية</h1>
+                <p class="auth-sub">RETRO WORKSTATION EMULATION</p>
             </div>
             <div class="tab-bar">
-              <button class="tab-btn active" id="tab-login">تسجيل دخول</button>
-              <button class="tab-btn" id="tab-register">إنشاء حساب</button>
+                <button class="tab-btn active" id="tab-login">تسجيل دخول</button>
+                <button class="tab-btn" id="tab-register">إنشاء حساب</button>
             </div>
             <div id="form-login" class="scroll">
-              <div class="field">
-                <label>البريد الإلكتروني</label>
-                <input id="l-email" type="email" placeholder="example@email.com" style="direction:ltr;"/>
-              </div>
-              <div class="field">
-                <label>كلمة المرور</label>
-                <input id="l-pass" type="password" placeholder="••••••••" style="direction:ltr;"/>
-              </div>
-              <div class="err-msg" id="l-err"></div>
-              <button class="btn primary" style="width:100%;margin-top:.5rem;" id="login-btn">دخول ←</button>
+                <div class="field">
+                    <label>البريد الإلكتروني</label>
+                    <input id="l-email" type="email" placeholder="user@system.com" style="direction:ltr;"/>
+                </div>
+                <div class="field">
+                    <label>كلمة المرور</label>
+                    <input id="l-pass" type="password" placeholder="••••••••" style="direction:ltr;"/>
+                </div>
+                <div class="err-msg" id="l-err"></div>
+                <button class="btn primary" style="width:100%;margin-top:.5rem;" id="login-btn">[ تنفيذ الدخول ]</button>
             </div>
             <div id="form-register" class="scroll" style="display:none;">
-              <div class="field">
-                <label>اسم المستخدم</label>
-                <input id="r-name" type="text" placeholder="اسمك في اللعبة" maxlength="20"/>
-              </div>
-              <div class="field">
-                <label>البريد الإلكتروني</label>
-                <input id="r-email" type="email" placeholder="example@email.com" style="direction:ltr;"/>
-              </div>
-              <div class="field">
-                <label>كلمة المرور (٦ أحرف على الأقل)</label>
-                <input id="r-pass" type="password" placeholder="••••••••" style="direction:ltr;"/>
-              </div>
-              <div class="err-msg" id="r-err"></div>
-              <button class="btn primary" style="width:100%;margin-top:.5rem;" id="register-btn">إنشاء الحساب ←</button>
+                <div class="field">
+                    <label>اسم المستخدم</label>
+                    <input id="r-name" type="text" placeholder="المعرف الرقمي" maxlength="20"/>
+                </div>
+                <div class="field">
+                    <label>البريد الإلكتروني</label>
+                    <input id="r-email" type="email" placeholder="user@system.com" style="direction:ltr;"/>
+                </div>
+                <div class="field">
+                    <label>كلمة المرور (٦ أحرف+)</label>
+                    <input id="r-pass" type="password" placeholder="••••••••" style="direction:ltr;"/>
+                </div>
+                <div class="err-msg" id="r-err"></div>
+                <button class="btn primary" style="width:100%;margin-top:.5rem;" id="register-btn">[ تسجيل معرّف جديد ]</button>
             </div>
-          </div>
         </div>
+    </div>
 
-        <div id="screen-home" class="screen">
-          <div class="topbar">
-            <span class="topbar-section-title">لوحة التحكم الرئيسية</span>
-            <div class="window-controls-decor"><span></span><span></span><span></span></div>
-          </div>
-          <div class="home-hero">
+    <!-- الشاشة الرئيسية (HOME SCREEN) -->
+    <div id="screen-home" class="screen">
+        <div class="home-hero">
             <div class="hero-frame">
-              <div class="corner tl"></div><div class="corner tr"></div>
-              <div class="corner bl"></div><div class="corner br"></div>
-              <div class="hero-seal">ض</div>
-              <h1 class="hero-title">الكاروتا العربية</h1>
-              <p class="hero-sub">AL-KARUTA AL-ARABIYA</p>
+                <div class="corner tl"></div><div class="corner tr"></div>
+                <div class="corner bl"></div><div class="corner br"></div>
+                <h1 class="hero-title">الكاروتا العربية</h1>
+                <p class="hero-sub">CLASSICAL POETRY SIMULATOR</p>
             </div>
             <div class="btn-group">
-              <button class="btn danger"   id="btn-create">إنشاء غرفة</button>
-              <button class="btn primary"  id="btn-join-toggle">إنضمام</button>
-              <button class="btn blue-btn" id="btn-matchmake">🎲 مباراة عشوائية</button>
-              <button class="btn"          id="btn-solo">بشيله</button>
+                <button class="btn danger"   id="btn-create">إنشاء غرفة لعب</button>
+                <button class="btn primary"  id="btn-join-toggle">انضمام لغرفة</button>
+                <button class="btn blue-btn" id="btn-matchmake">🎲 مباراة عشوائية</button>
+                <button class="btn"          id="btn-solo">مباراة فردية (بشيله)</button>
             </div>
-          </div>
-          <div id="join-panel" style="display:none;margin-bottom:1rem;">
+        </div>
+        <div id="join-panel" style="display:none;margin-bottom:1rem;">
             <div class="scroll">
-              <label>رمز الغرفة</label>
-              <div class="share-row">
-                <input id="join-code" type="text" placeholder="ABCD" maxlength="4"
-                       style="text-transform:uppercase;letter-spacing:8px;font-size:20px;text-align:center;" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"/>
-                <button class="btn primary" id="btn-do-join">دخول ←</button>
-              </div>
+                <label>أدخل رمز الغرفة المكون من 4 أحرف</label>
+                <div class="share-row">
+                    <input id="join-code" type="text" placeholder="ABCD" maxlength="4"
+                           style="text-transform:uppercase;letter-spacing:8px;font-size:20px;text-align:center;" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"/>
+                    <button class="btn primary" id="btn-do-join">دخول الغرفة</button>
+                </div>
             </div>
-          </div>
-          <div id="invites-panel" style="display:none;margin-bottom:1rem;">
-            <div class="scroll" style="border-color:var(--cyber-primary);">
-              <div class="section-title" style="color:var(--cyber-primary);">📩 دعوات للعب</div>
-              <div id="invites-list"></div>
-            </div>
-          </div>
-          <div class="info-box">
-            <strong>طريقة اللعب:</strong> تُقرأ المقدمة في البداية ثم تبدأ اللعبة، يقرأ القارئ الشطر الأول ثم يتسابق اللاعبون على من يستطيع معرفة الشطر الثاني من القصيدة أولًا ومن يجمع أكبر عدد من البطاقات يفوز<br><br>
-            <strong>الأوراق:</strong> المعلقات · الشعر العباسي · الشعر الأندلسي · الشعر الحديث
-          </div>
         </div>
+        <div id="invites-panel" style="display:none;margin-bottom:1rem;">
+            <div class="scroll">
+                <div class="section-title">📩 دعوات اللعب الواردة</div>
+                <div id="invites-list"></div>
+            </div>
+        </div>
+        <div class="info-box">
+            <strong>قوانين الميدان:</strong> تُقرأ المقدمة في البداية ثم تبدأ اللعبة، يقرأ القارئ الشطر الأول (الصدر) ثم يتسابق اللاعبون على من يستطيع معرفة الشطر الثاني (العجز) من القصيدة أولًا ومن يجمع أكبر عدد من البطاقات يفوز.<br>
+            <strong>المخطوطات المتاحة:</strong> المعلقات السبع · الشعر العباسي · الشعر الأندلسي · الشعر الحديث.
+        </div>
+    </div>
 
-        <div id="screen-deck-select" class="screen">
-          <div class="topbar">
-            <span class="topbar-brand" id="deck-select-back">← رجوع القائمة</span>
-            <div class="window-controls-decor"><span></span><span></span><span></span></div>
-          </div>
-          <div class="scroll">
-            <div class="section-title">مجموعة الشعر</div>
-            <p style="font-size:13px;opacity:0.7;margin-bottom:1rem;">اختر ديواناً شعرياً. سيستخدم جميع اللاعبين نفس المجموعة.</p>
-            <div id="deck-options"></div>
-          </div>
-          <div class="scroll">
-            <div class="section-title">عدد البطاقات</div>
+    <!-- شاشة اختيار الديوان (DECK SELECT SCREEN) -->
+    <div id="screen-deck-select" class="screen">
+        <div class="scroll">
+            <div class="section-title">📖 خطوة ١: اختر المخطوطة الشعرية</div>
+            <div id="deck-options" style="margin-top:10px;"></div>
+        </div>
+        <div class="scroll">
+            <div class="section-title">⚙️ خطوة ٢: حدد عدد أوراق الميدان</div>
             <div id="count-options"></div>
-          </div>
-          <div class="btn-row" style="margin-top:.5rem;">
-            <button class="btn primary" id="deck-confirm-btn">التالي ← ابدأ</button>
-            <button class="btn"          id="deck-cancel-btn">إلغاء</button>
-          </div>
         </div>
+        <div class="btn-row" style="padding:10px 5px;">
+            <button class="btn primary" id="deck-confirm-btn">تأكيد وبدء المحاكاة ←</button>
+            <button class="btn"          id="deck-cancel-btn">إلغاء الأمر</button>
+        </div>
+    </div>
 
-        <div id="screen-cards-browser" class="screen">
-          <div class="topbar">
-            <span class="topbar-brand" id="browser-back">← العودة للميدان</span>
-            <span class="topbar-section-title">📖 مكتبة القصائد والبطاقات</span>
-          </div>
-          <div class="scroll">
+    <!-- مكتبة تصفح القصائد (CARDS BROWSER) -->
+    <div id="screen-cards-browser" class="screen">
+        <div class="scroll">
             <div class="browser-tabs-wrap" id="browser-tabs"></div>
             <div class="browser-search-wrap">
-              <input id="browser-search" type="text" placeholder="ابحث عن شاعر أو بيت شعري…"/>
-              <span class="browser-search-icon">🔍</span>
+                <input id="browser-search" type="text" placeholder="ابحث في سجلات الشركاء والقصائد والبحور…"/>
+                <span class="browser-search-icon">🔍</span>
             </div>
-          </div>
-          <div id="browser-cards"></div>
         </div>
+        <div id="browser-cards"></div>
+    </div>
 
-        <div id="screen-profile" class="screen">
-          <div class="topbar">
-            <span class="topbar-brand" id="profile-back">← العودة للميدان</span>
-            <span class="nav-link" id="profile-logout" style="color:var(--cyber-secondary);">خروج الحساب</span>
-          </div>
-          <div class="scroll">
+    <!-- الملف الشخصي وتعديل البيانات (PROFILE SCREEN) -->
+    <div id="screen-profile" class="screen">
+        <div class="scroll">
             <div class="profile-header">
-              <div class="avatar-lg" id="p-avatar">🦁</div>
-              <div class="profile-info">
-                <h2 id="p-name">—</h2>
-                <p id="p-email" style="direction:ltr;font-size:12px;opacity:0.6;text-align:right;"></p>
-                <p id="p-bio" style="font-size:13px;opacity:0.8;margin-top:.25rem;"></p>
-              </div>
+                <div class="avatar-lg" id="p-avatar">🦁</div>
+                <div class="profile-info">
+                    <h2 id="p-name">—</h2>
+                    <p id="p-email" style="direction:ltr;font-size:12px;opacity:0.7;text-align:right;"></p>
+                    <p id="p-bio" style="font-size:13px;margin-top:4px;"></p>
+                </div>
             </div>
             <div class="stats-row">
-              <div class="stat-box"><div class="stat-num" id="st-games">0</div><div class="stat-lbl">مباريات</div></div>
-              <div class="stat-box"><div class="stat-num" id="st-wins">0</div><div class="stat-lbl">انتصارات</div></div>
-              <div class="stat-box"><div class="stat-num" id="st-cards">0</div><div class="stat-lbl">بطاقات</div></div>
+                <div class="stat-box"><div class="stat-num" id="st-games">0</div><div class="stat-lbl">مباريات</div></div>
+                <div class="stat-box"><div class="stat-num" id="st-wins">0</div><div class="stat-lbl">انتصارات</div></div>
+                <div class="stat-box"><div class="stat-num" id="st-cards">0</div><div class="stat-lbl">بطاقات</div></div>
             </div>
-          </div>
-          <div class="scroll">
-            <div class="section-title">تعديل الملف الشخصي</div>
+        </div>
+        <div class="scroll">
+            <div class="section-title">تعديل ملف المستخدم</div>
             <div class="field">
-              <label>اسم المستخدم</label>
-              <input id="edit-name" type="text" maxlength="20"/>
-            </div>
-            <div class="field">
-              <label>نبذة قصيرة</label>
-              <textarea id="edit-bio" maxlength="100" placeholder="اكتب نبذة عنك…"></textarea>
+                <label>اسم المستخدم الجديد</label>
+                <input id="edit-name" type="text" maxlength="20"/>
             </div>
             <div class="field">
-              <label>صورة الملف الشخصي</label>
-              <div style="display:flex;align-items:center;gap:14px;margin:.5rem 0;">
-                <div class="avatar-lg" id="p-photo-preview" style="width:64px;height:64px;font-size:32px;">🦁</div>
-                <div>
-                  <label class="btn sm" for="photo-input" style="display:inline-block;cursor:pointer;">📷 اختر صورة</label>
-                  <input type="file" id="photo-input" accept="image/*" style="display:none;"/>
-                  <div style="font-size:11px;opacity:0.6;margin-top:4px;">JPG · PNG · WebP</div>
-                  <button class="btn sm danger" id="remove-photo-btn" style="margin-top:6px;display:none;">حذف الصورة</button>
+                <label>النبذة الشخصية (البيو)</label>
+                <textarea id="edit-bio" maxlength="100" placeholder="نبذة عن اهتماماتك الشعرية…"></textarea>
+            </div>
+            <div class="field">
+                <label>رمز الصورة الشخصية</label>
+                <div style="display:flex;align-items:center;gap:14px;margin:.5rem 0;">
+                    <div class="avatar-lg" id="p-photo-preview" style="width:64px;height:64px;font-size:32px;">🦁</div>
+                    <div>
+                        <label class="btn sm" for="photo-input" style="cursor:pointer;">📷 تحميل صورة</label>
+                        <input type="file" id="photo-input" accept="image/*" style="display:none;"/>
+                        <button class="btn sm danger" id="remove-photo-btn" style="margin-top:6px;display:none;">حذف</button>
+                    </div>
                 </div>
-              </div>
             </div>
             <div class="field">
-              <label>أو اختر رمزاً تعبيرياً</label>
-              <div class="avatar-grid" id="avatar-grid"></div>
+                <label>أو اختر رمزاً نظامياً تعبيرياً</label>
+                <div class="avatar-grid" id="avatar-grid"></div>
             </div>
-            <button class="btn primary" id="save-profile-btn">حفظ التغييرات ✓</button>
-          </div>
+            <button class="btn primary" id="save-profile-btn">تحديث السجلات ✓</button>
         </div>
+    </div>
 
-        <div id="screen-friends" class="screen">
-          <div class="topbar">
-            <span class="topbar-brand" id="friends-back">← العودة للميدان</span>
-            <span class="topbar-section-title">👥 قائمة رفقاء السلاح</span>
-          </div>
-          <div class="scroll">
-            <div class="section-title">البحث عن لاعب</div>
+    <!-- شاشة قائمة الأصدقاء والبحث (FRIENDS SCREEN) -->
+    <div id="screen-friends" class="screen">
+        <div class="scroll">
+            <div class="section-title">البحث عن مستخدم في الشبكة</div>
             <div class="search-box">
-              <input id="friend-search" type="text" placeholder="اكتب اسم المستخدم…" maxlength="20"/>
-              <span class="search-icon">🔍</span>
+                <input id="friend-search" type="text" placeholder="اكتب اسم المستخدم بدقة…" maxlength="20"/>
+                <span class="search-icon">🔍</span>
             </div>
-            <button class="btn primary sm" id="search-btn">بحث</button>
+            <button class="btn primary sm" id="search-btn">بدء البحث</button>
             <div id="search-result" style="margin-top:1rem;"></div>
-          </div>
-          <div class="scroll">
-            <div class="section-title">طلبات الصداقة المعلقة</div>
+        </div>
+        <div class="scroll">
+            <div class="section-title">طلبات الصداقة الواردة</div>
             <div id="pending-list"><div class="empty-state">لا توجد طلبات معلقة</div></div>
-          </div>
-          <div class="scroll">
-            <div class="section-title">أصدقائي</div>
-            <div id="friends-list"><div class="empty-state">لا يوجد أصدقاء بعد — ابحث وأضف!</div></div>
-          </div>
         </div>
+        <div class="scroll">
+            <div class="section-title">قائمة الرفقاء</div>
+            <div id="friends-list"><div class="empty-state">لم يتم ربط أصدقاء بعد.</div></div>
+        </div>
+    </div>
 
-        <div id="screen-matchmaking" class="screen">
-          <div class="topbar"><span class="topbar-brand" id="mm-back">← إلغاء الميدان</span></div>
-          <div class="scroll">
+    <!-- شاشة قائمة الانتظار العشوائي (MATCHMAKING SCREEN) -->
+    <div id="screen-matchmaking" class="screen">
+        <div class="scroll">
             <div class="mm-wrap">
-              <div class="section-title">🎲 مباراة عشوائية</div>
-              <div class="mm-spinner"></div>
-              <div class="mm-count" id="mm-count">—</div>
-              <div class="mm-status" id="mm-status">جاري البحث عن لاعبين…</div>
-              <div class="btn-group">
-                <button class="btn danger" id="btn-cancel-mm">إلغاء البحث</button>
-              </div>
+                <div class="section-title">جاري البحث عن خصم متصل…</div>
+                <div class="mm-spinner"></div>
+                <div class="mm-count" id="mm-count">—</div>
+                <div class="mm-status" id="mm-status">البحث مستمر…</div>
+                <div class="btn-group">
+                    <button class="btn danger" id="btn-cancel-mm">قطع الاتصال وإلغاء</button>
+                </div>
             </div>
-          </div>
         </div>
+    </div>
 
-        <div id="screen-lobby" class="screen">
-          <div class="topbar"><span class="topbar-brand" id="lobby-back">← مغادرة الحجرة</span></div>
-          <div class="scroll">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;">
-              <strong>رمز الغرفة — Room Code</strong>
-              <button class="btn sm" id="copy-invite-btn">📋 نسخ الرابط</button>
-            </div>
+    <!-- صالة انتظار الحجرة (LOBBY SCREEN) -->
+    <div id="screen-lobby" class="screen">
+        <div class="scroll">
+            <strong>معرف الغرفة المفتوحة (Room Code)</strong>
             <div class="room-code-box" id="room-code-show">----</div>
             <div id="lobby-deck-info" class="lobby-deck-badge">المختارات</div>
-            <p style="font-size:11px;opacity:0.6;text-align:center;direction:ltr;">يسمح بوجود لاعبين فقط</p>
-          </div>
-          <div class="scroll">
-            <strong style="font-size:14px;">اللاعبون الحاليون</strong>
+            <button class="btn sm" id="copy-invite-btn" style="float:left;margin-top:-45px;">📋 نسخ الرابط</button>
+        </div>
+        <div class="scroll">
+            <div class="section-title">المتصلون داخل الحجرة</div>
             <div class="player-list" id="player-list"></div>
-            <div id="wait-msg" class="wait-msg" style="display:none;">في انتظار الاعبين<span>.</span><span>.</span><span>.</span></div>
-          </div>
-          <div class="btn-row">
-            <button class="btn danger" id="start-btn">▶ ابدأ اللعبة</button>
-            <button class="btn"        id="leave-lobby-btn">← رجوع</button>
-          </div>
-          <p id="host-hint" style="font-size:12px;opacity:0.6;margin-top:.75rem;direction:ltr;"></p>
+            <div id="wait-msg" class="wait-msg" style="display:none;">في انتظار انضمام لاعبين آخرين<span>.</span><span>.</span><span>.</span></div>
         </div>
+        <div class="btn-row">
+            <button class="btn danger" id="start-btn">▶ إطلاق الإشارة وبدء المباراة</button>
+            <button class="btn"        id="leave-lobby-btn">انسحاب رجوع</button>
+        </div>
+        <p id="host-hint" style="font-size:11px;opacity:0.7;margin-top:10px;direction:ltr;"></p>
+    </div>
 
-        <div id="screen-intro" class="screen">
-          <div class="intro-box">
-            <div class="intro-num" id="intro-num"></div>
-            <div class="intro-label" id="intro-lbl">المختارات<br><small>استمع إلى القصيدة الافتتاحية…</small></div>
+    <!-- شاشة العرض والقصيدة الافتتاحية (INTRO SCREEN) -->
+    <div id="screen-intro" class="screen">
+        <div class="intro-box">
+            <div class="intro-num" id="intro-num">🎴</div>
+            <div class="intro-label" id="intro-lbl">تحميل المخطوطة الشعرية…</div>
             <div class="wave" id="wave">
-              <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
             </div>
-            <div class="intro-status" id="intro-status">جاري التحميل…</div>
+            <div class="intro-status" id="intro-status">جاري التهيئة…</div>
             <div class="countdown" id="countdown"></div>
-            <button class="tap-play-btn" id="tap-play-btn">▶ اضغط للاستماع</button>
-            <button class="btn sm" id="skip-intro-btn" style="margin-top:1.5rem;">تخطى ←</button>
-          </div>
+            <button class="tap-play-btn" id="tap-play-btn">▶ تشغيل الصوت الإلقائي</button>
+            <button class="btn sm" id="skip-intro-btn" style="margin-top:1.5rem;">تخطي العرض وإطلاق المباراة</button>
         </div>
+    </div>
 
-        <div id="screen-game" class="screen">
-          <div class="game-header">
+    <!-- شاشة اللعب والميدان الفعلي (GAME SCREEN) -->
+    <div id="screen-game" class="screen">
+        <div class="game-header">
             <div class="scores" id="scores"></div>
-            <div class="round-tag" id="round-tag">بيت ١ / ٢٨</div>
-          </div>
-          <div class="yomifuda">
-            <div class="yomi-left"><span class="yomi-lbl">READING CARD</span></div>
-            <div class="yomi-right">
-              <div class="reading-now" id="reading-now"><div class="rdot"></div><span>الشطر يُقرأ الآن…</span></div>
-              <div class="yomi-verse" id="reader-verse">…</div>
-              <div class="yomi-poet"  id="reader-poet"></div>
-            </div>
-          </div>
-          <div class="cards-grid-target" id="cards-grid"></div>
-          <div class="btn-row" style="margin-top:1rem;">
-            <button class="btn primary" id="skip-btn" style="display:none;">التالي ←</button>
-            <button class="btn" id="leave-game-btn">مغادرة اللعبة</button>
-          </div>
+            <div class="round-tag" id="round-tag">سجل اللعب بيت ١ / ٢٨</div>
         </div>
+        <div class="yomifuda">
+            <div class="yomi-left"><span class="yomi-lbl">RECITAL</span></div>
+            <div class="yomi-right">
+                <div class="reading-now" id="reading-now"><div class="rdot"></div><span>الإلقاء الصوتي نشط الآن…</span></div>
+                <div class="yomi-verse" id="reader-verse">…</div>
+                <div class="yomi-poet"  id="reader-poet"></div>
+            </div>
+        </div>
+        <div class="cards-grid-target" id="cards-grid"></div>
+        <div class="btn-row" style="margin-top:1.5rem;">
+            <button class="btn primary" id="skip-btn" style="display:none;">البيت التالي →</button>
+            <button class="btn danger" id="leave-game-btn">انسحاب وإعلان الهزيمة</button>
+        </div>
+    </div>
 
-        <div id="screen-result" class="screen">
-          <div class="result-scroll">
-            <div class="result-title">🏆 اللعبة انتهت!</div>
+    <!-- شاشة النتائج ومنصة الفائزين (RESULT SCREEN) -->
+    <div id="screen-result" class="screen">
+        <div class="result-scroll">
+            <div class="result-title">🏆 انتهاء محاكاة المعركة</div>
             <div class="result-sub" id="result-sub"></div>
             <div class="podium" id="podium"></div>
-          </div>
-          <div class="btn-group">
-            <button class="btn danger" id="again-btn">العب مجدداً</button>
-            <button class="btn" id="result-lobby-btn">← القائمة الرئيسية</button>
-          </div>
         </div>
+        <div class="btn-group">
+            <button class="btn danger" id="again-btn">بدء دورة محاكاة جديدة</button>
+            <button class="btn" id="result-lobby-btn">العودة لسطح المكتب الرئيسي</button>
+        </div>
+    </div>
 
-        <div id="screen-admin" class="screen">
-          <div class="topbar">
-            <span class="topbar-brand" id="admin-back">← الكاروتا</span>
-            <div class="admin-badge">ADMIN PANEL</div>
-          </div>
-          <div class="scroll">
-            <div class="section-title">إدارة المستخدمين</div>
+    <!-- لوحة التحكم الإدارية (ADMIN SCREEN) -->
+    <div id="screen-admin" class="screen">
+        <div class="scroll">
+            <div class="section-title">قاعدة بيانات المستخدمين المشتركين</div>
             <div class="search-box">
-              <input id="admin-search" type="text" placeholder="بحث بالاسم أو البريد الإلكتروني…"/>
-              <span class="search-icon">🔍</span>
+                <input id="admin-search" type="text" placeholder="فلترة السجلات بالاسم أو البريد الإلكتروني…"/>
+                <span class="search-icon">🔍</span>
             </div>
             <div style="overflow-x:auto;">
-              <table class="admin-table">
-                <thead>
-                  <tr>
-                    <th>المستخدم</th><th>البريد</th><th>مباريات</th>
-                    <th>بطاقات</th><th>الحالة</th><th>إجراء</th>
-                  </tr>
-                </thead>
-                <tbody id="admin-tbody"></tbody>
-              </table>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>المستخدم</th><th>البريد</th><th>مباريات</th><th>بطاقات</th><th>الحالة</th><th>إجراءات الإشراف</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-tbody"></tbody>
+                </table>
             </div>
-          </div>
-          <div class="scroll">
-            <div class="section-title">الغرف النشطة</div>
-            <div id="admin-rooms"><div class="empty-state">لا توجد غرف نشطة</div></div>
-          </div>
         </div>
-
-        <div id="screen-settings" class="screen">
-          <div class="topbar">
-            <span class="topbar-brand" id="settings-back">← الكاروتا</span>
-            <span class="topbar-section-title">🎨 تخصيص نظام المظهر والألوان</span>
-          </div>
-          <div class="scroll">
-            <div class="section-title">لوحة الألوان التناظرية</div>
-            <p style="font-size:13px;opacity:0.7;margin-bottom:1rem;">اختر نظام ألوان يناسب ذوقك السياسي والريترو. يُحفظ اختيارك تلقائياً.</p>
-            <div id="theme-options" class="settings-grid"></div>
-          </div>
-          <div class="scroll">
-            <div class="section-title">خلفية الموقع المدمجة</div>
-            <p style="font-size:13px;opacity:0.7;margin-bottom:1rem;">اختر شبكة خلفية مختلفة للموقع لتعمل بالتوافق مع النيون.</p>
-            <div id="bg-options" class="settings-grid"></div>
-          </div>
+        <div class="scroll">
+            <div class="section-title">الغرف النشطة برمجياً في الـ Database</div>
+            <div id="admin-rooms"><div class="empty-state">لا توجد حجرات نشطة حالياً</div></div>
         </div>
+    </div>
 
-    </main>
+    <!-- لوحة إعدادات تخصيص الخلفية والمظهر (SETTINGS SCREEN) -->
+    <div id="screen-settings" class="screen">
+        <div class="scroll">
+            <div class="section-title">لوحة تعديل ألوان الواجهة (OS Theme Class)</div>
+            <div id="theme-options" class="settings-grid" style="margin-top:10px;"></div>
+        </div>
+        <div class="scroll">
+            <div class="section-title">نقوش الزجاج الخلفية للشاشة (CRT Screen Grid)</div>
+            <div id="bg-options" class="settings-grid" style="margin-top:10px;"></div>
+        </div>
+    </div>
+
 </div>
 
+<!-- المكونات البرمجية المنبثقة المشتركة -->
 <div class="toast" id="toast"></div>
 <div class="modal-bg" id="modal-bg">
-  <div class="modal">
-    <button class="modal-close" id="modal-close-btn">✕</button>
-    <div class="modal-title" id="modal-title">ملف اللاعب</div>
-    <div id="modal-body"></div>
-  </div>
+    <div class="modal">
+        <div class="modal-close" id="modal-close-btn">✕</div>
+        <div class="modal-title" id="modal-title">ملف اللاعب البكسلي</div>
+        <div id="modal-body"></div>
+    </div>
 </div>
 
 <script src="js/app.js"></script>

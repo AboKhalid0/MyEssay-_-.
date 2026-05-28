@@ -229,24 +229,24 @@ function getLibraryDeck(id){
 ──────────────────────────────────────────────────────────────── */
 const THEMES = [
   {
-    id:'emerald', name:'الزمرد', nameEn:'Emerald',
-    swatch:['#2d5a27','#8b1a1a','#f7eed8'],
-    desc:'المظهر الكلاسيكي الأخضر',
+    id:'emerald', name:'الديوان السيبراني (الافتراضي)', nameEn:'Cyber Sky',
+    swatch:['#00a2ff','#ff3b93','#ffffff'],
+    desc:'المظهر الافتراضي المشرق بخطوط زرقاء ونيون',
   },
   {
-    id:'lapis', name:'اللازورد', nameEn:'Lapis',
-    swatch:['#1a3564','#c8962a','#eeeae0'],
-    desc:'أزرق ملكي بلمسات ذهبية',
+    id:'lapis', name:'أوكييو ريترو', nameEn:'Retro Ukiyo',
+    swatch:['#a15eff','#ffac33','#ffffff'],
+    desc:'لمسات الباستيل البنفسجية والخلفيات الهادئة',
   },
   {
-    id:'ruby', name:'العقيق', nameEn:'Ruby',
-    swatch:['#6b1a1a','#c8962a','#faf5e8'],
-    desc:'دفء الأحمر العميق والذهب',
+    id:'ruby', name:'المصفوفة الحمراء', nameEn:'Cyber Ruby',
+    swatch:['#ff3b3b','#00e5ff','#ffffff'],
+    desc:'تباين عالٍ بين الأحمر الكلاسيكي والنيون الفاتح',
   },
   {
-    id:'night', name:'الليل', nameEn:'Night',
-    swatch:['#c8962a','#e8d9a0','#2a2520'],
-    desc:'وضع الليل — ذهب على عتمة',
+    id:'night', name:'شاشة المحطة الطرفية', nameEn:'Terminal Night',
+    swatch:['#39ff14','#ff0055','#151a23'],
+    desc:'الوضع الليلي الحقيقي — نيون أخضر مصفوفاتي على عتمة',
   },
 ];
 
@@ -256,19 +256,18 @@ const THEMES = [
    id must match a CSS class: body.bg-{id}
 ──────────────────────────────────────────────────────────────── */
 const BACKGROUNDS = [
-  { id:'grid',    name:'الشبكة',        nameEn:'Classic Grid',    emoji:'⊞' },
-  { id:'desert',  name:'الصحراء',       nameEn:'Desert Dunes',    emoji:'🏜️' },
-  { id:'night',   name:'السماء الليلية',nameEn:'Starry Night',    emoji:'✨' },
-  { id:'marble',  name:'الرخام',        nameEn:'Marble',          emoji:'🌫️' },
-  { id:'forest',  name:'الغابة',        nameEn:'Dark Forest',     emoji:'🌿' },
-  // ── Image backgrounds — place your photo at the listed path ──
-  { id:'photo1',  name:'صورة رايقه',         nameEn:'Photo 1',         emoji:'🖼️', isPhoto:true, src:'img/bg-1.jpg' },
-  { id:'photo2',  name:'اوراق الساكورا الزرقاء',         nameEn:'Photo 2',         emoji:'🖼️', isPhoto:true, src:'img/bg-2.jpg' },
-  { id:'photo3',  name:'بعض الاشجار على قارعة الطريق',         nameEn:'Photo 3',         emoji:'🖼️', isPhoto:true, src:'img/bg-3.jpg' },
-  { id:'photo4',  name:'باسكال',         nameEn:'Photo 4',         emoji:'🖼️', isPhoto:true, src:'img/bg-4.jpg' },
-  { id:'photo5',  name:'مياووووووو',         nameEn:'Photo 5',         emoji:'🖼️', isPhoto:true, src:'img/bg-5.jpg' },
+  { id:'grid',    name:'شبكة سيبرانية',        nameEn:'Classic Cyber Grid',    emoji:'⊞' },
+  { id:'desert',  name:'الكثبان المضيئة',       nameEn:'Neon Dunes',    emoji:'🏜️' },
+  { id:'night',   name:'مصفوفة النقاط',  nameEn:'Retro Dot Matrix',    emoji:'✨' },
+  { id:'marble',  name:'المربعات المفككة',          nameEn:'Abstract Blocks',          emoji:'🌫️' },
+  { id:'forest',  name:'ممر الخطوط التناظرية',       nameEn:'Scanline Alley',     emoji:'🌿' },
+  // ── Image backgrounds stay exactly as configured ──
+  { id:'photo1',  name:'صورة رايقه',          nameEn:'Photo 1',         emoji:'🖼️', isPhoto:true, src:'img/bg-1.jpg' },
+  { id:'photo2',  name:'اوراق الساكورا الزرقاء',          nameEn:'Photo 2',         emoji:'🖼️', isPhoto:true, src:'img/bg-2.jpg' },
+  { id:'photo3',  name:'بعض الاشجار على قارعة الطريق',          nameEn:'Photo 3',         emoji:'🖼️', isPhoto:true, src:'img/bg-3.jpg' },
+  { id:'photo4',  name:'باسكال',          nameEn:'Photo 4',         emoji:'🖼️', isPhoto:true, src:'img/bg-4.jpg' },
+  { id:'photo5',  name:'مياووووووو',          nameEn:'Photo 5',         emoji:'🖼️', isPhoto:true, src:'img/bg-5.jpg' },
 ];
-
 
 /* ═══════════════════════════════════════
    §STATE  —  shared runtime state

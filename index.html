@@ -1,347 +1,358 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-    <title>الكاروتا العربية</title>
-    <meta name="description" content="لعبة الكاروتا العربية"/>
-    <meta name="theme-color" content="#4a665a"/>
-    <meta name="apple-mobile-web-app-capable" content="yes"/>
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎴</text></svg>"/>
-    <link rel="stylesheet" href="css/style.css"/>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>مكتبة — قراءة جماعية</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <!-- PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <!-- epub.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+    import { getDatabase } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
+    import { getAuth } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+    window.__firebaseModules = { initializeApp, getDatabase, getAuth };
+  </script>
+
+  <link rel="stylesheet" href="css/main.css" />
 </head>
 <body>
 
-<div id="app">
-
-    <!-- شريط المهام العلوي العام للنظام (SYSTEM MENUBAR) -->
-    <header class="topbar">
-        <div class="topbar-brand" id="home-brand">⚙️ المنظومة التناظرية v1.0</div>
-        <div class="topbar-section-title"></div>
-        <div class="topbar-right">
-            <span class="nav-link" id="nav-cards-browser">المكتبة 📖</span>
-            <span class="nav-link" id="nav-friends">الرفقاء 👥</span>
-            <span class="nav-link" id="nav-profile">الملف 📜</span>
-            <span class="nav-link" id="nav-settings">المظهر 🎨</span>
-            <span class="nav-link" id="nav-admin" style="display:none;color:#ff3b3b;">الإدارة 🛠️</span>
-            <span class="nav-link" id="nav-logout">خروج</span>
-        </div>
-        <div class="avatar-sm" id="nav-avatar" style="margin-right:10px;">🦁</div>
+<!-- ═══════════════════════════════════════════
+     LOBBY — shown before joining a room
+═══════════════════════════════════════════ -->
+<div id="lobby" class="screen active">
+  <div class="lobby-bg">
+    <div class="bookshelf-deco"></div>
+  </div>
+  <div class="lobby-content">
+    <header class="lobby-header">
+      <div class="logo-mark">📚</div>
+      <h1 class="logo-title">مكتبة</h1>
+      <p class="logo-sub">اقرأ مع أصحابك، معاً في الوقت ذاته</p>
     </header>
 
-    <!-- شاشة تسجيل الدخول وإنشاء الحساب (AUTH SCREEN) -->
-    <div id="screen-auth" class="screen active">
-        <div class="auth-wrap">
-            <div class="auth-hero">
-                <div class="auth-seal">ض</div>
-                <h1 class="auth-title">الكاروتا العربية</h1>
-                <p class="auth-sub">RETRO WORKSTATION EMULATION</p>
-            </div>
-            <div class="tab-bar">
-                <button class="tab-btn active" id="tab-login">تسجيل دخول</button>
-                <button class="tab-btn" id="tab-register">إنشاء حساب</button>
-            </div>
-            <div id="form-login" class="scroll">
-                <div class="field">
-                    <label>البريد الإلكتروني</label>
-                    <input id="l-email" type="email" placeholder="user@system.com" style="direction:ltr;"/>
-                </div>
-                <div class="field">
-                    <label>كلمة المرور</label>
-                    <input id="l-pass" type="password" placeholder="••••••••" style="direction:ltr;"/>
-                </div>
-                <div class="err-msg" id="l-err"></div>
-                <button class="btn primary" style="width:100%;margin-top:.5rem;" id="login-btn">[ تنفيذ الدخول ]</button>
-            </div>
-            <div id="form-register" class="scroll" style="display:none;">
-                <div class="field">
-                    <label>اسم المستخدم</label>
-                    <input id="r-name" type="text" placeholder="المعرف الرقمي" maxlength="20"/>
-                </div>
-                <div class="field">
-                    <label>البريد الإلكتروني</label>
-                    <input id="r-email" type="email" placeholder="user@system.com" style="direction:ltr;"/>
-                </div>
-                <div class="field">
-                    <label>كلمة المرور (٦ أحرف+)</label>
-                    <input id="r-pass" type="password" placeholder="••••••••" style="direction:ltr;"/>
-                </div>
-                <div class="err-msg" id="r-err"></div>
-                <button class="btn primary" style="width:100%;margin-top:.5rem;" id="register-btn">[ تسجيل معرّف جديد ]</button>
-            </div>
+    <div class="lobby-cards">
+      <!-- Username -->
+      <div class="lobby-card" id="card-name">
+        <div class="card-step">١</div>
+        <h2>ما اسمك؟</h2>
+        <div class="input-row">
+          <div class="avatar-picker" id="avatarPicker">
+            <span id="avatarDisplay">📖</span>
+          </div>
+          <input type="text" id="usernameInput" placeholder="اسم مستخدم..." maxlength="20" dir="auto" />
         </div>
+        <div class="avatar-options" id="avatarOptions">
+          <span data-emoji="📖">📖</span><span data-emoji="🌙">🌙</span>
+          <span data-emoji="⭐">⭐</span><span data-emoji="🦁">🦁</span>
+          <span data-emoji="🐺">🐺</span><span data-emoji="🦊">🦊</span>
+          <span data-emoji="🐉">🐉</span><span data-emoji="🌿">🌿</span>
+          <span data-emoji="🔥">🔥</span><span data-emoji="💎">💎</span>
+          <span data-emoji="🎭">🎭</span><span data-emoji="⚔️">⚔️</span>
+        </div>
+      </div>
+
+      <!-- Room Actions -->
+      <div class="lobby-card" id="card-room">
+        <div class="card-step">٢</div>
+        <h2>غرفة القراءة</h2>
+        <div class="room-actions">
+          <button class="btn-primary" id="btnCreateRoom">
+            <span class="btn-icon">✦</span> إنشاء غرفة جديدة
+          </button>
+          <div class="divider-text">أو</div>
+          <div class="join-row">
+            <input type="text" id="roomCodeInput" placeholder="كود الغرفة..." maxlength="6" dir="ltr" class="code-input" />
+            <button class="btn-secondary" id="btnJoinRoom">انضم</button>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- الشاشة الرئيسية (HOME SCREEN) -->
-    <div id="screen-home" class="screen">
-        <div class="home-hero">
-            <div class="hero-frame">
-                <div class="corner tl"></div><div class="corner tr"></div>
-                <div class="corner bl"></div><div class="corner br"></div>
-                <h1 class="hero-title">الكاروتا العربية</h1>
-                <p class="hero-sub">CLASSICAL POETRY SIMULATOR</p>
-            </div>
-            <div class="btn-group">
-                <button class="btn danger"   id="btn-create">إنشاء غرفة لعب</button>
-                <button class="btn primary"  id="btn-join-toggle">انضمام لغرفة</button>
-                <button class="btn blue-btn" id="btn-matchmake">🎲 مباراة عشوائية</button>
-                <button class="btn"          id="btn-solo">مباراة فردية (بشيله)</button>
-            </div>
-        </div>
-        <div id="join-panel" style="display:none;margin-bottom:1rem;">
-            <div class="scroll">
-                <label>أدخل رمز الغرفة المكون من 4 أحرف</label>
-                <div class="share-row">
-                    <input id="join-code" type="text" placeholder="ABCD" maxlength="4"
-                           style="text-transform:uppercase;letter-spacing:8px;font-size:20px;text-align:center;" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"/>
-                    <button class="btn primary" id="btn-do-join">دخول الغرفة</button>
-                </div>
-            </div>
-        </div>
-        <div id="invites-panel" style="display:none;margin-bottom:1rem;">
-            <div class="scroll">
-                <div class="section-title">📩 دعوات اللعب الواردة</div>
-                <div id="invites-list"></div>
-            </div>
-        </div>
-        <div class="info-box">
-            <strong>قوانين الميدان:</strong> تُقرأ المقدمة في البداية ثم تبدأ اللعبة، يقرأ القارئ الشطر الأول (الصدر) ثم يتسابق اللاعبون على من يستطيع معرفة الشطر الثاني (العجز) من القصيدة أولًا ومن يجمع أكبر عدد من البطاقات يفوز.<br>
-            <strong>المخطوطات المتاحة:</strong> المعلقات السبع · الشعر العباسي · الشعر الأندلسي · الشعر الحديث.
-        </div>
+    <!-- Firebase Config -->
+    <div class="firebase-config-section" id="firebaseConfigSection">
+      <button class="btn-ghost" id="btnToggleConfig">⚙ إعداد Firebase</button>
+<div class="config-form hidden" id="configForm">
+  <p class="config-hint">أدخل بيانات مشروع Firebase الخاص بك (مجاني)</p>
+  <input type="text" id="fbApiKey" placeholder="apiKey" dir="ltr" />
+  <input type="text" id="fbProjectId" placeholder="projectId" dir="ltr" />
+  <input type="text" id="fbDbUrl" placeholder="databaseURL" dir="ltr" />
+  
+  <input type="text" id="fbStorageBucket" placeholder="storageBucket" dir="ltr" />
+  
+  <button class="btn-primary" id="btnSaveConfig">حفظ الإعداد</button>
+</div>
     </div>
+  </div>
+</div>
 
-    <!-- شاشة اختيار الديوان (DECK SELECT SCREEN) -->
-    <div id="screen-deck-select" class="screen">
-        <div class="scroll">
-            <div class="section-title">📖 خطوة ١: اختر المخطوطة الشعرية</div>
-            <div id="deck-options" style="margin-top:10px;"></div>
-        </div>
-        <div class="scroll">
-            <div class="section-title">⚙️ خطوة ٢: حدد عدد أوراق الميدان</div>
-            <div id="count-options"></div>
-        </div>
-        <div class="btn-row" style="padding:10px 5px;">
-            <button class="btn primary" id="deck-confirm-btn">تأكيد وبدء المحاكاة ←</button>
-            <button class="btn"          id="deck-cancel-btn">إلغاء الأمر</button>
-        </div>
+<!-- ═══════════════════════════════════════════
+     CREATE ROOM MODAL
+═══════════════════════════════════════════ -->
+<div id="modalCreateRoom" class="modal hidden">
+  <div class="modal-backdrop"></div>
+  <div class="modal-box">
+    <h2>غرفة قراءة جديدة</h2>
+    <div class="form-group">
+      <label>اسم الغرفة</label>
+      <input type="text" id="roomNameInput" placeholder="مثال: نادي روايات الليل" dir="auto" />
     </div>
+    <div class="form-group">
+      <label>كلمة مرور (اختياري)</label>
+      <input type="password" id="roomPassInput" placeholder="اتركها فارغة للغرفة المفتوحة" />
+    </div>
+    <div class="form-group">
+      <label>اتجاه القراءة</label>
+      <div class="radio-group">
+        <label class="radio-opt">
+          <input type="radio" name="readDir" value="rtl" checked /> عربي / يمين→يسار
+        </label>
+        <label class="radio-opt">
+          <input type="radio" name="readDir" value="ltr" /> إنجليزي / يسار→يمين
+        </label>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-primary" id="btnConfirmCreate">إنشاء الغرفة ✦</button>
+      <button class="btn-ghost" id="btnCancelCreate">إلغاء</button>
+    </div>
+  </div>
+</div>
 
-    <!-- مكتبة تصفح القصائد (CARDS BROWSER) -->
-    <div id="screen-cards-browser" class="screen">
-        <div class="scroll">
-            <div class="browser-tabs-wrap" id="browser-tabs"></div>
-            <div class="browser-search-wrap">
-                <input id="browser-search" type="text" placeholder="ابحث في سجلات الشركاء والقصائد والبحور…"/>
-                <span class="browser-search-icon">🔍</span>
-            </div>
-        </div>
-        <div id="browser-cards"></div>
-    </div>
+<!-- ═══════════════════════════════════════════
+     READING ROOM — main app
+═══════════════════════════════════════════ -->
+<div id="room" class="screen hidden">
 
-    <!-- الملف الشخصي وتعديل البيانات (PROFILE SCREEN) -->
-    <div id="screen-profile" class="screen">
-        <div class="scroll">
-            <div class="profile-header">
-                <div class="avatar-lg" id="p-avatar">🦁</div>
-                <div class="profile-info">
-                    <h2 id="p-name">—</h2>
-                    <p id="p-email" style="direction:ltr;font-size:12px;opacity:0.7;text-align:right;"></p>
-                    <p id="p-bio" style="font-size:13px;margin-top:4px;"></p>
-                </div>
-            </div>
-            <div class="stats-row">
-                <div class="stat-box"><div class="stat-num" id="st-games">0</div><div class="stat-lbl">مباريات</div></div>
-                <div class="stat-box"><div class="stat-num" id="st-wins">0</div><div class="stat-lbl">انتصارات</div></div>
-                <div class="stat-box"><div class="stat-num" id="st-cards">0</div><div class="stat-lbl">بطاقات</div></div>
-            </div>
-        </div>
-        <div class="scroll">
-            <div class="section-title">تعديل ملف المستخدم</div>
-            <div class="field">
-                <label>اسم المستخدم الجديد</label>
-                <input id="edit-name" type="text" maxlength="20"/>
-            </div>
-            <div class="field">
-                <label>النبذة الشخصية (البيو)</label>
-                <textarea id="edit-bio" maxlength="100" placeholder="نبذة عن اهتماماتك الشعرية…"></textarea>
-            </div>
-            <div class="field">
-                <label>رمز الصورة الشخصية</label>
-                <div style="display:flex;align-items:center;gap:14px;margin:.5rem 0;">
-                    <div class="avatar-lg" id="p-photo-preview" style="width:64px;height:64px;font-size:32px;">🦁</div>
-                    <div>
-                        <label class="btn sm" for="photo-input" style="cursor:pointer;">📷 تحميل صورة</label>
-                        <input type="file" id="photo-input" accept="image/*" style="display:none;"/>
-                        <button class="btn sm danger" id="remove-photo-btn" style="margin-top:6px;display:none;">حذف</button>
-                    </div>
-                </div>
-            </div>
-            <div class="field">
-                <label>أو اختر رمزاً نظامياً تعبيرياً</label>
-                <div class="avatar-grid" id="avatar-grid"></div>
-            </div>
-            <button class="btn primary" id="save-profile-btn">تحديث السجلات ✓</button>
-        </div>
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="topbar-right">
+      <button class="icon-btn" id="btnBackToLobby" title="الخروج من الغرفة">←</button>
+      <div class="room-info">
+        <span class="room-name-display" id="roomNameDisplay">...</span>
+        <span class="room-code-badge" id="roomCodeDisplay"></span>
+      </div>
     </div>
+    <div class="topbar-center">
+      <div class="sync-toggle" id="syncToggle" title="وضع المزامنة">
+        <span class="sync-icon">⟳</span>
+        <span class="sync-label" id="syncLabel">مزامنة</span>
+      </div>
+    </div>
+    <div class="topbar-left">
+      <div class="members-bar" id="membersBar"></div>
+      <button class="icon-btn" id="btnToggleSidebar" title="الدردشة">💬</button>
+      <button class="icon-btn" id="btnOpenDoc" title="فتح مستند">📂</button>
+    </div>
+  </header>
 
-    <!-- شاشة قائمة الأصدقاء والبحث (FRIENDS SCREEN) -->
-    <div id="screen-friends" class="screen">
-        <div class="scroll">
-            <div class="section-title">البحث عن مستخدم في الشبكة</div>
-            <div class="search-box">
-                <input id="friend-search" type="text" placeholder="اكتب اسم المستخدم بدقة…" maxlength="20"/>
-                <span class="search-icon">🔍</span>
-            </div>
-            <button class="btn primary sm" id="search-btn">بدء البحث</button>
-            <div id="search-result" style="margin-top:1rem;"></div>
-        </div>
-        <div class="scroll">
-            <div class="section-title">طلبات الصداقة الواردة</div>
-            <div id="pending-list"><div class="empty-state">لا توجد طلبات معلقة</div></div>
-        </div>
-        <div class="scroll">
-            <div class="section-title">قائمة الرفقاء</div>
-            <div id="friends-list"><div class="empty-state">لم يتم ربط أصدقاء بعد.</div></div>
-        </div>
+  <!-- PROGRESS BAR -->
+  <div class="progress-shelf" id="progressShelf">
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+      <div class="member-positions" id="memberPositions"></div>
     </div>
+    <div class="progress-label" id="progressLabel">٠٪</div>
+  </div>
 
-    <!-- شاشة قائمة الانتظار العشوائي (MATCHMAKING SCREEN) -->
-    <div id="screen-matchmaking" class="screen">
-        <div class="scroll">
-            <div class="mm-wrap">
-                <div class="section-title">جاري البحث عن خصم متصل…</div>
-                <div class="mm-spinner"></div>
-                <div class="mm-count" id="mm-count">—</div>
-                <div class="mm-status" id="mm-status">البحث مستمر…</div>
-                <div class="btn-group">
-                    <button class="btn danger" id="btn-cancel-mm">قطع الاتصال وإلغاء</button>
-                </div>
-            </div>
-        </div>
-    </div>
+  <!-- MAIN AREA -->
+  <main class="reader-layout">
 
-    <!-- صالة انتظار الحجرة (LOBBY SCREEN) -->
-    <div id="screen-lobby" class="screen">
-        <div class="scroll">
-            <strong>معرف الغرفة المفتوحة (Room Code)</strong>
-            <div class="room-code-box" id="room-code-show">----</div>
-            <div id="lobby-deck-info" class="lobby-deck-badge">المختارات</div>
-            <button class="btn sm" id="copy-invite-btn" style="float:left;margin-top:-45px;">📋 نسخ الرابط</button>
-        </div>
-        <div class="scroll">
-            <div class="section-title">المتصلون داخل الحجرة</div>
-            <div class="player-list" id="player-list"></div>
-            <div id="wait-msg" class="wait-msg" style="display:none;">في انتظار انضمام لاعبين آخرين<span>.</span><span>.</span><span>.</span></div>
-        </div>
-        <div class="btn-row">
-            <button class="btn danger" id="start-btn">▶ إطلاق الإشارة وبدء المباراة</button>
-            <button class="btn"        id="leave-lobby-btn">انسحاب رجوع</button>
-        </div>
-        <p id="host-hint" style="font-size:11px;opacity:0.7;margin-top:10px;direction:ltr;"></p>
-    </div>
+    <!-- DOCUMENT VIEWER -->
+    <section class="viewer-area" id="viewerArea">
 
-    <!-- شاشة العرض والقصيدة الافتتاحية (INTRO SCREEN) -->
-    <div id="screen-intro" class="screen">
-        <div class="intro-box">
-            <div class="intro-num" id="intro-num">🎴</div>
-            <div class="intro-label" id="intro-lbl">تحميل المخطوطة الشعرية…</div>
-            <div class="wave" id="wave">
-                <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-            </div>
-            <div class="intro-status" id="intro-status">جاري التهيئة…</div>
-            <div class="countdown" id="countdown"></div>
-            <button class="tap-play-btn" id="tap-play-btn">▶ تشغيل الصوت الإلقائي</button>
-            <button class="btn sm" id="skip-intro-btn" style="margin-top:1.5rem;">تخطي العرض وإطلاق المباراة</button>
+      <!-- EMPTY STATE -->
+      <div class="viewer-empty" id="viewerEmpty">
+        <div class="empty-icon">📚</div>
+        <h3>لا يوجد مستند مفتوح</h3>
+        <p>ارفع ملفاً أو أدرج رابطاً لبدء القراءة</p>
+        <div class="doc-source-options">
+          <button class="btn-primary" id="btnUploadFile">
+            <span>⬆</span> رفع ملف
+          </button>
+          <div class="divider-text">أو</div>
+          <div class="url-input-row">
+            <input type="text" id="docUrlInput" placeholder="رابط PDF / EPUB / صورة..." dir="ltr" />
+            <button class="btn-secondary" id="btnLoadUrl">تحميل</button>
+          </div>
         </div>
-    </div>
+        <input type="file" id="fileInput" accept=".pdf,.epub,.cbz,.txt,.jpg,.jpeg,.png,.gif,.webp" class="hidden" multiple />
+      </div>
 
-    <!-- شاشة اللعب والميدان الفعلي (GAME SCREEN) -->
-    <div id="screen-game" class="screen">
-        <div class="game-header">
-            <div class="scores" id="scores"></div>
-            <div class="round-tag" id="round-tag">سجل اللعب بيت ١ / ٢٨</div>
+      <!-- PDF VIEWER -->
+      <div class="pdf-viewer hidden" id="pdfViewer">
+        <div class="page-nav page-nav-right" id="btnPrevPage">
+          <span>›</span>
         </div>
-        <div class="yomifuda">
-            <div class="yomi-left"><span class="yomi-lbl">RECITAL</span></div>
-            <div class="yomi-right">
-                <div class="reading-now" id="reading-now"><div class="rdot"></div><span>الإلقاء الصوتي نشط الآن…</span></div>
-                <div class="yomi-verse" id="reader-verse">…</div>
-                <div class="yomi-poet"  id="reader-poet"></div>
-            </div>
+        <div class="pdf-canvas-wrap" id="pdfCanvasWrap">
+          <canvas id="pdfCanvas"></canvas>
+          <div class="annotation-layer" id="annotationLayer"></div>
+          <div class="drawing-layer hidden" id="drawingLayer">
+            <canvas id="drawCanvas"></canvas>
+          </div>
         </div>
-        <div class="cards-grid-target" id="cards-grid"></div>
-        <div class="btn-row" style="margin-top:1.5rem;">
-            <button class="btn primary" id="skip-btn" style="display:none;">البيت التالي →</button>
-            <button class="btn danger" id="leave-game-btn">انسحاب وإعلان الهزيمة</button>
+        <div class="page-nav page-nav-left" id="btnNextPage">
+          <span>›</span>
         </div>
-    </div>
+      </div>
 
-    <!-- شاشة النتائج ومنصة الفائزين (RESULT SCREEN) -->
-    <div id="screen-result" class="screen">
-        <div class="result-scroll">
-            <div class="result-title">🏆 انتهاء محاكاة المعركة</div>
-            <div class="result-sub" id="result-sub"></div>
-            <div class="podium" id="podium"></div>
-        </div>
-        <div class="btn-group">
-            <button class="btn danger" id="again-btn">بدء دورة محاكاة جديدة</button>
-            <button class="btn" id="result-lobby-btn">العودة لسطح المكتب الرئيسي</button>
-        </div>
-    </div>
+      <!-- EPUB VIEWER -->
+      <div class="epub-viewer hidden" id="epubViewer">
+        <div class="page-nav page-nav-right" id="epubBtnPrev"><span>›</span></div>
+        <div id="epubContainer"></div>
+        <div class="page-nav page-nav-left" id="epubBtnNext"><span>›</span></div>
+      </div>
 
-    <!-- لوحة التحكم الإدارية (ADMIN SCREEN) -->
-    <div id="screen-admin" class="screen">
-        <div class="scroll">
-            <div class="section-title">قاعدة بيانات المستخدمين المشتركين</div>
-            <div class="search-box">
-                <input id="admin-search" type="text" placeholder="فلترة السجلات بالاسم أو البريد الإلكتروني…"/>
-                <span class="search-icon">🔍</span>
-            </div>
-            <div style="overflow-x:auto;">
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th>المستخدم</th><th>البريد</th><th>مباريات</th><th>بطاقات</th><th>الحالة</th><th>إجراءات الإشراف</th>
-                        </tr>
-                    </thead>
-                    <tbody id="admin-tbody"></tbody>
-                </table>
-            </div>
+      <!-- IMAGE/MANGA VIEWER -->
+      <div class="manga-viewer hidden" id="mangaViewer">
+        <div class="manga-nav-right" id="mangaBtnPrev">
+          <span>›</span>
         </div>
-        <div class="scroll">
-            <div class="section-title">الغرف النشطة برمجياً في الـ Database</div>
-            <div id="admin-rooms"><div class="empty-state">لا توجد حجرات نشطة حالياً</div></div>
+        <div class="manga-page-wrap">
+          <img id="mangaPage" src="" alt="صفحة" />
+          <div class="annotation-layer" id="mangaAnnotationLayer"></div>
         </div>
-    </div>
+        <div class="manga-nav-left" id="mangaBtnNext">
+          <span>›</span>
+        </div>
+        <div class="manga-strip" id="mangaStrip"></div>
+      </div>
 
-    <!-- لوحة إعدادات تخصيص الخلفية والمظهر (SETTINGS SCREEN) -->
-    <div id="screen-settings" class="screen">
-        <div class="scroll">
-            <div class="section-title">لوحة تعديل ألوان الواجهة (OS Theme Class)</div>
-            <div id="theme-options" class="settings-grid" style="margin-top:10px;"></div>
+      <!-- ANNOTATION TOOLBAR -->
+      <div class="annotation-toolbar hidden" id="annotationToolbar">
+        <button class="tool-btn active" data-tool="select" title="تحديد">↖</button>
+        <div class="tool-sep"></div>
+        <button class="tool-btn" data-tool="highlight" title="تظليل">
+          <span style="background:#f6c90e;padding:0 6px;border-radius:3px;">أ</span>
+        </button>
+        <button class="tool-btn" data-tool="note" title="ملاحظة">📝</button>
+        <button class="tool-btn" data-tool="draw" title="رسم">✏️</button>
+        <button class="tool-btn" data-tool="sticky" title="ملصق">🟡</button>
+        <div class="tool-sep"></div>
+        <div class="color-row" id="colorRow">
+          <div class="color-dot active" data-color="#f6c90e" style="background:#f6c90e;"></div>
+          <div class="color-dot" data-color="#4fc3f7" style="background:#4fc3f7;"></div>
+          <div class="color-dot" data-color="#ef5350" style="background:#ef5350;"></div>
+          <div class="color-dot" data-color="#66bb6a" style="background:#66bb6a;"></div>
+          <div class="color-dot" data-color="#ce93d8" style="background:#ce93d8;"></div>
         </div>
-        <div class="scroll">
-            <div class="section-title">نقوش الزجاج الخلفية للشاشة (CRT Screen Grid)</div>
-            <div id="bg-options" class="settings-grid" style="margin-top:10px;"></div>
+        <div class="tool-sep"></div>
+        <button class="tool-btn" id="btnClearDraw" title="مسح الرسم">🗑</button>
+      </div>
+
+    </section>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-tabs">
+        <button class="tab-btn active" data-tab="chat">💬 دردشة</button>
+        <button class="tab-btn" data-tab="members">👥 الأعضاء</button>
+        <button class="tab-btn" data-tab="bookmarks">🔖 علامات</button>
+        <button class="tab-btn" data-tab="annotations">✍ تعليقات</button>
+      </div>
+
+      <!-- CHAT TAB -->
+      <div class="tab-content active" data-tab="chat">
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input-area">
+          <div class="chat-actions-row">
+            <button class="chat-action-btn" id="btnPageRef" title="أذكر صفحة">📄</button>
+            <button class="chat-action-btn" id="btnEmoji" title="إيموجي">😊</button>
+          </div>
+          <div class="chat-compose">
+            <textarea id="chatInput" placeholder="اكتب رسالة..." rows="1" dir="auto"></textarea>
+            <button class="send-btn" id="btnSend">↑</button>
+          </div>
         </div>
-    </div>
+      </div>
+
+      <!-- MEMBERS TAB -->
+      <div class="tab-content hidden" data-tab="members">
+        <div class="members-list" id="membersList"></div>
+        <div class="host-controls hidden" id="hostControls">
+          <h4>تحكم المضيف</h4>
+          <label class="toggle-row">
+            <span>مزامنة الصفحات</span>
+            <div class="toggle-switch" id="syncSwitch"></div>
+          </label>
+        </div>
+      </div>
+
+      <!-- BOOKMARKS TAB -->
+      <div class="tab-content hidden" data-tab="bookmarks">
+        <div class="bookmarks-header">
+          <button class="btn-secondary sm" id="btnAddBookmark">+ إضافة علامة هنا</button>
+        </div>
+        <div class="bookmarks-list" id="bookmarksList"></div>
+      </div>
+
+      <!-- ANNOTATIONS TAB -->
+      <div class="tab-content hidden" data-tab="annotations">
+        <div class="annotations-list" id="annotationsList"></div>
+      </div>
+
+    </aside>
+  </main>
+
+  <!-- PAGE INDICATOR -->
+  <div class="page-indicator" id="pageIndicator">
+    <span id="currentPageDisplay">١</span>
+    <span class="page-sep">/</span>
+    <span id="totalPagesDisplay">?</span>
+  </div>
 
 </div>
 
-<!-- المكونات البرمجية المنبثقة المشتركة -->
-<div class="toast" id="toast"></div>
-<div class="modal-bg" id="modal-bg">
-    <div class="modal">
-        <div class="modal-close" id="modal-close-btn">✕</div>
-        <div class="modal-title" id="modal-title">ملف اللاعب البكسلي</div>
-        <div id="modal-body"></div>
-    </div>
+<!-- ═══════════════════════════════════════════
+     EMOJI PICKER
+═══════════════════════════════════════════ -->
+<div class="emoji-picker hidden" id="emojiPicker">
+  <div class="emoji-grid">
+    😄 😂 🤔 😍 😢 😡 🤯 🥰 😎 🤩
+    👍 👎 ❤️ 🔥 💯 ✨ 👏 🙏 💪 🎉
+    📖 📚 ✍️ 💬 ⭐ 🌙 🎭 🗡️ 🐉 🌿
+  </div>
 </div>
 
-<script src="js/app.js"></script>
+<!-- ═══════════════════════════════════════════
+     STICKY NOTE EDITOR
+═══════════════════════════════════════════ -->
+<div class="sticky-editor hidden" id="stickyEditor">
+  <textarea id="stickyText" placeholder="اكتب ملاحظتك..." dir="auto"></textarea>
+  <div class="sticky-actions">
+    <button class="btn-primary sm" id="btnSaveSticky">حفظ</button>
+    <button class="btn-ghost sm" id="btnCancelSticky">إلغاء</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TOAST NOTIFICATIONS
+═══════════════════════════════════════════ -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ═══════════════════════════════════════════
+     KEYBOARD SHORTCUTS HINT
+═══════════════════════════════════════════ -->
+<div class="shortcuts-hint" id="shortcutsHint">
+  <span><kbd>←</kbd><kbd>→</kbd> تقليب</span>
+  <span><kbd>C</kbd> دردشة</span>
+  <span><kbd>B</kbd> علامة</span>
+  <span><kbd>A</kbd> تعليقات</span>
+  <span><kbd>?</kbd> مساعدة</span>
+</div>
+
+<script type="module" src="firebase-init.js"></script>
+<script type="module" src="js/app.js"></script>
 </body>
 </html>

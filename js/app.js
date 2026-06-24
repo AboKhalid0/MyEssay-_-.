@@ -1,5 +1,4 @@
-import { getStorageInstance, initFirebase, getDb } from './firebase-init.js';
-import { ref as storageRef, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
+import { initFirebase, getDb } from './firebase-init.js';
 import { ref, set, onValue, push, onChildAdded, onDisconnect, update, remove } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
 
 // --- Configuration & State ---
@@ -88,7 +87,6 @@ function showToast(msg, type = 'info') {
 
 // --- Event Listeners ---
 function setupEventListeners() {
-  // Avatar Selection (Restored)
   DOM.lobby.avatarOptions.addEventListener('click', (e) => {
     if (e.target.tagName === 'SPAN') {
       STATE.userAvatar = e.target.dataset.emoji;
@@ -96,7 +94,6 @@ function setupEventListeners() {
     }
   });
 
-  // Firebase Config Toggle & Save (Unified and Fixed)
   DOM.lobby.btnToggleConfig.addEventListener('click', () => DOM.lobby.configForm.classList.toggle('hidden'));
   DOM.lobby.btnSaveConfig.addEventListener('click', () => {
     const config = {
@@ -116,7 +113,6 @@ function setupEventListeners() {
     }
   });
 
-  // Room Creation & Join
   DOM.lobby.btnCreateRoom.addEventListener('click', () => DOM.lobby.modalCreate.classList.remove('hidden'));
   DOM.lobby.btnCancelCreate.addEventListener('click', () => DOM.lobby.modalCreate.classList.add('hidden'));
   DOM.lobby.btnConfirmCreate.addEventListener('click', createRoom);
@@ -126,7 +122,6 @@ function setupEventListeners() {
     else showToast('كود الغرفة غير صحيح', 'error');
   });
 
-  // Leave Room & Toggles
   DOM.room.btnBack.addEventListener('click', leaveRoom);
   DOM.room.btnToggleSidebar.addEventListener('click', () => document.getElementById('sidebar').classList.toggle('collapsed'));
   document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -138,22 +133,18 @@ function setupEventListeners() {
     });
   });
 
-  // File Upload & URL Loader
   DOM.viewer.btnUpload.addEventListener('click', () => DOM.viewer.fileInput.click());
   DOM.viewer.fileInput.addEventListener('change', handleFileUpload);
   setupUrlLoader();
 
-  // Navigation Setup
   setupNavigation(DOM.viewer.pdf.prev, DOM.viewer.pdf.next);
   setupNavigation(DOM.viewer.epub.prev, DOM.viewer.epub.next);
 
-  // Chat
   DOM.chat.btnSend.addEventListener('click', sendChatMessage);
   DOM.chat.input.addEventListener('keypress', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); }
   });
 
-  // Setup Drawing Tools
   setupAnnotationTools();
 }
 
@@ -162,25 +153,48 @@ function setupNavigation(prevBtn, nextBtn) {
   nextBtn.addEventListener('click', () => changePage(-1)); 
 }
 
+// 🌐 THE NEW SMART URL PARSER
 function setupUrlLoader() {
   const btnLoadUrl = document.getElementById('btnLoadUrl');
   const urlInput = document.getElementById('docUrlInput');
   if(!btnLoadUrl || !urlInput) return;
   
   btnLoadUrl.addEventListener('click', async () => {
-    const url = urlInput.value.trim();
-    if (!url) return;
+    const rawUrl = urlInput.value.trim();
+    if (!rawUrl) return;
     
-    const type = url.endsWith('.epub') ? 'epub' : 'pdf';
-    const docName = url.split('/').pop() || "مستند عبر الرابط";
+    let finalUrl = rawUrl;
+
+    // Detect Google Drive links and convert to direct downloads
+    const gDriveRegex = /\/file\/d\/([a-zA-Z0-9_-]+)/;
+    const match = rawUrl.match(gDriveRegex);
+
+    if (match) {
+      const fileId = match[1];
+      const directUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+      // Wrap in CORS Proxy
+      finalUrl = `https://corsproxy.io/?${encodeURIComponent(directUrl)}`;
+    } else {
+      // Wrap standard URLs in CORS Proxy to bypass browser security
+      finalUrl = `https://corsproxy.io/?${encodeURIComponent(rawUrl)}`;
+    }
+
+    const type = rawUrl.toLowerCase().includes('.epub') ? 'epub' : 'pdf';
+    const docName = "كتاب عبر الرابط"; 
     STATE.loadedDocName = docName;
 
-    await loadDocumentFromUrl(url, type);
+    try {
+      showToast("جاري تحميل الكتاب...", "info");
+      await loadDocumentFromUrl(finalUrl, type);
 
-    if (STATE.isHost) {
-      set(ref(STATE.db, `rooms/${STATE.roomCode}/doc`), {
-        name: docName, type: type, isLocal: false, url: url
-      });
+      if (STATE.isHost) {
+        set(ref(STATE.db, `rooms/${STATE.roomCode}/doc`), {
+          name: docName, type: type, isLocal: false, url: finalUrl
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("فشل التحميل. تأكد من أن الرابط مباشر وملفه أقل من 25 ميجابايت.", "error");
     }
   });
 }
@@ -296,7 +310,7 @@ function listenToDocChanges() {
   });
 }
 
-// --- Document Rendering ---
+// --- Document Rendering (Local Files ONLY) ---
 async function handleFileUpload(e) {
   const file = e.target.files[0];
   if (!file) return;
@@ -305,27 +319,13 @@ async function handleFileUpload(e) {
   await loadDocumentFromUrl(URL.createObjectURL(file), file.type === 'application/pdf' ? 'pdf' : 'epub');
 
   if (STATE.isHost) {
-    showToast(`جاري رفع ${file.name} للغرفة...`, 'info'); 
-    
-    const st = getStorageInstance();
-    const fileRef = storageRef(st, `rooms/${STATE.roomCode}/${file.name}`);
-    
-    try {
-      await uploadBytes(fileRef, file);
-      const downloadUrl = await getDownloadURL(fileRef);
-      
-      set(ref(STATE.db, `rooms/${STATE.roomCode}/doc`), {
-        name: file.name,
-        type: STATE.currentDocType,
-        isLocal: false, 
-        url: downloadUrl
-      });
-      
-      showToast('تم رفع الملف بنجاح! يمكن لأصدقائك رؤيته الآن.', 'success'); 
-    } catch (error) {
-      console.error("Upload failed:", error);
-      showToast('فشل في رفع الملف.', 'error');
-    }
+    // Tell Firebase the name of the file so guests know what to upload
+    set(ref(STATE.db, `rooms/${STATE.roomCode}/doc`), {
+      name: file.name,
+      type: STATE.currentDocType,
+      isLocal: true, 
+      url: null
+    });
   }
 }
 
@@ -377,7 +377,6 @@ async function renderCurrentPage() {
     
     await page.render({ canvasContext: ctx, viewport: viewport }).promise;
 
-    // Setup Drawing Canvas to match PDF exactly
     const drawCanvas = document.getElementById('drawCanvas');
     if (drawCanvas) {
       drawCanvas.width = canvas.width;

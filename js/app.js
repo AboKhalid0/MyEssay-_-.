@@ -165,18 +165,19 @@ function setupUrlLoader() {
     
     let finalUrl = rawUrl;
 
-    // Detect Google Drive links and convert to direct downloads
+    // 1. Detect Google Drive links and convert to direct downloads
     const gDriveRegex = /\/file\/d\/([a-zA-Z0-9_-]+)/;
     const match = rawUrl.match(gDriveRegex);
 
     if (match) {
       const fileId = match[1];
+      // Google Drive direct download URL
       const directUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
-      // Wrap in CORS Proxy
-      finalUrl = `https://corsproxy.io/?${encodeURIComponent(directUrl)}`;
+      // Wrap in AllOrigins Proxy (Allows raw binary files)
+      finalUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(directUrl)}`;
     } else {
-      // Wrap standard URLs in CORS Proxy to bypass browser security
-      finalUrl = `https://corsproxy.io/?${encodeURIComponent(rawUrl)}`;
+      // Wrap standard URLs in AllOrigins Proxy
+      finalUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(rawUrl)}`;
     }
 
     const type = rawUrl.toLowerCase().includes('.epub') ? 'epub' : 'pdf';
@@ -184,7 +185,7 @@ function setupUrlLoader() {
     STATE.loadedDocName = docName;
 
     try {
-      showToast("جاري تحميل الكتاب...", "info");
+      showToast("جاري تحميل الكتاب...", "info"); // "Loading book..."
       await loadDocumentFromUrl(finalUrl, type);
 
       if (STATE.isHost) {
@@ -194,7 +195,7 @@ function setupUrlLoader() {
       }
     } catch (err) {
       console.error(err);
-      showToast("فشل التحميل. تأكد من أن الرابط مباشر وملفه أقل من 25 ميجابايت.", "error");
+      showToast("فشل التحميل. تأكد من أن الرابط مباشر وملفه أقل من ٢٥ ميجابايت.", "error");
     }
   });
 }

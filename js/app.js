@@ -1,5 +1,5 @@
 
-import { initFirebase, saveConfig, loadConfig, hasConfig, getDb } from './firebase-init.js';
+import { initFirebase, getDb } from './firebase-init.js';
 
 // ═══════════════════════════════════════════════════════════
 // STATE

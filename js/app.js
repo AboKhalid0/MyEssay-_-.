@@ -146,31 +146,16 @@ function initLobby() {
   });
   $('avatarOptions').querySelector('span').classList.add('selected');
 
-  // firebase config
-  $('btnToggleConfig').addEventListener('click', () => $('configForm').classList.toggle('hidden'));
-  $('btnSaveConfig').addEventListener('click', () => {
-    const cfg = {
-      apiKey:        $('fbApiKey').value.trim(),
-      projectId:     $('fbProjectId').value.trim(),
-      databaseURL:   $('fbDbUrl').value.trim(),
-      authDomain:    $('fbProjectId').value.trim() + '.firebaseapp.com',
-      storageBucket: $('fbProjectId').value.trim() + '.appspot.com',
-    };
-    if (!cfg.apiKey || !cfg.projectId || !cfg.databaseURL) { toast('يرجى تعبئة جميع الحقول','error'); return; }
-    saveConfig(cfg);
-    toast('تم حفظ إعداد Firebase ✓','success');
-    $('configForm').classList.add('hidden');
-  });
-  const cfg = loadConfig();
-  if (cfg) { $('fbApiKey').value=cfg.apiKey||''; $('fbProjectId').value=cfg.projectId||''; $('fbDbUrl').value=cfg.databaseURL||''; }
-
+  // أزرار إنشاء والانضمام للغرفة
   $('btnCreateRoom').addEventListener('click', () => {
     if (!$('usernameInput').value.trim()) { toast('أدخل اسمك أولاً','error'); return; }
     show($('modalCreateRoom'));
   });
+  
   $('btnCancelCreate').addEventListener('click', () => hide($('modalCreateRoom')));
   $('modalCreateRoom').querySelector('.modal-backdrop').addEventListener('click', () => hide($('modalCreateRoom')));
   $('btnConfirmCreate').addEventListener('click', createRoom);
+  
   $('btnJoinRoom').addEventListener('click', joinRoom);
   $('roomCodeInput').addEventListener('keydown', e => { if(e.key==='Enter') joinRoom(); });
 }

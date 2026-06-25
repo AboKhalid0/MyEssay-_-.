@@ -283,26 +283,24 @@ function enterRoom() {
   $('sidebar').classList.remove('collapsed');
   updateSyncUI();
 
+  // 1. زر تغيير المزامنة العلوي (متاح للجميع)
   $('syncToggle').addEventListener('click', () => {
-    if (!S.isHost) { toast('فقط المضيف يمكنه تغيير وضع المزامنة','info'); return; }
     S.syncMode = !S.syncMode;
     dbUpdate('rooms/' + S.room.id, { syncMode: S.syncMode });
     updateSyncUI();
   });
 
-  // Instant sync button — visible to all, host broadcasts current page
+  // 2. زر المزامنة الفورية Sync Now (متاح للجميع)
   $('btnSyncNow')?.addEventListener('click', () => {
-    if (!S.isHost) {
-      toast('فقط المضيف يبث المزامنة الفورية','info'); return;
-    }
     dbSet('rooms/' + S.room.id + '/hostPage', S.currentPage);
     dbSet('rooms/' + S.room.id + '/syncPing', Date.now());
     toast('تمت مزامنة الجميع على صفحة ' + toAr(S.currentPage),'success');
   });
 
-  if (S.isHost) {
-    show($('hostControls'));
-    const sw = $('syncSwitch');
+  // 3. إظهار شريط تحكم المضيف للكل
+  show($('hostControls'));
+  const sw = $('syncSwitch');
+  if (sw) {
     sw.className = 'toggle-switch' + (S.syncMode ? ' on' : '');
     sw.addEventListener('click', () => {
       S.syncMode = !S.syncMode;
@@ -374,22 +372,25 @@ function setupRoomListeners() {
   });
 
   // Host page broadcasts (sync)
+// بث الصفحات: أي واحد يقلب الصفحة، الباقين يتحركون معه
   dbListen('rooms/' + S.room.id + '/hostPage', (page) => {
     if (!page) return;
-    if (!S.isHost && S.syncMode && page !== S.currentPage) {
+    if (S.syncMode && page !== S.currentPage) {
       goToPage(page, false);
     }
   });
 
-  // Instant sync ping (forces page jump even in free mode)
+  // المزامنة الفورية: الاستجابة لضغطة Sync Now من أي عضو
   dbListen('rooms/' + S.room.id + '/syncPing', (ts) => {
-    if (!ts || S.isHost) return;
-    // Fetch host's current page and jump
+    if (!ts) return;
     fbMod.get(fbRef('rooms/' + S.room.id + '/hostPage')).then(snap => {
       const p = snap.val();
       if (p && p !== S.currentPage) goToPage(p, false);
     });
   });
+
+  // استقبال الملفات: حذفنا شرط (if isHost return) ليظهر إشعار الملف للهوست أيضاً
+
 
   // ── CHAT via Firebase (real-time for all members) ─────────
   dbListen('rooms/' + S.room.id + '/chat', (data) => {
@@ -409,7 +410,6 @@ function setupRoomListeners() {
     if (!docInfo) return;
     if (S.sharedDocUrl === (docInfo.url || docInfo.name)) return;
     S.sharedDocUrl = docInfo.url || docInfo.name;
-    if (S.isHost) return;
     showDocSharedBanner(docInfo);
   });
 
@@ -598,12 +598,11 @@ function renderMemberPositions() {
 // DOCUMENT LOADER
 // ═══════════════════════════════════════════════════════════
 function setupDocLoader() {
-  $('btnOpenDoc').addEventListener('click', () => {
-    // show viewer-empty but also allow clearing current doc
+$('btnOpenDoc').addEventListener('click', () => {
     resetViewers();
     show($('viewerEmpty'));
-    if (S.isHost && firebaseReady && S.room?.id) {
-      // Clear shared doc so members also see empty state
+    // السماح لأي عضو بتصفير المستند في الغرفة
+    if (firebaseReady && S.room?.id) {
       dbRemove('rooms/' + S.room.id + '/sharedDoc');
       dbRemove('rooms/' + S.room.id + '/hostPage');
       S.sharedDocUrl = null;
@@ -967,10 +966,11 @@ function afterPageChange(broadcast=true) {
   updateProgress(); saveProgress(); renderAnnotationsOnPage();
 
   if (!broadcast || !firebaseReady || !S.room?.id) return;
-  // All users update their own page
+
   dbUpdate('rooms/' + S.room.id + '/members/' + S.user.id, { page: S.currentPage });
-  // Host also broadcasts for sync
-  if (S.isHost && S.syncMode) {
+  
+  // كان سابقاً يشترط: (if S.isHost) .. الآن أي شخص يقلب الصفحة يرسلها للسيرفر
+  if (S.syncMode) {
     dbSet('rooms/' + S.room.id + '/hostPage', S.currentPage);
   }
 }

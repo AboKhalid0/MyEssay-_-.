@@ -1275,7 +1275,6 @@ function showFirebaseRulesHelp() {
 // ═══════════════════════════════════════════════════════════
 async function boot() {
   await setupFirebase();
-  if (!hasConfig()) show($('firebaseConfigSection'));
   initLobby();
 
   // Mobile swipe

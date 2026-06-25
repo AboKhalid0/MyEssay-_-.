@@ -1,45 +1,26 @@
-// firebase-init.js
-// Handles Firebase setup, config persistence, and exports db/auth
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getDatabase } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
 
-const STORAGE_KEY = 'maktaba_firebase_config';
+// 1. ضع معلومات مشروعك هنا مباشرة
+const firebaseConfig = {
+  apiKey: "AIzaSyBgHFTC6hHQ8lL2I6AqtsW13jDgJodiRq0",
+  authDomain: "my-sweetlibrary1.firebaseapp.com",
+  databaseURL: "https://my-sweetlibrary1-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "my-sweetlibrary1",
+  storageBucket: "my-sweetlibrary1.firebasestorage.app",
+  messagingSenderId: "805197492729",
+  appId: "1:805197492729:web:cd73524f0ed08a9e818d28"
+};
 
-let db   = null;
-let auth = null;
-let app  = null;
-
-export function getDb()   { return db;   }
-export function getAuth() { return auth; }
+let app;
+let db;
 
 export async function initFirebase() {
-  const cfg = loadConfig();
-  if (!cfg) return false;
-
-  try {
-    const { initializeApp }  = window.__firebaseModules;
-    const { getDatabase }    = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js');
-    const { getAuth: fa }    = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
-
-    app  = initializeApp(cfg, 'maktaba');
-    db   = getDatabase(app);
-    auth = fa(app);
-    return true;
-  } catch (e) {
-    console.error('Firebase init failed:', e);
-    return false;
-  }
+  app = initializeApp(firebaseConfig);
+  db = getDatabase(app);
+  return true; 
 }
 
-export function saveConfig(cfg) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg));
-}
-
-export function loadConfig() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch { return null; }
-}
-
-export function hasConfig() {
-  return !!loadConfig();
+export function getDb() {
+  return db;
 }

@@ -83,16 +83,13 @@
     <!-- Firebase Config -->
     <div class="firebase-config-section" id="firebaseConfigSection">
       <button class="btn-ghost" id="btnToggleConfig">⚙ إعداد Firebase</button>
-<div class="config-form hidden" id="configForm">
-  <p class="config-hint">أدخل بيانات مشروع Firebase الخاص بك (مجاني)</p>
-  <input type="text" id="fbApiKey" placeholder="apiKey" dir="ltr" />
-  <input type="text" id="fbProjectId" placeholder="projectId" dir="ltr" />
-  <input type="text" id="fbDbUrl" placeholder="databaseURL" dir="ltr" />
-  
-  <input type="text" id="fbStorageBucket" placeholder="storageBucket" dir="ltr" />
-  
-  <button class="btn-primary" id="btnSaveConfig">حفظ الإعداد</button>
-</div>
+      <div class="config-form hidden" id="configForm">
+        <p class="config-hint">أدخل بيانات مشروع Firebase الخاص بك (مجاني)</p>
+        <input type="text" id="fbApiKey" placeholder="apiKey" dir="ltr" />
+        <input type="text" id="fbProjectId" placeholder="projectId" dir="ltr" />
+        <input type="text" id="fbDbUrl" placeholder="databaseURL" dir="ltr" />
+        <button class="btn-primary" id="btnSaveConfig">حفظ الإعداد</button>
+      </div>
     </div>
   </div>
 </div>
@@ -352,7 +349,7 @@
   <span><kbd>?</kbd> مساعدة</span>
 </div>
 
-<script type="module" src="firebase-init.js"></script>
+<script type="module" src="js/firebase-init.js"></script>
 <script type="module" src="js/app.js"></script>
 </body>
 </html>

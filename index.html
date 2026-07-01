@@ -19,7 +19,6 @@
   <link rel="stylesheet" href="css/main.css" />
 </head>
 <body>
-
 <!-- ══ LOBBY ══════════════════════════════════════════ -->
 <div id="lobby" class="screen active">
   <div class="lobby-bg"></div>
@@ -69,7 +68,6 @@
     </div>
   </div>
 </div>
-
 <!-- ══ CREATE ROOM MODAL ═══════════════════════════════ -->
 <div id="modalCreateRoom" class="modal hidden">
   <div class="modal-backdrop"></div>
@@ -90,10 +88,8 @@
     </div>
   </div>
 </div>
-
 <!-- ══ READING ROOM ════════════════════════════════════ -->
 <div id="room" class="screen hidden">
-
   <!-- TOPBAR -->
   <header class="topbar">
     <div class="topbar-right">
@@ -116,7 +112,6 @@
       <button class="icon-btn" id="btnOpenDoc"       title="فتح مستند">📂</button>
     </div>
   </header>
-
   <!-- PROGRESS BAR -->
   <div class="progress-shelf">
     <div class="progress-track">
@@ -125,13 +120,10 @@
     </div>
     <div class="progress-label" id="progressLabel">٠٪</div>
   </div>
-
   <!-- MAIN AREA -->
   <main class="reader-layout">
-
     <!-- VIEWER -->
     <section class="viewer-area" id="viewerArea">
-
       <!-- EMPTY STATE -->
       <div class="viewer-empty" id="viewerEmpty">
         <div class="empty-icon">📚</div>
@@ -147,7 +139,6 @@
         </div>
         <input type="file" id="fileInput" accept=".pdf,.epub,.cbz,.txt,.jpg,.jpeg,.png,.gif,.webp" class="hidden" />
       </div>
-
       <!-- PDF VIEWER -->
       <div class="pdf-viewer hidden" id="pdfViewer">
         <div class="page-nav page-nav-right" id="btnPrevPage"><span>›</span></div>
@@ -161,7 +152,6 @@
         </div>
         <div class="page-nav page-nav-left" id="btnNextPage"><span>›</span></div>
       </div>
-
       <!-- EPUB VIEWER -->
       <div class="epub-viewer hidden" id="epubViewer">
         <div class="page-nav page-nav-right" id="epubBtnPrev"><span>›</span></div>
@@ -174,7 +164,6 @@
         </div>
         <div class="page-nav page-nav-left" id="epubBtnNext"><span>›</span></div>
       </div>
-
       <!-- MANGA/IMAGE VIEWER -->
       <div class="manga-viewer hidden" id="mangaViewer">
         <div class="manga-nav-btn manga-nav-right" id="mangaBtnPrev"><span>›</span></div>
@@ -188,10 +177,8 @@
         <div class="manga-nav-btn manga-nav-left"  id="mangaBtnNext"><span>›</span></div>
         <div class="manga-strip" id="mangaStrip"></div>
       </div>
-
       <!-- ══ DRAWING TOOLBAR — always visible ════════ -->
       <div class="draw-toolbar hidden" id="drawToolbar">
-
         <!-- Tools -->
         <div class="dtb-group">
           <button class="dtb-btn active" data-tool="pen"       title="قلم (P)">
@@ -228,9 +215,7 @@
             <svg viewBox="0 0 24 24"><path d="M4 0l8 18 3-7 7-3z"/></svg>
           </button>
         </div>
-
         <div class="dtb-sep"></div>
-
         <!-- Colors -->
         <div class="dtb-group dtb-colors" id="dtbColors">
           <div class="dtb-color active" data-color="#f6c90e" style="background:#f6c90e" title="ذهبي"></div>
@@ -247,25 +232,20 @@
             <span>+</span>
           </label>
         </div>
-
         <div class="dtb-sep"></div>
-
         <!-- Size -->
         <div class="dtb-group dtb-size-group">
           <span class="dtb-label">سماكة</span>
           <input type="range" id="dtbSize" min="1" max="40" value="4" class="dtb-slider" />
           <span class="dtb-size-val" id="dtbSizeVal">4</span>
         </div>
-
         <!-- Opacity -->
         <div class="dtb-group dtb-size-group">
           <span class="dtb-label">شفافية</span>
           <input type="range" id="dtbOpacity" min="10" max="100" value="100" class="dtb-slider" />
           <span class="dtb-size-val" id="dtbOpacityVal">100%</span>
         </div>
-
         <div class="dtb-sep"></div>
-
         <!-- Actions -->
         <div class="dtb-group">
           <button class="dtb-btn" id="btnUndo"      title="تراجع (Ctrl+Z)">
@@ -278,10 +258,8 @@
             <svg viewBox="0 0 24 24"><path d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12z"/></svg>
           </button>
         </div>
-
       </div>
       <!-- end draw-toolbar -->
-
       <!-- TEXT INPUT POPUP -->
       <div class="text-input-popup hidden" id="textInputPopup">
         <textarea id="textInputArea" placeholder="اكتب هنا..." dir="auto" rows="3"></textarea>
@@ -290,7 +268,6 @@
           <button class="btn-ghost sm"   id="btnCancelText">إلغاء</button>
         </div>
       </div>
-
       <!-- STICKY EDITOR -->
       <div class="sticky-editor hidden" id="stickyEditor">
         <div class="sticky-editor-header">📝 ملاحظة</div>
@@ -300,9 +277,7 @@
           <button class="btn-ghost sm"   id="btnCancelSticky">إلغاء</button>
         </div>
       </div>
-
     </section>
-
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-tabs">
@@ -311,7 +286,6 @@
         <button class="tab-btn" data-tab="bookmarks">🔖</button>
         <button class="tab-btn" data-tab="annotations">✍</button>
       </div>
-
       <div class="tab-content active" data-tab="chat">
         <div class="chat-messages" id="chatMessages"></div>
         <div class="chat-input-area">
@@ -325,7 +299,6 @@
           </div>
         </div>
       </div>
-
       <div class="tab-content hidden" data-tab="members">
         <div class="members-list" id="membersList"></div>
         <div class="host-controls hidden" id="hostControls">
@@ -336,30 +309,25 @@
           </label>
         </div>
       </div>
-
       <div class="tab-content hidden" data-tab="bookmarks">
         <div class="bookmarks-header">
           <button class="btn-secondary sm" id="btnAddBookmark">+ علامة هنا</button>
         </div>
         <div class="bookmarks-list" id="bookmarksList"></div>
       </div>
-
       <div class="tab-content hidden" data-tab="annotations">
         <div class="annotations-list" id="annotationsList"></div>
       </div>
     </aside>
   </main>
-
   <!-- PAGE INDICATOR -->
   <div class="page-indicator hidden" id="pageIndicator">
     <span id="currentPageDisplay">١</span>
     <span class="page-sep">/</span>
     <span id="totalPagesDisplay">?</span>
   </div>
-
 </div>
 <!-- end room -->
-
 <!-- EMOJI PICKER -->
 <div class="emoji-picker hidden" id="emojiPicker">
   <div class="emoji-grid">
@@ -368,10 +336,8 @@
     📖 📚 ✍️ 💬 ⭐ 🌙 🎭 🗡️ 🐉 🌿
   </div>
 </div>
-
 <!-- TOAST -->
 <div class="toast-container" id="toastContainer"></div>
-
 <!-- SHORTCUTS -->
 <div class="shortcuts-hint" id="shortcutsHint">
   <span><kbd>←→</kbd> تقليب</span>
@@ -382,7 +348,6 @@
   <span><kbd>V</kbd> تحديد</span>
   <span><kbd>Ctrl+Z</kbd> تراجع</span>
 </div>
-
 <script type="module" src="js/firebase-init.js"></script>
 <script type="module" src="js/app.js"></script>
 </body>

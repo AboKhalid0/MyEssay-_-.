@@ -137,18 +137,24 @@ function buildUser() {
 
 async function createRoom() {
   buildUser();
-  const name    = $('roomNameInput').value.trim() || 'غرفة قراءة';
+  const name    = $('roomNameInput').value.trim() || 'مجلس قراءة';
   const pass    = $('roomPassInput').value.trim();
   const readDir = document.querySelector('input[name="readDir"]:checked').value;
+  const isPersistent = $('isPersistentRoom')?.checked; // هل هي غرفة دائمة؟
   const code    = genCode();
   
-  S.isHost=true; S.syncMode=true;
+  S.syncMode=true;
   S.room = { id:genId(), name, code, hostId:S.user.id, readDir, syncMode:true, pass:pass||null, created:Date.now() };
   
   await setupFirebase();
   if (firebaseReady) {
     await dbSet('rooms/'+S.room.id, { ...S.room, members:{ [S.user.id]:{ name:S.user.name, emoji:S.user.emoji, page:1, joinedAt:Date.now(), online:true } } });
     await dbSet('codes/'+code, S.room.id);
+    
+    // إذا كانت دائمة، احفظها في قائمة الغرف العامة
+    if (isPersistent) {
+      await dbSet('publicRooms/'+S.room.id, { name, hostName: S.user.name, hasPass: !!pass, created: Date.now() });
+    }
   }
   hide($('modalCreateRoom')); enterRoom();
 }
@@ -161,7 +167,7 @@ async function joinRoom() {
   
   if (!firebaseReady) {
     S.room={ id:'offline',name:'وضع عدم الاتصال',code,hostId:S.user.id,readDir:'rtl',syncMode:false };
-    S.isHost=true; enterRoom(); toast('وضع بدون Firebase','info'); return;
+    enterRoom(); toast('وضع بدون Firebase','info'); return;
   }
   
   try {
@@ -184,6 +190,15 @@ async function joinRoom() {
     
     if (roomData.pass && roomData.pass !== prompt('كلمة المرور:')){ toast('كلمة مرور خاطئة','error'); return; }
     
+    finishJoin(roomId, roomData); // استخدمنا الدالة المساعدة هنا
+  } catch(e) {
+    console.error('joinRoom:',e);
+    toast('خطأ: '+e.message,'error');
+  }
+}
+    
+    if (roomData.pass && roomData.pass !== prompt('كلمة المرور:')){ toast('كلمة مرور خاطئة','error'); return; }
+    
     S.room   = { ...roomData, id:roomId };
     S.isHost = roomData.hostId === S.user.id;
     await dbUpdate('rooms/'+roomId+'/members/'+S.user.id, { name:S.user.name, emoji:S.user.emoji, page:1, joinedAt:Date.now(), online:true });
@@ -193,6 +208,60 @@ async function joinRoom() {
     if (e.message?.includes('Permission')){ toast('خطأ في صلاحيات Firebase','error'); showFirebaseRulesHelp(); }
     else toast('خطأ: '+e.message,'error');
   }
+}
+
+function listenToPublicRooms() {
+  if (!firebaseReady) return;
+  onValue(fbRef('publicRooms'), snap => {
+    const rooms = snap.val() || {};
+    const grid = $('publicRoomsGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    const entries = Object.entries(rooms);
+    
+    if (entries.length === 0) {
+      grid.innerHTML = '<p style="color:var(--txt-m);font-size:0.85rem;grid-column:1/-1;text-align:center;">لا توجد مجالس دائمة حالياً. كن أول من ينشئ واحداً!</p>';
+      return;
+    }
+    
+    entries.forEach(([id, r]) => {
+      const el = document.createElement('div');
+      el.className = 'public-room-card';
+      el.innerHTML = `
+        <div class="pr-name">${r.name}</div>
+        <div class="pr-meta">المؤسس: ${r.hostName} ${r.hasPass ? '🔒' : '🔓'}</div>
+        <button class="btn-secondary sm" style="width:100%">دخول للمجلس</button>
+      `;
+      el.querySelector('button').onclick = () => joinPersistentRoom(id, r.hasPass);
+      grid.appendChild(el);
+    });
+  });
+}
+
+async function joinPersistentRoom(roomId, hasPass) {
+  buildUser();
+  await setupFirebase();
+  if (!firebaseReady) return;
+
+  if (hasPass) {
+    const p = prompt('كلمة المرور للمجلس:');
+    if (p === null) return;
+    const rs = await get(fbRef('rooms/'+roomId));
+    if (!rs.exists()) { toast('المجلس غير موجود','error'); return; }
+    const roomData = rs.val();
+    if (roomData.pass !== p) { toast('كلمة مرور خاطئة','error'); return; }
+    finishJoin(roomId, roomData);
+  } else {
+    const rs = await get(fbRef('rooms/'+roomId));
+    if (!rs.exists()) { toast('المجلس غير موجود','error'); return; }
+    finishJoin(roomId, rs.val());
+  }
+}
+
+async function finishJoin(roomId, roomData) {
+  S.room   = { ...roomData, id:roomId };
+  await dbUpdate('rooms/'+roomId+'/members/'+S.user.id, { name:S.user.name, emoji:S.user.emoji, page:1, joinedAt:Date.now(), online:true });
+  enterRoom();
 }
 
 // ══════════════════════════════════════════════════════════
@@ -207,25 +276,23 @@ function enterRoom() {
   
   updateSyncUI();
   
+  // الآن، أي شخص يمكنه تفعيل أو إيقاف المزامنة!
   $('syncToggle').addEventListener('click', () => {
-    if (!S.isHost){ toast('فقط المضيف يغير المزامنة','info'); return; }
     S.syncMode = !S.syncMode;
     dbUpdate('rooms/'+S.room.id, { syncMode:S.syncMode });
     updateSyncUI();
   });
   
+  // أي شخص يمكنه بث مزامنة فورية!
   $('btnSyncNow').addEventListener('click', () => {
-    if (!S.isHost){ toast('فقط المضيف يبث مزامنة فورية','info'); return; }
     dbSet('rooms/'+S.room.id+'/hostPage', S.currentPage);
     dbSet('rooms/'+S.room.id+'/syncPing', Date.now());
     toast('تمت مزامنة الجميع على صفحة '+toAr(S.currentPage),'success');
   });
   
-  if (S.isHost) {
-    show($('hostControls'));
-    const sw=$('syncSwitch'); sw.className='toggle-switch'+(S.syncMode?' on':'');
-    sw.addEventListener('click', () => { S.syncMode=!S.syncMode; sw.className='toggle-switch'+(S.syncMode?' on':''); dbUpdate('rooms/'+S.room.id,{syncMode:S.syncMode}); updateSyncUI(); });
-  }
+show($('hostControls'));
+  const sw=$('syncSwitch'); sw.className='toggle-switch'+(S.syncMode?' on':'');
+  sw.addEventListener('click', () => { S.syncMode=!S.syncMode; sw.className='toggle-switch'+(S.syncMode?' on':''); dbUpdate('rooms/'+S.room.id,{syncMode:S.syncMode}); updateSyncUI(); });
   
   setupRoomListeners(); setupChat(); setupSidebar(); setupDocLoader();
   initDrawToolbar(); setupKeyboard();
@@ -237,6 +304,7 @@ function enterRoom() {
   
   addSystemMsg(S.user.emoji+' '+S.user.name+' انضم للغرفة');
 }
+
 
 function updateSyncUI() {
   const tog=$('syncToggle'); const lbl=$('syncLabel');
@@ -710,9 +778,15 @@ function afterPageChange(broadcast=true){
   $('currentPageDisplay').textContent=toAr(S.currentPage);
   $('totalPagesDisplay').textContent=toAr(S.totalPages);
   updateProgress(); saveProgress(); renderAnnotationsOnPage(); syncOverlaySize();
-  if(!broadcast||!firebaseReady||!S.room?.id)return;
+  
+  if(!broadcast||!firebaseReady||!S.room?.id) return;
+  
   dbUpdate('rooms/'+S.room.id+'/members/'+S.user.id,{page:S.currentPage});
-  if(S.isHost&&S.syncMode) dbSet('rooms/'+S.room.id+'/hostPage',S.currentPage);
+  
+  // إذا كانت المزامنة مفعلة، أي شخص يقلب الصفحة سيغير صفحة الغرفة كاملة!
+  if(S.syncMode) {
+    dbSet('rooms/'+S.room.id+'/hostPage', S.currentPage);
+  }
 }
 
 function updateProgress(){
@@ -1177,6 +1251,9 @@ async function boot() {
   await setupFirebase();
   initLobby();
   
+  // جلب الغرف الدائمة بمجرد تشغيل التطبيق
+  if (firebaseReady) listenToPublicRooms(); 
+  
   window.addEventListener('resize', ()=>{ syncOverlaySize(); });
   
   let tx=0;
@@ -1188,5 +1265,4 @@ async function boot() {
     navigatePage(S.room?.readDir==='rtl'?(diff>0?-1:1):(diff>0?1:-1));
   },{passive:true});
 }
-
 boot();

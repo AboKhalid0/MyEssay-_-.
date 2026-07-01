@@ -1,7 +1,6 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import { getDatabase } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
 
-// 1. ضع معلومات مشروعك هنا مباشرة
 const firebaseConfig = {
   apiKey: "AIzaSyBgHFTC6hHQ8lL2I6AqtsW13jDgJodiRq0",
   authDomain: "my-sweetlibrary1.firebaseapp.com",

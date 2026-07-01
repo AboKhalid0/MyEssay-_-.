@@ -340,11 +340,6 @@ function leaveRoom() {
   resetViewers(); setScreen('lobby');
 }
 
-function activateTab(name) {
-  $('sidebar').classList.remove('collapsed');
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
-  document.querySelectorAll('.tab-content').forEach(c=>{ c.classList.toggle('hidden',c.dataset.tab!==name); c.classList.toggle('active',c.dataset.tab===name); });
-}
 
 function setupChat() {
   const input=$('chatInput');

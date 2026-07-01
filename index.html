@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>مكتبة — قراءة جماعية</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -118,10 +118,10 @@
       <button class="icon-btn" id="btnCloseDoc" title="إغلاق المستند للجميع" style="color:var(--red);">✖</button>
     </div>
     <div class="topbar-left">
-      <!-- أزرار الجوال والتحكم بالقوائم -->
-      <button class="icon-btn" id="btnToggleDraw" title="أدوات الرسم">🖍️</button>
-      <button class="icon-btn" id="btnToggleSidebar" title="الدردشة والاعضاء">💬</button>
-      <button class="icon-btn" id="btnOpenDoc" title="فتح مستند">📂</button>
+      <div class="members-bar" id="membersBar"></div>
+      <button class="icon-btn" id="btnToggleTools" title="إظهار/إخفاء أدوات الرسم">🖌️</button>
+      <button class="icon-btn" id="btnToggleSidebar" title="الدردشة">💬</button>
+      <button class="icon-btn" id="btnOpenDoc"       title="فتح مستند">📂</button>
     </div>
   </header>
 
@@ -195,7 +195,6 @@
       </div>
 
       <!-- ══ DRAWING TOOLBAR ════════ -->
-      <!-- مدمج فيه كلاس hidden افتراضياً لكي لا يزعج القارئ على الجوال حتى يطلبه -->
       <div class="draw-toolbar hidden" id="drawToolbar">
         <!-- Tools -->
         <div class="dtb-group">
@@ -264,7 +263,7 @@
     </section>
 
     <!-- SIDEBAR -->
-    <aside class="sidebar collapsed" id="sidebar">
+    <aside class="sidebar" id="sidebar">
       <div class="sidebar-tabs">
         <button class="tab-btn active" data-tab="chat">💬</button>
         <button class="tab-btn" data-tab="members">👥</button>

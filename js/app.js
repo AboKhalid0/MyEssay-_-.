@@ -8,7 +8,7 @@ import { ref, set, update, onValue, push, remove, get, onDisconnect } from 'http
 const S = {
   user: null, room: null, doc: null,
   currentPage: 1, totalPages: 1,
-  syncMode: true, isHost: false, // لم تعد مستخدمة للقيود بفضل الديمقراطية
+  syncMode: true,
   members: {}, annotations: {}, bookmarks: [],
   pdfDoc: null, epubBook: null, epubRendition: null, mangaImages: [],
   dbListeners: [], sharedDocUrl: null, pendingSticky: null, _text: '',
@@ -102,10 +102,8 @@ function toDirectUrl(url) {
   if (m) return `https://drive.google.com/uc?export=download&id=${m[1]}`;
   m = url.match(/drive\.google\.com\/.*[?&]id=([^&]+)/);
   if (m) return `https://drive.google.com/uc?export=download&id=${m[1]}`;
-  if (url.includes('dropbox.com'))
-    return url.replace('www.dropbox.com','dl.dropboxusercontent.com').replace(/[?&]dl=0/,'');
-  if (url.includes('archive.org/details/'))
-    return url.replace('/details/','/download/');
+  if (url.includes('dropbox.com')) return url.replace('www.dropbox.com','dl.dropboxusercontent.com').replace(/[?&]dl=0/,'');
+  if (url.includes('archive.org/details/')) return url.replace('/details/','/download/');
   return url;
 }
 
@@ -217,10 +215,7 @@ async function createRoom() {
   if (firebaseReady) {
     await dbSet('rooms/'+S.room.id, { ...S.room, members:{ [S.user.id]:{ name:S.user.name, emoji:S.user.emoji, page:1, joinedAt:Date.now(), online:true } } });
     await dbSet('codes/'+code, S.room.id);
-    
-    if (isPersistent) {
-      await dbSet('publicRooms/'+S.room.id, { name, hostName: S.user.name, hasPass: !!pass, created: Date.now() });
-    }
+    if (isPersistent) await dbSet('publicRooms/'+S.room.id, { name, hostName: S.user.name, hasPass: !!pass, created: Date.now() });
   }
   hide($('modalCreateRoom')); enterRoom();
 }
@@ -253,9 +248,7 @@ async function joinRoom() {
       [roomId, roomData] = match;
       dbSet('codes/'+code, roomId);
     }
-    
     if (roomData.pass && roomData.pass !== prompt('كلمة المرور:')){ toast('كلمة مرور خاطئة','error'); return; }
-    
     finishJoin(roomId, roomData);
   } catch(e) {
     toast('خطأ: '+e.message,'error');
@@ -276,7 +269,9 @@ function enterRoom() {
   $('roomNameDisplay').textContent = S.room.name;
   $('roomCodeDisplay').textContent = S.room.code;
   $('roomCodeDisplay').onclick = () => { navigator.clipboard?.writeText(S.room.code); toast('تم نسخ الكود ✓','info'); };
-  $('sidebar').classList.remove('collapsed');
+  
+  // الوضع الافتراضي للجوال: إخفاء القوائم للحصول على مساحة قراءة كاملة
+  $('sidebar').classList.add('collapsed');
   
   updateSyncUI();
   
@@ -292,13 +287,43 @@ function enterRoom() {
     toast('تمت مزامنة الجميع على صفحة '+toAr(S.currentPage),'success');
   });
 
-  // زر إغلاق الملف الجديد للجميع
   $('btnCloseDoc').addEventListener('click', () => {
     if (!S.doc) return;
     if (confirm('هل أنت متأكد من إغلاق المستند عند جميع أفراد الغرفة؟')) {
       dbRemove('rooms/'+S.room.id+'/sharedDoc');
       dbRemove('rooms/'+S.room.id+'/hostPage');
+      resetViewers(); // Local reset
     }
+  });
+  
+  // زر إظهار/إخفاء أدوات الرسم
+  const btnToggleDraw = $('btnToggleDraw');
+  const drawToolbar = $('drawToolbar');
+  
+  // افتراضياً نخفي أدوات الرسم على الجوال إذا كانت الشاشة صغيرة
+  if (window.innerWidth <= 700) {
+      drawToolbar.classList.add('hidden');
+      document.body.classList.remove('draw-tools-active');
+  } else {
+      drawToolbar.classList.remove('hidden');
+      document.body.classList.add('draw-tools-active');
+      btnToggleDraw.classList.add('active');
+  }
+
+  btnToggleDraw.addEventListener('click', () => {
+      drawToolbar.classList.toggle('hidden');
+      
+      if (drawToolbar.classList.contains('hidden')) {
+          document.body.classList.remove('draw-tools-active');
+          btnToggleDraw.classList.remove('active');
+      } else {
+          document.body.classList.add('draw-tools-active');
+          btnToggleDraw.classList.add('active');
+      }
+      
+      // إعادة حساب حجم المستند ليملأ الفراغ فوراً
+      setTimeout(syncOverlaySize, 50); 
+      setTimeout(syncOverlaySize, 300); // تأكيد بعد انتهاء الانيميشن
   });
   
   show($('hostControls'));
@@ -366,14 +391,11 @@ function setupRoomListeners() {
   
   dbListen('rooms/'+S.room.id+'/sharedDoc', docInfo => {
     if (!docInfo) {
-      // أحدهم ضغط زر إغلاق الملف
-      resetViewers();
-      show($('viewerEmpty'));
+      resetViewers(); // تأكيد إغلاق المستند عند إزالته من الجميع
       S.sharedDocUrl = null;
       return;
     }
-    // تجاهل إذا أنا من قمت بالرفع
-    if (docInfo.uid === S.user.id) return;
+    if (docInfo.uid === S.user.id) return; // لا تظهر إشعار لي بملف رفعته للتو
     
     if (S.sharedDocUrl===(docInfo.url||docInfo.name)) return;
     S.sharedDocUrl = docInfo.url||docInfo.name;
@@ -391,13 +413,21 @@ function setupRoomListeners() {
 // SIDEBAR & CHAT
 // ══════════════════════════════════════════════════════════
 function setupSidebar() {
-  $('btnToggleSidebar').addEventListener('click', () => $('sidebar').classList.toggle('collapsed'));
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const t=btn.dataset.tab;
+  const btn = $('btnToggleSidebar');
+  const sidebar = $('sidebar');
+  
+  btn.addEventListener('click', () => {
+    sidebar.classList.toggle('collapsed');
+    btn.classList.toggle('active', !sidebar.classList.contains('collapsed'));
+    setTimeout(syncOverlaySize, 300);
+  });
+  
+  document.querySelectorAll('.tab-btn').forEach(tbtn => {
+    tbtn.addEventListener('click', () => {
+      const t=tbtn.dataset.tab;
       document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c=>{ c.classList.toggle('hidden',c.dataset.tab!==t); c.classList.toggle('active',c.dataset.tab===t); });
-      btn.classList.add('active');
+      tbtn.classList.add('active');
     });
   });
   $('btnBackToLobby').addEventListener('click', () => { if(confirm('مغادرة الغرفة؟'))leaveRoom(); });
@@ -478,29 +508,30 @@ function renderMemberPositions() {
 // ══════════════════════════════════════════════════════════
 function setupDocLoader() {
   $('btnOpenDoc').addEventListener('click', ()=>{
-    resetViewers(); show($('viewerEmpty'));
+    resetViewers(); 
   });
   
-  $('btnUploadFile').addEventListener('click', ()=>$('fileInput').click());
+  $('btnUploadFile').addEventListener('click', () => {
+    $('fileInput').value = ''; // حل مشكلة الرفع المزدوج: تنظيف المدخل قبل النقر
+    $('fileInput').click();
+  });
   
   $('fileInput').addEventListener('change', async e=>{
     const file = e.target.files[0]; 
     if(!file) return; 
-    e.target.value = ''; // لتمكين الرفع المتكرر لنفس الملف
 
     const MAX_SIZE = 3 * 1024 * 1024; // 3 MB
     if (file.size > MAX_SIZE) {
-      toast('حجم الملف كبير جداً! الحد الأقصى هو 3 ميجابايت للرفع المباشر.', 'error', 5000);
+      toast('حجم الملف كبير جداً! الحد الأقصى للرفع المباشر هو 3 ميجابايت.', 'error', 5000);
       return;
     }
 
-    resetViewers(); hide($('viewerEmpty'));
-    toast('جاري تحضير الملف...', 'info');
+    toast('جاري تحضير الملف للغرفة...', 'info');
 
-    // تشغيل الملف محلياً للمستخدم أولاً
+    // عرض محلي
     await loadFile(file);
 
-    // رفع الملف كـ Base64
+    // رفع للكل
     const reader = new FileReader();
     reader.onload = async (ev) => {
       const base64Data = ev.target.result;
@@ -514,7 +545,7 @@ function setupDocLoader() {
           time: Date.now()
         }); 
         S.sharedDocUrl = file.name; 
-        toast('تم رفع الملف ومشاركته للغرفة ✓', 'success');
+        toast('تم المشاركة للجميع ✓', 'success');
       }
     };
     reader.readAsDataURL(file);
@@ -522,7 +553,7 @@ function setupDocLoader() {
   
   $('btnLoadUrl').addEventListener('click', ()=>{
     const raw=$('docUrlInput').value.trim(); if(!raw)return;
-    const url=toDirectUrl(raw); resetViewers(); hide($('viewerEmpty'));
+    const url=toDirectUrl(raw); 
     loadFromUrl(url,raw);
     if(firebaseReady&&S.room?.id){ dbSet('rooms/'+S.room.id+'/sharedDoc',{type:'url',url,originalUrl:raw,byName:S.user.name,uid:S.user.id,time:Date.now()}); S.sharedDocUrl=url; }
   });
@@ -536,11 +567,17 @@ function showDocSharedBanner(docInfo) {
   if (docInfo.type === 'base64' && docInfo.data) {
     b.innerHTML = `<span>📁 <strong>${docInfo.byName}</strong> شارك ملفاً: <em>${docInfo.name}</em></span><button class="btn-primary sm" id="btnAcceptDoc">عرض الآن</button><button class="btn-ghost sm" id="btnDismissBanner">✕</button>`;
     $('viewerArea').prepend(b);
-    $('btnAcceptDoc').onclick = () => { b.remove(); resetViewers(); loadFromBase64(docInfo.data, docInfo.name); };
+    $('btnAcceptDoc').onclick = () => { 
+        b.remove(); 
+        loadFromBase64(docInfo.data, docInfo.name); 
+    };
   } else if (docInfo.type === 'url' && docInfo.url) {
     b.innerHTML = `<span>📖 <strong>${docInfo.byName}</strong> شارك مستنداً</span><button class="btn-primary sm" id="btnAcceptDoc">فتح</button><button class="btn-ghost sm" id="btnDismissBanner">✕</button>`;
     $('viewerArea').prepend(b);
-    $('btnAcceptDoc').onclick = () => { b.remove(); resetViewers(); loadFromUrl(docInfo.url, docInfo.originalUrl||docInfo.url); };
+    $('btnAcceptDoc').onclick = () => { 
+        b.remove(); 
+        loadFromUrl(docInfo.url, docInfo.originalUrl||docInfo.url); 
+    };
   }
   
   $('btnDismissBanner').onclick = () => b.remove();
@@ -548,14 +585,15 @@ function showDocSharedBanner(docInfo) {
 
 function resetViewers() {
   ['pdfViewer','epubViewer','mangaViewer'].forEach(id=>hide($(id)));
+  show($('viewerEmpty')); // إظهار شاشة الرفع الافتراضية
   $('pageIndicator').classList.remove('visible');
+  
   try{S.pdfDoc?.destroy()}catch(e){}
   try{S.epubRendition?.destroy()}catch(e){}
   S.doc=null;S.pdfDoc=null;S.epubBook=null;S.epubRendition=null;
   S.mangaImages=[];S.currentPage=1;S.totalPages=1;
   S.drawHistory=[];S.redoStack=[];
   
-  // تصفير طابور معالجة الـ PDF
   pdfPageRendering = false;
   pdfPagePending = null;
   updateProgress();
@@ -574,10 +612,10 @@ async function loadFromBase64(base64Str, fileName) {
     else if (['cbz', 'zip'].includes(ext)) { await loadCbz(new File([blob], fileName, { type: blob.type })); } 
     else if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'].includes(ext)) { await loadImages([url]); } 
     else if (ext === 'txt') { await loadText(new File([blob], fileName, { type: blob.type })); } 
-    else { toast('نوع الملف غير مدعوم', 'error'); show($('viewerEmpty')); }
+    else { toast('نوع الملف غير مدعوم', 'error'); resetViewers(); }
   } catch (e) {
     console.error(e);
-    toast('تعذّر بناء الملف المرفوع', 'error'); show($('viewerEmpty'));
+    toast('تعذّر بناء الملف المرفوع', 'error'); resetViewers();
   }
 }
 
@@ -588,7 +626,7 @@ async function loadFile(file) {
   else if(['cbz','zip'].includes(ext)) await loadCbz(file);
   else if(['jpg','jpeg','png','gif','webp','bmp'].includes(ext)) await loadImages([file]);
   else if(ext==='txt') await loadText(file);
-  else{ toast('نوع الملف غير مدعوم','error'); show($('viewerEmpty')); }
+  else{ toast('نوع الملف غير مدعوم','error'); resetViewers(); }
 }
 
 async function loadFromUrl(url, orig) {
@@ -598,7 +636,7 @@ async function loadFromUrl(url, orig) {
     if(lower.includes('.epub')) await loadEpub(url);
     else if(/\.(jpg|jpeg|png|gif|webp|bmp)(\?|$)/i.test(lower)) await loadImages([url]);
     else await loadPdf(url);
-  } catch(e){ toast('تعذّر تحميل الملف: '+e.message,'error'); show($('viewerEmpty')); }
+  } catch(e){ toast('تعذّر تحميل الملف: '+e.message,'error'); resetViewers(); }
 }
 
 // ── PDF ─────────────────────────────────────────────────
@@ -611,19 +649,21 @@ async function loadPdf(source) {
       : pdfjsLib.getDocument({data:await source.arrayBuffer()});
     S.pdfDoc=await task.promise; S.totalPages=S.pdfDoc.numPages;
     S.doc={type:'pdf',name:typeof source==='string'?source.split('/').pop():source.name};
+    
+    hide($('viewerEmpty')); // الحل السحري لإخفاء شاشة الرفع بنجاح
     show($('pdfViewer')); $('pageIndicator').classList.add('visible');
+    
     $('btnPrevPage').onclick=()=>navigatePage(S.room?.readDir==='rtl'?1:-1);
     $('btnNextPage').onclick=()=>navigatePage(S.room?.readDir==='rtl'?-1:1);
     await renderPdfPage(1); onDocLoaded();
     toast('PDF — '+toAr(S.totalPages)+' صفحة','success');
-  } catch(e){ toast('فشل تحميل PDF: '+e.message,'error'); show($('viewerEmpty')); }
+  } catch(e){ toast('فشل تحميل PDF: '+e.message,'error'); resetViewers(); }
 }
 
 async function renderPdfPage(n) {
   if(!S.pdfDoc) return;
   S.currentPage = Math.max(1, Math.min(n, S.totalPages));
   
-  // نظام الطابور (Queue) لمنع تداخل الرسم وإيقاف الـ Canvas errors
   if (pdfPageRendering) {
     pdfPagePending = S.currentPage;
     return;
@@ -635,8 +675,11 @@ async function renderPdfPage(n) {
     const canvas = $('pdfCanvas');
     const ctx = canvas.getContext('2d');
     const vp = page.getViewport({scale:1});
-    const aH = $('viewerArea').clientHeight - 60, aW = $('viewerArea').clientWidth - 120;
-    const scale = Math.min(aH / vp.height, aW / vp.width, 2);
+    
+    // حساب حجم الكانفاس ليأخذ كامل المساحة المتاحة ديناميكياً
+    const aH = $('viewerArea').clientHeight - 20; 
+    const aW = $('viewerArea').clientWidth - 100;
+    const scale = Math.min(aH / vp.height, aW / vp.width, 2.5); // 2.5 max scale for clarity
     const viewport = page.getViewport({scale});
     
     canvas.height = viewport.height; 
@@ -652,7 +695,7 @@ async function renderPdfPage(n) {
     if (pdfPagePending !== null) {
       const pending = pdfPagePending;
       pdfPagePending = null;
-      renderPdfPage(pending); // تشغيل المهمة التي كانت بالانتظار
+      renderPdfPage(pending); 
     } else {
       syncOverlaySize();
       $('currentPageDisplay').textContent = toAr(S.currentPage);
@@ -672,11 +715,14 @@ async function loadEpub(source) {
     S.epubRendition=rend;
     await book.ready; S.totalPages=book.spine?.items?.length||100; S.currentPage=1;
     await rend.display();
+    
+    hide($('viewerEmpty'));
     show($('epubViewer')); $('pageIndicator').classList.add('visible');
+    
     $('epubBtnPrev').onclick=async()=>{ await rend.prev(); S.currentPage=Math.max(1,S.currentPage-1); afterPageChange(); };
     $('epubBtnNext').onclick=async()=>{ await rend.next(); S.currentPage=Math.min(S.totalPages,S.currentPage+1); afterPageChange(); };
     onDocLoaded(); toast('EPUB محمّل ✓','success');
-  } catch(e){ toast('فشل تحميل EPUB: '+e.message,'error'); show($('viewerEmpty')); }
+  } catch(e){ toast('فشل تحميل EPUB: '+e.message,'error'); resetViewers(); }
 }
 
 // ── CBZ / Images ────────────────────────────────────────
@@ -689,7 +735,7 @@ async function loadCbz(file) {
     S.mangaImages=await Promise.all(files.map(([,f])=>f.async('blob').then(b=>URL.createObjectURL(b))));
     S.doc={type:'manga',name:file.name}; await initMangaViewer();
     toast('CBZ — '+toAr(S.mangaImages.length)+' صفحة ✓','success');
-  } catch(e){ toast('فشل تحميل CBZ: '+e.message,'error'); show($('viewerEmpty')); }
+  } catch(e){ toast('فشل تحميل CBZ: '+e.message,'error'); resetViewers(); }
 }
 
 async function loadImages(sources) {
@@ -699,6 +745,7 @@ async function loadImages(sources) {
 
 async function initMangaViewer() {
   S.totalPages=S.mangaImages.length; S.currentPage=1;
+  hide($('viewerEmpty'));
   show($('mangaViewer')); $('pageIndicator').classList.add('visible');
   buildMangaStrip(); renderMangaPage(1);
   $('mangaBtnPrev').onclick=()=>navigatePage(S.room?.readDir==='rtl'?1:-1);
@@ -727,7 +774,10 @@ async function loadText(file) {
   const text=await file.text();
   S.doc={type:'text',name:file.name}; S._text=text;
   S.totalPages=Math.ceil(text.length/3000); S.currentPage=1;
+  
+  hide($('viewerEmpty'));
   show($('pdfViewer')); $('pageIndicator').classList.add('visible');
+  
   renderTextPage(1);
   $('btnPrevPage').onclick=()=>navigatePage(-1);
   $('btnNextPage').onclick=()=>navigatePage(1);
@@ -750,7 +800,6 @@ function renderTextPage(n) {
 }
 
 function onDocLoaded() {
-  show($('drawToolbar'));
   updateProgress(); saveProgress();
   renderAnnotationsOnPage();
   syncOverlaySize();
@@ -859,7 +908,6 @@ function renderBookmarks(){
 // DRAWING SYSTEM
 // ══════════════════════════════════════════════════════════
 function initDrawToolbar() {
-  show($('drawToolbar'));
   document.querySelectorAll('.dtb-btn[data-tool]').forEach(btn => {
     btn.addEventListener('click', () => {
       S.tool = btn.dataset.tool;
@@ -1270,6 +1318,7 @@ async function boot() {
   
   if (firebaseReady) listenToPublicRooms();
   
+  // تحديث الحجم عند تدوير الشاشة أو تغيير المتصفح
   window.addEventListener('resize', ()=>{ syncOverlaySize(); });
   
   let tx=0;

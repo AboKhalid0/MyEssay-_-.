@@ -393,35 +393,81 @@ function setupDocLoader() {
     resetViewers(); show($('viewerEmpty'));
     if(S.isHost&&firebaseReady&&S.room?.id){ dbRemove('rooms/'+S.room.id+'/sharedDoc'); dbRemove('rooms/'+S.room.id+'/hostPage'); S.sharedDocUrl=null; }
   });
+  
   $('btnUploadFile').addEventListener('click', ()=>$('fileInput').click());
-  $('fileInput').addEventListener('change', async e=>{
-    const file=e.target.files[0]; if(!file)return; e.target.value='';
+  
+  $('fileInput').addEventListener('change', async e => {
+    const file = e.target.files[0]; 
+    if(!file) return; 
+    e.target.value = '';
+
+    // 🔴 حماية قاعدة البيانات: نمنع الملفات التي تزيد عن 3 ميجابايت
+    const MAX_SIZE = 10 * 1024 * 1024; // 3 MB
+    if (file.size > MAX_SIZE) {
+      toast('حجم الملف كبير جداً! الحد الأقصى للرفع المباشر هو 10 ميجابايت. للكتب الكبيرة استخدم الرابط.', 'error', 5000);
+      return;
+    }
+
     resetViewers(); hide($('viewerEmpty'));
+    toast('جاري تحضير الملف...', 'info');
+
+    // عرض الملف محلياً للشخص الذي رفعه
     await loadFile(file);
-    if(firebaseReady&&S.room?.id){ dbSet('rooms/'+S.room.id+'/sharedDoc',{type:'upload',name:file.name,url:null,byName:S.user.name,time:Date.now()}); S.sharedDocUrl=file.name; }
+
+    // تحويل الملف إلى Base64 وإرساله للقاعدة اللحظية
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      const base64Data = ev.target.result;
+      if(firebaseReady && S.room?.id){ 
+        dbSet('rooms/'+S.room.id+'/sharedDoc', {
+          type: 'base64', // نوع جديد للملفات المرفوعة
+          name: file.name,
+          data: base64Data, // الملف كنص
+          byName: S.user.name,
+          time: Date.now()
+        }); 
+        S.sharedDocUrl = file.name; 
+        toast('تم رفع الملف ومشاركته للغرفة ✓', 'success');
+      }
+    };
+    reader.readAsDataURL(file);
   });
+
   $('btnLoadUrl').addEventListener('click', ()=>{
     const raw=$('docUrlInput').value.trim(); if(!raw)return;
     const url=toDirectUrl(raw); resetViewers(); hide($('viewerEmpty'));
     loadFromUrl(url,raw);
     if(firebaseReady&&S.room?.id){ dbSet('rooms/'+S.room.id+'/sharedDoc',{type:'url',url,originalUrl:raw,byName:S.user.name,time:Date.now()}); S.sharedDocUrl=url; }
   });
+  
   $('docUrlInput').addEventListener('keydown', e=>{ if(e.key==='Enter')$('btnLoadUrl').click(); });
 }
 
 function showDocSharedBanner(docInfo) {
   document.querySelector('.shared-doc-banner')?.remove();
-  const b=document.createElement('div'); b.className='shared-doc-banner';
-  if (docInfo.type==='url'&&docInfo.url) {
-    b.innerHTML=`<span>📖 <strong>${docInfo.byName}</strong> شارك مستنداً</span><button class="btn-primary sm" id="btnAcceptDoc">فتح</button><button class="btn-ghost sm" id="btnDismissBanner">✕</button>`;
+  const b = document.createElement('div'); b.className = 'shared-doc-banner';
+  
+  if (docInfo.type === 'base64' && docInfo.data) {
+    // 🟢 إضافة خيار "عرض الآن" للملفات المرفوعة مباشرة
+    b.innerHTML = `<span>📁 <strong>${docInfo.byName}</strong> شارك ملفاً: <em>${docInfo.name}</em></span><button class="btn-primary sm" id="btnAcceptDoc">عرض الآن</button><button class="btn-ghost sm" id="btnDismissBanner">✕</button>`;
     $('viewerArea').prepend(b);
-    $('btnAcceptDoc').onclick=()=>{ b.remove(); resetViewers(); loadFromUrl(docInfo.url,docInfo.originalUrl||docInfo.url); };
+    $('btnAcceptDoc').onclick = () => { 
+      b.remove(); 
+      resetViewers(); 
+      loadFromBase64(docInfo.data, docInfo.name); 
+    };
+  } else if (docInfo.type === 'url' && docInfo.url) {
+    // الروابط
+    b.innerHTML = `<span>📖 <strong>${docInfo.byName}</strong> شارك مستنداً</span><button class="btn-primary sm" id="btnAcceptDoc">فتح</button><button class="btn-ghost sm" id="btnDismissBanner">✕</button>`;
+    $('viewerArea').prepend(b);
+    $('btnAcceptDoc').onclick = () => { b.remove(); resetViewers(); loadFromUrl(docInfo.url, docInfo.originalUrl||docInfo.url); };
   } else {
-    b.innerHTML=`<span>📁 <strong>${docInfo.byName}</strong> فتح: <em>${docInfo.name}</em> — ارفع نفس الملف</span><button class="btn-primary sm" id="btnAcceptUpload">رفع</button><button class="btn-ghost sm" id="btnDismissBanner">✕</button>`;
+    // وضع التوافق مع الكود القديم إذا وجد
+    b.innerHTML = `<span>📁 <strong>${docInfo.byName}</strong> فتح: <em>${docInfo.name}</em></span><button class="btn-ghost sm" id="btnDismissBanner">✕</button>`;
     $('viewerArea').prepend(b);
-    $('btnAcceptUpload').onclick=()=>{ b.remove(); $('fileInput').click(); };
   }
-  $('btnDismissBanner').onclick=()=>b.remove();
+  
+  $('btnDismissBanner').onclick = () => b.remove();
 }
 
 function resetViewers() {
@@ -432,6 +478,39 @@ function resetViewers() {
   S.doc=null;S.pdfDoc=null;S.epubBook=null;S.epubRendition=null;
   S.mangaImages=[];S.currentPage=1;S.totalPages=1;
   S.drawHistory=[];S.redoStack=[];
+}
+
+async function loadFromBase64(base64Str, fileName) {
+  toast('جاري تحميل الملف وبناءه...', 'info');
+  try {
+    // تحويل Base64 مرة أخرى إلى Blob (ملف حقيقي في الذاكرة)
+    const res = await fetch(base64Str);
+    const blob = await res.blob();
+    
+    // إنشاء رابط محلي وهمي للملف
+    const url = URL.createObjectURL(blob);
+    const ext = fileName.split('.').pop().toLowerCase();
+    
+    // توجيه الملف للقارئ المناسب بناءً على امتداده
+    if (ext === 'pdf') {
+      await loadPdf(url);
+    } else if (ext === 'epub') {
+      await loadEpub(await blob.arrayBuffer());
+    } else if (['cbz', 'zip'].includes(ext)) {
+      const fakeFile = new File([blob], fileName, { type: blob.type });
+      await loadCbz(fakeFile);
+    } else if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'].includes(ext)) {
+      await loadImages([url]);
+    } else if (ext === 'txt') {
+      const fakeFile = new File([blob], fileName, { type: blob.type });
+      await loadText(fakeFile);
+    } else {
+      toast('نوع الملف غير مدعوم', 'error'); show($('viewerEmpty'));
+    }
+  } catch (e) {
+    console.error(e);
+    toast('تعذّر بناء الملف المرفوع', 'error'); show($('viewerEmpty'));
+  }
 }
 
 async function loadFile(file) {

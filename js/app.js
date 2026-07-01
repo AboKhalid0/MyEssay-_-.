@@ -197,18 +197,6 @@ async function joinRoom() {
   }
 }
     
-    if (roomData.pass && roomData.pass !== prompt('كلمة المرور:')){ toast('كلمة مرور خاطئة','error'); return; }
-    
-    S.room   = { ...roomData, id:roomId };
-    S.isHost = roomData.hostId === S.user.id;
-    await dbUpdate('rooms/'+roomId+'/members/'+S.user.id, { name:S.user.name, emoji:S.user.emoji, page:1, joinedAt:Date.now(), online:true });
-    enterRoom();
-  } catch(e) {
-    console.error('joinRoom:',e);
-    if (e.message?.includes('Permission')){ toast('خطأ في صلاحيات Firebase','error'); showFirebaseRulesHelp(); }
-    else toast('خطأ: '+e.message,'error');
-  }
-}
 
 function listenToPublicRooms() {
   if (!firebaseReady) return;

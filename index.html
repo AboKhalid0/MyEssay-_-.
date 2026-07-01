@@ -4,73 +4,51 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>مكتبة — قراءة جماعية</title>
-
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-
-  <!-- PDF.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <!-- epub.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
-
-  <!-- Firebase -->
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-    import { getDatabase } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
-    import { getAuth } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+    import { getDatabase }   from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
+    import { getAuth }       from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
     window.__firebaseModules = { initializeApp, getDatabase, getAuth };
   </script>
-
   <link rel="stylesheet" href="css/main.css" />
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════
-     LOBBY — shown before joining a room
-═══════════════════════════════════════════ -->
+<!-- ══ LOBBY ══════════════════════════════════════════ -->
 <div id="lobby" class="screen active">
-  <div class="lobby-bg">
-    <div class="bookshelf-deco"></div>
-  </div>
+  <div class="lobby-bg"></div>
   <div class="lobby-content">
     <header class="lobby-header">
       <div class="logo-mark">📚</div>
       <h1 class="logo-title">مكتبة</h1>
       <p class="logo-sub">اقرأ مع أصحابك، معاً في الوقت ذاته</p>
     </header>
-
     <div class="lobby-cards">
-      <!-- Username -->
-      <div class="lobby-card" id="card-name">
+      <div class="lobby-card">
         <div class="card-step">١</div>
         <h2>ما اسمك؟</h2>
         <div class="input-row">
-          <div class="avatar-picker" id="avatarPicker">
-            <span id="avatarDisplay">📖</span>
-          </div>
+          <div class="avatar-picker" id="avatarPicker"><span id="avatarDisplay">📖</span></div>
           <input type="text" id="usernameInput" placeholder="اسم مستخدم..." maxlength="20" dir="auto" />
         </div>
         <div class="avatar-options" id="avatarOptions">
-          <span data-emoji="📖">📖</span><span data-emoji="🌙">🌙</span>
-          <span data-emoji="⭐">⭐</span><span data-emoji="🦁">🦁</span>
-          <span data-emoji="🐺">🐺</span><span data-emoji="🦊">🦊</span>
-          <span data-emoji="🐉">🐉</span><span data-emoji="🌿">🌿</span>
-          <span data-emoji="🔥">🔥</span><span data-emoji="💎">💎</span>
-          <span data-emoji="🎭">🎭</span><span data-emoji="⚔️">⚔️</span>
+          <span data-emoji="📖">📖</span><span data-emoji="🌙">🌙</span><span data-emoji="⭐">⭐</span>
+          <span data-emoji="🦁">🦁</span><span data-emoji="🐺">🐺</span><span data-emoji="🦊">🦊</span>
+          <span data-emoji="🐉">🐉</span><span data-emoji="🌿">🌿</span><span data-emoji="🔥">🔥</span>
+          <span data-emoji="💎">💎</span><span data-emoji="🎭">🎭</span><span data-emoji="⚔️">⚔️</span>
         </div>
       </div>
-
-      <!-- Room Actions -->
-      <div class="lobby-card" id="card-room">
+      <div class="lobby-card">
         <div class="card-step">٢</div>
         <h2>غرفة القراءة</h2>
         <div class="room-actions">
-          <button class="btn-primary" id="btnCreateRoom">
-            <span class="btn-icon">✦</span> إنشاء غرفة جديدة
-          </button>
+          <button class="btn-primary" id="btnCreateRoom"><span class="btn-icon">✦</span> إنشاء غرفة جديدة</button>
           <div class="divider-text">أو</div>
           <div class="join-row">
             <input type="text" id="roomCodeInput" placeholder="كود الغرفة..." maxlength="6" dir="ltr" class="code-input" />
@@ -79,12 +57,10 @@
         </div>
       </div>
     </div>
-
-    <!-- Firebase Config -->
     <div class="firebase-config-section" id="firebaseConfigSection">
       <button class="btn-ghost" id="btnToggleConfig">⚙ إعداد Firebase</button>
       <div class="config-form hidden" id="configForm">
-        <p class="config-hint">أدخل بيانات مشروع Firebase الخاص بك (مجاني)</p>
+        <p class="config-hint">أدخل بيانات مشروع Firebase</p>
         <input type="text" id="fbApiKey" placeholder="apiKey" dir="ltr" />
         <input type="text" id="fbProjectId" placeholder="projectId" dir="ltr" />
         <input type="text" id="fbDbUrl" placeholder="databaseURL" dir="ltr" />
@@ -94,68 +70,55 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════
-     CREATE ROOM MODAL
-═══════════════════════════════════════════ -->
+<!-- ══ CREATE ROOM MODAL ═══════════════════════════════ -->
 <div id="modalCreateRoom" class="modal hidden">
   <div class="modal-backdrop"></div>
   <div class="modal-box">
     <h2>غرفة قراءة جديدة</h2>
-    <div class="form-group">
-      <label>اسم الغرفة</label>
-      <input type="text" id="roomNameInput" placeholder="مثال: نادي روايات الليل" dir="auto" />
-    </div>
-    <div class="form-group">
-      <label>كلمة مرور (اختياري)</label>
-      <input type="password" id="roomPassInput" placeholder="اتركها فارغة للغرفة المفتوحة" />
-    </div>
+    <div class="form-group"><label>اسم الغرفة</label><input type="text" id="roomNameInput" placeholder="مثال: نادي روايات الليل" dir="auto" /></div>
+    <div class="form-group"><label>كلمة مرور (اختياري)</label><input type="password" id="roomPassInput" placeholder="اتركها فارغة للغرفة المفتوحة" /></div>
     <div class="form-group">
       <label>اتجاه القراءة</label>
       <div class="radio-group">
-        <label class="radio-opt">
-          <input type="radio" name="readDir" value="rtl" checked /> عربي / يمين→يسار
-        </label>
-        <label class="radio-opt">
-          <input type="radio" name="readDir" value="ltr" /> إنجليزي / يسار→يمين
-        </label>
+        <label class="radio-opt"><input type="radio" name="readDir" value="rtl" checked /> عربي / يمين←يسار</label>
+        <label class="radio-opt"><input type="radio" name="readDir" value="ltr" /> إنجليزي / يسار←يمين</label>
       </div>
     </div>
     <div class="modal-actions">
       <button class="btn-primary" id="btnConfirmCreate">إنشاء الغرفة ✦</button>
-      <button class="btn-ghost" id="btnCancelCreate">إلغاء</button>
+      <button class="btn-ghost"   id="btnCancelCreate">إلغاء</button>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════
-     READING ROOM — main app
-═══════════════════════════════════════════ -->
+<!-- ══ READING ROOM ════════════════════════════════════ -->
 <div id="room" class="screen hidden">
 
-  <!-- TOP BAR -->
+  <!-- TOPBAR -->
   <header class="topbar">
     <div class="topbar-right">
-      <button class="icon-btn" id="btnBackToLobby" title="الخروج من الغرفة">←</button>
+      <button class="icon-btn" id="btnBackToLobby" title="الخروج">←</button>
       <div class="room-info">
         <span class="room-name-display" id="roomNameDisplay">...</span>
-        <span class="room-code-badge" id="roomCodeDisplay"></span>
+        <span class="room-code-badge"   id="roomCodeDisplay"></span>
       </div>
     </div>
     <div class="topbar-center">
-      <div class="sync-toggle" id="syncToggle" title="وضع المزامنة">
+      <div class="sync-toggle" id="syncToggle">
         <span class="sync-icon">⟳</span>
-        <span class="sync-label" id="syncLabel">مزامنة</span>
+        <span id="syncLabel">مزامنة</span>
       </div>
+      <button class="icon-btn topbar-sync-now" id="btnSyncNow" title="مزامنة فورية">⚡</button>
     </div>
     <div class="topbar-left">
       <div class="members-bar" id="membersBar"></div>
       <button class="icon-btn" id="btnToggleSidebar" title="الدردشة">💬</button>
-      <button class="icon-btn" id="btnOpenDoc" title="فتح مستند">📂</button>
+      <button class="icon-btn" id="btnOpenDoc"       title="فتح مستند">📂</button>
     </div>
   </header>
 
   <!-- PROGRESS BAR -->
-  <div class="progress-shelf" id="progressShelf">
+  <div class="progress-shelf">
     <div class="progress-track">
       <div class="progress-fill" id="progressFill"></div>
       <div class="member-positions" id="memberPositions"></div>
@@ -166,86 +129,176 @@
   <!-- MAIN AREA -->
   <main class="reader-layout">
 
-    <!-- DOCUMENT VIEWER -->
+    <!-- VIEWER -->
     <section class="viewer-area" id="viewerArea">
 
       <!-- EMPTY STATE -->
       <div class="viewer-empty" id="viewerEmpty">
         <div class="empty-icon">📚</div>
         <h3>لا يوجد مستند مفتوح</h3>
-        <p>ارفع ملفاً أو أدرج رابطاً لبدء القراءة</p>
+        <p>ارفع ملفاً أو أدرج رابطاً</p>
         <div class="doc-source-options">
-          <button class="btn-primary" id="btnUploadFile">
-            <span>⬆</span> رفع ملف
-          </button>
+          <button class="btn-primary" id="btnUploadFile">⬆ رفع ملف</button>
           <div class="divider-text">أو</div>
           <div class="url-input-row">
-            <input type="text" id="docUrlInput" placeholder="رابط PDF / EPUB / صورة..." dir="ltr" />
+            <input type="text" id="docUrlInput" placeholder="رابط PDF / EPUB / صورة / Google Drive..." dir="ltr" />
             <button class="btn-secondary" id="btnLoadUrl">تحميل</button>
           </div>
         </div>
-        <input type="file" id="fileInput" accept=".pdf,.epub,.cbz,.txt,.jpg,.jpeg,.png,.gif,.webp" class="hidden" multiple />
+        <input type="file" id="fileInput" accept=".pdf,.epub,.cbz,.txt,.jpg,.jpeg,.png,.gif,.webp" class="hidden" />
       </div>
 
       <!-- PDF VIEWER -->
       <div class="pdf-viewer hidden" id="pdfViewer">
-        <div class="page-nav page-nav-right" id="btnPrevPage">
-          <span>›</span>
-        </div>
-        <div class="pdf-canvas-wrap" id="pdfCanvasWrap">
+        <div class="page-nav page-nav-right" id="btnPrevPage"><span>›</span></div>
+        <div class="doc-canvas-wrap" id="pdfCanvasWrap">
           <canvas id="pdfCanvas"></canvas>
-          <div class="annotation-layer" id="annotationLayer"></div>
-          <div class="drawing-layer hidden" id="drawingLayer">
-            <canvas id="drawCanvas"></canvas>
+          <!-- unified overlay: annotations + drawing on top of every doc type -->
+          <div class="overlay-root" id="overlayRoot">
+            <div class="ann-layer"  id="annLayer"></div>
+            <canvas class="draw-canvas" id="drawCanvas"></canvas>
           </div>
         </div>
-        <div class="page-nav page-nav-left" id="btnNextPage">
-          <span>›</span>
-        </div>
+        <div class="page-nav page-nav-left" id="btnNextPage"><span>›</span></div>
       </div>
 
       <!-- EPUB VIEWER -->
       <div class="epub-viewer hidden" id="epubViewer">
         <div class="page-nav page-nav-right" id="epubBtnPrev"><span>›</span></div>
-        <div id="epubContainer"></div>
+        <div class="doc-canvas-wrap" id="epubCanvasWrap">
+          <div id="epubContainer"></div>
+          <div class="overlay-root" id="epubOverlayRoot">
+            <div class="ann-layer"  id="epubAnnLayer"></div>
+            <canvas class="draw-canvas" id="epubDrawCanvas"></canvas>
+          </div>
+        </div>
         <div class="page-nav page-nav-left" id="epubBtnNext"><span>›</span></div>
       </div>
 
-      <!-- IMAGE/MANGA VIEWER -->
+      <!-- MANGA/IMAGE VIEWER -->
       <div class="manga-viewer hidden" id="mangaViewer">
-        <div class="manga-nav-right" id="mangaBtnPrev">
-          <span>›</span>
-        </div>
-        <div class="manga-page-wrap">
+        <div class="manga-nav-btn manga-nav-right" id="mangaBtnPrev"><span>›</span></div>
+        <div class="doc-canvas-wrap" id="mangaCanvasWrap">
           <img id="mangaPage" src="" alt="صفحة" />
-          <div class="annotation-layer" id="mangaAnnotationLayer"></div>
+          <div class="overlay-root" id="mangaOverlayRoot">
+            <div class="ann-layer"  id="mangaAnnLayer"></div>
+            <canvas class="draw-canvas" id="mangaDrawCanvas"></canvas>
+          </div>
         </div>
-        <div class="manga-nav-left" id="mangaBtnNext">
-          <span>›</span>
-        </div>
+        <div class="manga-nav-btn manga-nav-left"  id="mangaBtnNext"><span>›</span></div>
         <div class="manga-strip" id="mangaStrip"></div>
       </div>
 
-      <!-- ANNOTATION TOOLBAR -->
-      <div class="annotation-toolbar hidden" id="annotationToolbar">
-        <button class="tool-btn active" data-tool="select" title="تحديد">↖</button>
-        <div class="tool-sep"></div>
-        <button class="tool-btn" data-tool="highlight" title="تظليل">
-          <span style="background:#f6c90e;padding:0 6px;border-radius:3px;">أ</span>
-        </button>
-        <button class="tool-btn" data-tool="note" title="ملاحظة">📝</button>
-        <button class="tool-btn" data-tool="draw" title="رسم">✏️</button>
-        <button class="tool-btn" data-tool="sticky" title="ملصق">🟡</button>
-        <div class="tool-sep"></div>
-        <div class="color-row" id="colorRow">
-          <div class="color-dot active" data-color="#f6c90e" style="background:#f6c90e;"></div>
-          <div class="color-dot" data-color="#4fc3f7" style="background:#4fc3f7;"></div>
-          <div class="color-dot" data-color="#ef5350" style="background:#ef5350;"></div>
-          <div class="color-dot" data-color="#66bb6a" style="background:#66bb6a;"></div>
-          <div class="color-dot" data-color="#ce93d8" style="background:#ce93d8;"></div>
+      <!-- ══ DRAWING TOOLBAR — always visible ════════ -->
+      <div class="draw-toolbar hidden" id="drawToolbar">
+
+        <!-- Tools -->
+        <div class="dtb-group">
+          <button class="dtb-btn active" data-tool="pen"       title="قلم (P)">
+            <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+          </button>
+          <button class="dtb-btn" data-tool="marker"    title="ماركر (M)">
+            <svg viewBox="0 0 24 24"><path d="M20.71 4.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0L4 13.25V17h3.75L20.71 4.04z" opacity=".5"/><path d="M20.71 4.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0L4 13.25V17h3.75L20.71 4.04z"/></svg>
+          </button>
+          <button class="dtb-btn" data-tool="line"      title="خط (L)">
+            <svg viewBox="0 0 24 24"><line x1="4" y1="20" x2="20" y2="4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+          </button>
+          <button class="dtb-btn" data-tool="arrow"     title="سهم (→)">
+            <svg viewBox="0 0 24 24"><line x1="4" y1="20" x2="18" y2="6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><polyline points="10,6 18,6 18,14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="dtb-btn" data-tool="rect"      title="مستطيل (R)">
+            <svg viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="1.5" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>
+          </button>
+          <button class="dtb-btn" data-tool="circle"    title="دائرة (O)">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>
+          </button>
+          <button class="dtb-btn" data-tool="highlight" title="تظليل (H)">
+            <svg viewBox="0 0 24 24"><rect x="3" y="14" width="18" height="6" rx="1" fill="currentColor" opacity=".5"/><path d="M5 14L9 4h6l4 10" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          </button>
+          <button class="dtb-btn" data-tool="text"      title="نص (T)">
+            <svg viewBox="0 0 24 24"><path d="M5 4v3h5.5v12h3V7H19V4z"/></svg>
+          </button>
+          <button class="dtb-btn" data-tool="sticky"    title="ملصق لاصق (S)">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8l6-6V5a2 2 0 0 0-2-2z"/></svg>
+          </button>
+          <button class="dtb-btn" data-tool="eraser"    title="ممحاة (E)">
+            <svg viewBox="0 0 24 24"><path d="M20.71 7.04L16.96 3.29a1 1 0 0 0-1.41 0L3.29 15.54a1 1 0 0 0 0 1.41l3.17 3.17H20v-2H9.83l10.88-10.88a1 1 0 0 0 0-1.41z"/></svg>
+          </button>
+          <button class="dtb-btn" data-tool="select"    title="تحديد (V)">
+            <svg viewBox="0 0 24 24"><path d="M4 0l8 18 3-7 7-3z"/></svg>
+          </button>
         </div>
-        <div class="tool-sep"></div>
-        <button class="tool-btn" id="btnClearDraw" title="مسح الرسم">🗑</button>
+
+        <div class="dtb-sep"></div>
+
+        <!-- Colors -->
+        <div class="dtb-group dtb-colors" id="dtbColors">
+          <div class="dtb-color active" data-color="#f6c90e" style="background:#f6c90e" title="ذهبي"></div>
+          <div class="dtb-color" data-color="#ef5350" style="background:#ef5350" title="أحمر"></div>
+          <div class="dtb-color" data-color="#4fc3f7" style="background:#4fc3f7" title="أزرق"></div>
+          <div class="dtb-color" data-color="#66bb6a" style="background:#66bb6a" title="أخضر"></div>
+          <div class="dtb-color" data-color="#ce93d8" style="background:#ce93d8" title="بنفسجي"></div>
+          <div class="dtb-color" data-color="#ff8a65" style="background:#ff8a65" title="برتقالي"></div>
+          <div class="dtb-color" data-color="#ffffff" style="background:#ffffff;border-color:#555" title="أبيض"></div>
+          <div class="dtb-color" data-color="#111111" style="background:#111111" title="أسود"></div>
+          <!-- custom color -->
+          <label class="dtb-color-custom" title="لون مخصص">
+            <input type="color" id="customColorPicker" value="#f6c90e" />
+            <span>+</span>
+          </label>
+        </div>
+
+        <div class="dtb-sep"></div>
+
+        <!-- Size -->
+        <div class="dtb-group dtb-size-group">
+          <span class="dtb-label">سماكة</span>
+          <input type="range" id="dtbSize" min="1" max="40" value="4" class="dtb-slider" />
+          <span class="dtb-size-val" id="dtbSizeVal">4</span>
+        </div>
+
+        <!-- Opacity -->
+        <div class="dtb-group dtb-size-group">
+          <span class="dtb-label">شفافية</span>
+          <input type="range" id="dtbOpacity" min="10" max="100" value="100" class="dtb-slider" />
+          <span class="dtb-size-val" id="dtbOpacityVal">100%</span>
+        </div>
+
+        <div class="dtb-sep"></div>
+
+        <!-- Actions -->
+        <div class="dtb-group">
+          <button class="dtb-btn" id="btnUndo"      title="تراجع (Ctrl+Z)">
+            <svg viewBox="0 0 24 24"><path d="M12 8c-2.21 0-4.21.9-5.66 2.34L3 7v9h9l-3.38-3.38A5 5 0 0 1 12 10c2.57 0 4.68 1.63 5.39 4h2.08A7.002 7.002 0 0 0 12 8z"/></svg>
+          </button>
+          <button class="dtb-btn" id="btnRedo"      title="إعادة (Ctrl+Y)">
+            <svg viewBox="0 0 24 24"><path d="M12 8c2.21 0 4.21.9 5.66 2.34L21 7v9h-9l3.38-3.38A5 5 0 0 0 12 10c-2.57 0-4.68 1.63-5.39 4H4.53A7.002 7.002 0 0 1 12 8z"/></svg>
+          </button>
+          <button class="dtb-btn dtb-danger" id="btnClearPage" title="مسح صفحة">
+            <svg viewBox="0 0 24 24"><path d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12z"/></svg>
+          </button>
+        </div>
+
+      </div>
+      <!-- end draw-toolbar -->
+
+      <!-- TEXT INPUT POPUP -->
+      <div class="text-input-popup hidden" id="textInputPopup">
+        <textarea id="textInputArea" placeholder="اكتب هنا..." dir="auto" rows="3"></textarea>
+        <div class="text-input-actions">
+          <button class="btn-primary sm" id="btnConfirmText">إضافة</button>
+          <button class="btn-ghost sm"   id="btnCancelText">إلغاء</button>
+        </div>
+      </div>
+
+      <!-- STICKY EDITOR -->
+      <div class="sticky-editor hidden" id="stickyEditor">
+        <div class="sticky-editor-header">📝 ملاحظة</div>
+        <textarea id="stickyText" placeholder="اكتب ملاحظتك..." dir="auto"></textarea>
+        <div class="sticky-actions">
+          <button class="btn-primary sm" id="btnSaveSticky">حفظ</button>
+          <button class="btn-ghost sm"   id="btnCancelSticky">إلغاء</button>
+        </div>
       </div>
 
     </section>
@@ -253,19 +306,18 @@
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-tabs">
-        <button class="tab-btn active" data-tab="chat">💬 دردشة</button>
-        <button class="tab-btn" data-tab="members">👥 الأعضاء</button>
-        <button class="tab-btn" data-tab="bookmarks">🔖 علامات</button>
-        <button class="tab-btn" data-tab="annotations">✍ تعليقات</button>
+        <button class="tab-btn active" data-tab="chat">💬</button>
+        <button class="tab-btn" data-tab="members">👥</button>
+        <button class="tab-btn" data-tab="bookmarks">🔖</button>
+        <button class="tab-btn" data-tab="annotations">✍</button>
       </div>
 
-      <!-- CHAT TAB -->
       <div class="tab-content active" data-tab="chat">
         <div class="chat-messages" id="chatMessages"></div>
         <div class="chat-input-area">
           <div class="chat-actions-row">
             <button class="chat-action-btn" id="btnPageRef" title="أذكر صفحة">📄</button>
-            <button class="chat-action-btn" id="btnEmoji" title="إيموجي">😊</button>
+            <button class="chat-action-btn" id="btnEmoji"   title="إيموجي">😊</button>
           </div>
           <div class="chat-compose">
             <textarea id="chatInput" placeholder="اكتب رسالة..." rows="1" dir="auto"></textarea>
@@ -274,7 +326,6 @@
         </div>
       </div>
 
-      <!-- MEMBERS TAB -->
       <div class="tab-content hidden" data-tab="members">
         <div class="members-list" id="membersList"></div>
         <div class="host-controls hidden" id="hostControls">
@@ -286,34 +337,30 @@
         </div>
       </div>
 
-      <!-- BOOKMARKS TAB -->
       <div class="tab-content hidden" data-tab="bookmarks">
         <div class="bookmarks-header">
-          <button class="btn-secondary sm" id="btnAddBookmark">+ إضافة علامة هنا</button>
+          <button class="btn-secondary sm" id="btnAddBookmark">+ علامة هنا</button>
         </div>
         <div class="bookmarks-list" id="bookmarksList"></div>
       </div>
 
-      <!-- ANNOTATIONS TAB -->
       <div class="tab-content hidden" data-tab="annotations">
         <div class="annotations-list" id="annotationsList"></div>
       </div>
-
     </aside>
   </main>
 
   <!-- PAGE INDICATOR -->
-  <div class="page-indicator" id="pageIndicator">
+  <div class="page-indicator hidden" id="pageIndicator">
     <span id="currentPageDisplay">١</span>
     <span class="page-sep">/</span>
     <span id="totalPagesDisplay">?</span>
   </div>
 
 </div>
+<!-- end room -->
 
-<!-- ═══════════════════════════════════════════
-     EMOJI PICKER
-═══════════════════════════════════════════ -->
+<!-- EMOJI PICKER -->
 <div class="emoji-picker hidden" id="emojiPicker">
   <div class="emoji-grid">
     😄 😂 🤔 😍 😢 😡 🤯 🥰 😎 🤩
@@ -322,31 +369,18 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════
-     STICKY NOTE EDITOR
-═══════════════════════════════════════════ -->
-<div class="sticky-editor hidden" id="stickyEditor">
-  <textarea id="stickyText" placeholder="اكتب ملاحظتك..." dir="auto"></textarea>
-  <div class="sticky-actions">
-    <button class="btn-primary sm" id="btnSaveSticky">حفظ</button>
-    <button class="btn-ghost sm" id="btnCancelSticky">إلغاء</button>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════
-     TOAST NOTIFICATIONS
-═══════════════════════════════════════════ -->
+<!-- TOAST -->
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- ═══════════════════════════════════════════
-     KEYBOARD SHORTCUTS HINT
-═══════════════════════════════════════════ -->
+<!-- SHORTCUTS -->
 <div class="shortcuts-hint" id="shortcutsHint">
-  <span><kbd>←</kbd><kbd>→</kbd> تقليب</span>
-  <span><kbd>C</kbd> دردشة</span>
-  <span><kbd>B</kbd> علامة</span>
-  <span><kbd>A</kbd> تعليقات</span>
-  <span><kbd>?</kbd> مساعدة</span>
+  <span><kbd>←→</kbd> تقليب</span>
+  <span><kbd>P</kbd> قلم</span>
+  <span><kbd>H</kbd> تظليل</span>
+  <span><kbd>T</kbd> نص</span>
+  <span><kbd>E</kbd> ممحاة</span>
+  <span><kbd>V</kbd> تحديد</span>
+  <span><kbd>Ctrl+Z</kbd> تراجع</span>
 </div>
 
 <script type="module" src="js/firebase-init.js"></script>

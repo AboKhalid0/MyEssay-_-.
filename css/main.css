@@ -430,3 +430,64 @@ kbd{background:var(--bg-3);border:1px solid var(--bord2);border-radius:3px;paddi
   .dtb-slider{width:50px}
   .dtb-label{display:none}
 }
+
+/* ══ PUBLIC & PERSISTENT ROOMS ════════════════════════════ */
+.lobby-public-rooms {
+  width: 100%;
+  margin-top: 1rem;
+  border-top: 1px solid var(--bord);
+  padding-top: 1.5rem;
+}
+.public-rooms-header h2 {
+  font-size: 1.1rem;
+  color: var(--gold);
+  margin-bottom: 1rem;
+  text-align: center;
+  font-family: 'Scheherazade New', serif;
+}
+.public-rooms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  width: 100%;
+}
+.public-room-card {
+  background: var(--bg-2);
+  border: 1px solid var(--bord);
+  border-radius: var(--r-lg);
+  padding: 1rem;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+.public-room-card:hover {
+  border-color: var(--gold-d);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.pr-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--txt);
+  margin-bottom: 0.35rem;
+}
+.pr-meta {
+  font-size: 0.75rem;
+  color: var(--txt-m);
+  margin-bottom: 0.85rem;
+  flex: 1;
+}
+.checkbox-opt {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--txt-m);
+  margin-top: 0.75rem;
+}
+.checkbox-opt input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--gold);
+}

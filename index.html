@@ -27,6 +27,16 @@
       <p class="logo-sub">اقرأ مع أصحابك، معاً في الوقت ذاته</p>
     </header>
     <div class="lobby-cards">
+      <!-- هذا الكود يوضع مباشرة تحت الـ lobby-cards في شاشة البداية -->
+    <div class="lobby-public-rooms">
+      <div class="public-rooms-header">
+        <h2>المجالس والغرف الدائمة</h2>
+      </div>
+      <div class="public-rooms-grid" id="publicRoomsGrid">
+        <!-- سيتم جلب الغرف الدائمة هنا برمجياً -->
+        <p style="color:var(--txt-m);font-size:0.85rem;grid-column:1/-1;text-align:center;">جاري التحميل...</p>
+      </div>
+    </div>
       <div class="lobby-card">
         <div class="card-step">١</div>
         <h2>ما اسمك؟</h2>
@@ -62,8 +72,15 @@
   <div class="modal-backdrop"></div>
   <div class="modal-box">
     <h2>غرفة قراءة جديدة</h2>
-    <div class="form-group"><label>اسم الغرفة</label><input type="text" id="roomNameInput" placeholder="مثال: نادي روايات الليل" dir="auto" /></div>
-    <div class="form-group"><label>كلمة مرور (اختياري)</label><input type="password" id="roomPassInput" placeholder="اتركها فارغة للغرفة المفتوحة" /></div>
+    <div class="form-group"><label>اسم الغرفة</label><input type="text" id="roomNameInput" placeholder="مثال: مجلس يحيى" dir="auto" /></div>
+<div class="form-group">
+      <label>كلمة مرور (اختياري)</label>
+      <input type="password" id="roomPassInput" placeholder="اتركها فارغة للغرفة المفتوحة" />
+      <label class="checkbox-opt">
+        <input type="checkbox" id="isPersistentRoom" /> 
+        جعل الغرفة دائمة (تظهر في القائمة الرئيسية للجميع)
+      </label>
+    </div>
     <div class="form-group">
       <label>اتجاه القراءة</label>
       <div class="radio-group">
@@ -311,7 +328,7 @@
       <div class="tab-content hidden" data-tab="members">
         <div class="members-list" id="membersList"></div>
         <div class="host-controls hidden" id="hostControls">
-          <h4>تحكم المضيف</h4>
+          <h4>التحكم</h4>
           <label class="toggle-row">
             <span>مزامنة الصفحات</span>
             <div class="toggle-switch" id="syncSwitch"></div>

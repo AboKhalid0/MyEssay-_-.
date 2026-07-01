@@ -8,7 +8,7 @@ import { ref, set, update, onValue, push, remove, get, onDisconnect } from 'http
 const S = {
   user: null, room: null, doc: null,
   currentPage: 1, totalPages: 1,
-  syncMode: true, isHost: false,
+  syncMode: true, isHost: false, // لم تعد مستخدمة للقيود بفضل الديمقراطية
   members: {}, annotations: {}, bookmarks: [],
   pdfDoc: null, epubBook: null, epubRendition: null, mangaImages: [],
   dbListeners: [], sharedDocUrl: null, pendingSticky: null, _text: '',
@@ -17,13 +17,16 @@ const S = {
   color: '#f6c90e',
   size: 4,
   opacity: 1.0,
-  drawHistory: [],   // undo stack of annotation id arrays per action
+  drawHistory: [],
   redoStack: [],
   isDrawing: false,
-  drawStart: null,   // {x,y} canvas coords
-  drawPath: [],      // for pen/marker
-  previewCtx: null,  // for shape preview while dragging
+  drawStart: null,
+  drawPath: [],
 };
+
+// Queue system لمنع انهيار الرسم Canvas
+let pdfPageRendering = false;
+let pdfPagePending = null;
 
 function activeOverlay() {
   if (!S.doc) return null;
@@ -107,7 +110,7 @@ function toDirectUrl(url) {
 }
 
 // ══════════════════════════════════════════════════════════
-// LOBBY
+// LOBBY & PUBLIC ROOMS
 // ══════════════════════════════════════════════════════════
 function initLobby() {
   $('avatarOptions').querySelectorAll('span').forEach(sp => {
@@ -135,15 +138,79 @@ function buildUser() {
   S.user = { id:genId(), name:$('usernameInput').value.trim()||'قارئ', emoji:$('avatarDisplay').textContent||'📖' };
 }
 
+function listenToPublicRooms() {
+  if (!firebaseReady) return;
+  onValue(fbRef('publicRooms'), snap => {
+    const rooms = snap.val() || {};
+    const grid = $('publicRoomsGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    const entries = Object.entries(rooms);
+    
+    if (entries.length === 0) {
+      grid.innerHTML = '<p style="color:var(--txt-m);font-size:0.85rem;grid-column:1/-1;text-align:center;">لا توجد مجالس دائمة حالياً. كن أول من ينشئ واحداً!</p>';
+      return;
+    }
+    
+    entries.forEach(([id, r]) => {
+      const el = document.createElement('div');
+      el.className = 'public-room-card';
+      el.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:start;">
+          <div class="pr-name">${r.name}</div>
+          <button class="icon-btn pr-del-btn" title="حذف المجلس" style="color:var(--red);padding:2px;font-size:0.9rem;width:24px;height:24px;">🗑</button>
+        </div>
+        <div class="pr-meta">المؤسس: ${r.hostName} ${r.hasPass ? '🔒' : '🔓'}</div>
+        <button class="btn-secondary sm" style="width:100%">دخول للمجلس</button>
+      `;
+      el.querySelector('button.btn-secondary').onclick = () => joinPersistentRoom(id, r.hasPass);
+      
+      el.querySelector('.pr-del-btn').onclick = (e) => {
+        e.stopPropagation();
+        const pw = prompt('الرمز السري لحذف الغرفة:');
+        if (pw === 'Yahyaisthebest') {
+            dbRemove('publicRooms/' + id);
+            dbRemove('rooms/' + id);
+            toast('تم الحذف بنجاح', 'success');
+        } else if (pw !== null) {
+            toast('الرمز غير صحيح', 'error');
+        }
+      };
+      
+      grid.appendChild(el);
+    });
+  });
+}
+
+async function joinPersistentRoom(roomId, hasPass) {
+  buildUser();
+  await setupFirebase();
+  if (!firebaseReady) return;
+
+  if (hasPass) {
+    const p = prompt('كلمة المرور للمجلس:');
+    if (p === null) return;
+    const rs = await get(fbRef('rooms/'+roomId));
+    if (!rs.exists()) { toast('المجلس غير موجود','error'); return; }
+    const roomData = rs.val();
+    if (roomData.pass !== p) { toast('كلمة مرور خاطئة','error'); return; }
+    finishJoin(roomId, roomData);
+  } else {
+    const rs = await get(fbRef('rooms/'+roomId));
+    if (!rs.exists()) { toast('المجلس غير موجود','error'); return; }
+    finishJoin(roomId, rs.val());
+  }
+}
+
 async function createRoom() {
   buildUser();
   const name    = $('roomNameInput').value.trim() || 'مجلس قراءة';
   const pass    = $('roomPassInput').value.trim();
   const readDir = document.querySelector('input[name="readDir"]:checked').value;
-  const isPersistent = $('isPersistentRoom')?.checked; // هل هي غرفة دائمة؟
+  const isPersistent = $('isPersistentRoom')?.checked;
   const code    = genCode();
   
-  S.syncMode=true;
+  S.syncMode = true;
   S.room = { id:genId(), name, code, hostId:S.user.id, readDir, syncMode:true, pass:pass||null, created:Date.now() };
   
   await setupFirebase();
@@ -151,7 +218,6 @@ async function createRoom() {
     await dbSet('rooms/'+S.room.id, { ...S.room, members:{ [S.user.id]:{ name:S.user.name, emoji:S.user.emoji, page:1, joinedAt:Date.now(), online:true } } });
     await dbSet('codes/'+code, S.room.id);
     
-    // إذا كانت دائمة، احفظها في قائمة الغرف العامة
     if (isPersistent) {
       await dbSet('publicRooms/'+S.room.id, { name, hostName: S.user.name, hasPass: !!pass, created: Date.now() });
     }
@@ -190,59 +256,9 @@ async function joinRoom() {
     
     if (roomData.pass && roomData.pass !== prompt('كلمة المرور:')){ toast('كلمة مرور خاطئة','error'); return; }
     
-    finishJoin(roomId, roomData); // استخدمنا الدالة المساعدة هنا
-  } catch(e) {
-    console.error('joinRoom:',e);
-    toast('خطأ: '+e.message,'error');
-  }
-}
-    
-
-function listenToPublicRooms() {
-  if (!firebaseReady) return;
-  onValue(fbRef('publicRooms'), snap => {
-    const rooms = snap.val() || {};
-    const grid = $('publicRoomsGrid');
-    if (!grid) return;
-    grid.innerHTML = '';
-    const entries = Object.entries(rooms);
-    
-    if (entries.length === 0) {
-      grid.innerHTML = '<p style="color:var(--txt-m);font-size:0.85rem;grid-column:1/-1;text-align:center;">لا توجد مجالس دائمة حالياً. كن أول من ينشئ واحداً!</p>';
-      return;
-    }
-    
-    entries.forEach(([id, r]) => {
-      const el = document.createElement('div');
-      el.className = 'public-room-card';
-      el.innerHTML = `
-        <div class="pr-name">${r.name}</div>
-        <div class="pr-meta">المؤسس: ${r.hostName} ${r.hasPass ? '🔒' : '🔓'}</div>
-        <button class="btn-secondary sm" style="width:100%">دخول للمجلس</button>
-      `;
-      el.querySelector('button').onclick = () => joinPersistentRoom(id, r.hasPass);
-      grid.appendChild(el);
-    });
-  });
-}
-
-async function joinPersistentRoom(roomId, hasPass) {
-  buildUser();
-  await setupFirebase();
-  if (!firebaseReady) return;
-
-  if (hasPass) {
-    const p = prompt('كلمة المرور للمجلس:');
-    if (p === null) return;
-    const rs = await get(fbRef('rooms/'+roomId));
-    if (!rs.exists()) { toast('المجلس غير موجود','error'); return; }
-    const roomData = rs.val();
-    if (roomData.pass !== p) { toast('كلمة مرور خاطئة','error'); return; }
     finishJoin(roomId, roomData);
-  } else {
-    const rs = await get(fbRef('rooms/'+roomId));
-    if (!rs.exists()) { toast('المجلس غير موجود','error'); return; }
-    finishJoin(roomId, rs.val());
+  } catch(e) {
+    toast('خطأ: '+e.message,'error');
   }
 }
 
@@ -253,7 +269,7 @@ async function finishJoin(roomId, roomData) {
 }
 
 // ══════════════════════════════════════════════════════════
-// ROOM
+// ROOM & SYNC CONTROLS
 // ══════════════════════════════════════════════════════════
 function enterRoom() {
   setScreen('room');
@@ -264,21 +280,28 @@ function enterRoom() {
   
   updateSyncUI();
   
-  // الآن، أي شخص يمكنه تفعيل أو إيقاف المزامنة!
   $('syncToggle').addEventListener('click', () => {
     S.syncMode = !S.syncMode;
     dbUpdate('rooms/'+S.room.id, { syncMode:S.syncMode });
     updateSyncUI();
   });
   
-  // أي شخص يمكنه بث مزامنة فورية!
   $('btnSyncNow').addEventListener('click', () => {
     dbSet('rooms/'+S.room.id+'/hostPage', S.currentPage);
     dbSet('rooms/'+S.room.id+'/syncPing', Date.now());
     toast('تمت مزامنة الجميع على صفحة '+toAr(S.currentPage),'success');
   });
+
+  // زر إغلاق الملف الجديد للجميع
+  $('btnCloseDoc').addEventListener('click', () => {
+    if (!S.doc) return;
+    if (confirm('هل أنت متأكد من إغلاق المستند عند جميع أفراد الغرفة؟')) {
+      dbRemove('rooms/'+S.room.id+'/sharedDoc');
+      dbRemove('rooms/'+S.room.id+'/hostPage');
+    }
+  });
   
-show($('hostControls'));
+  show($('hostControls'));
   const sw=$('syncSwitch'); sw.className='toggle-switch'+(S.syncMode?' on':'');
   sw.addEventListener('click', () => { S.syncMode=!S.syncMode; sw.className='toggle-switch'+(S.syncMode?' on':''); dbUpdate('rooms/'+S.room.id,{syncMode:S.syncMode}); updateSyncUI(); });
   
@@ -292,7 +315,6 @@ show($('hostControls'));
   
   addSystemMsg(S.user.emoji+' '+S.user.name+' انضم للغرفة');
 }
-
 
 function updateSyncUI() {
   const tog=$('syncToggle'); const lbl=$('syncLabel');
@@ -323,12 +345,12 @@ function setupRoomListeners() {
   dbListen('rooms/'+S.room.id+'/syncMode', val => { if(val!==null)S.syncMode=val; updateSyncUI(); });
   
   dbListen('rooms/'+S.room.id+'/hostPage', page => {
-    if (!page||S.isHost) return;
+    if (!page) return;
     if (S.syncMode && page!==S.currentPage) goToPage(page, false);
   });
   
   dbListen('rooms/'+S.room.id+'/syncPing', async ts => {
-    if (!ts||S.isHost) return;
+    if (!ts) return;
     const s = await get(fbRef('rooms/'+S.room.id+'/hostPage'));
     const p = s.val();
     if(p && p !== S.currentPage) goToPage(p, false);
@@ -343,10 +365,20 @@ function setupRoomListeners() {
   });
   
   dbListen('rooms/'+S.room.id+'/sharedDoc', docInfo => {
-    if (!docInfo) return;
+    if (!docInfo) {
+      // أحدهم ضغط زر إغلاق الملف
+      resetViewers();
+      show($('viewerEmpty'));
+      S.sharedDocUrl = null;
+      return;
+    }
+    // تجاهل إذا أنا من قمت بالرفع
+    if (docInfo.uid === S.user.id) return;
+    
     if (S.sharedDocUrl===(docInfo.url||docInfo.name)) return;
     S.sharedDocUrl = docInfo.url||docInfo.name;
-    if (!S.isHost) showDocSharedBanner(docInfo);
+    
+    showDocSharedBanner(docInfo);
   });
   
   dbListen('rooms/'+S.room.id+'/bookmarks/'+S.user.id, data => {
@@ -426,14 +458,14 @@ function renderMembers() {
   Object.entries(S.members).forEach(([uid,m])=>{
     if(!m)return;
     const isMe=uid===S.user?.id, isHost=uid===S.room?.hostId;
-    list.innerHTML+=`<div class="member-item"><div class="member-avatar">${m.emoji||'📖'}</div><div class="member-info"><div class="member-name">${m.name||'...'} ${isMe?'(أنت)':''}</div><div class="member-status">صفحة ${toAr(m.page||1)}</div></div>${isHost?'<span class="member-badge">مضيف</span>':''}<div class="member-online-dot" style="background:${m.online!==false?'var(--green)':'var(--txt-d)'}"></div></div>`;
+    list.innerHTML+=`<div class="member-item"><div class="member-avatar">${m.emoji||'📖'}</div><div class="member-info"><div class="member-name">${m.name||'...'} ${isMe?'(أنت)':''}</div><div class="member-status">صفحة ${toAr(m.page||1)}</div></div>${isHost?'<span class="member-badge">مؤسس</span>':''}<div class="member-online-dot" style="background:${m.online!==false?'var(--green)':'var(--txt-d)'}"></div></div>`;
     bar.innerHTML+=`<div class="member-avatar-sm" title="${m.name||''}">${m.emoji||'📖'}</div>`;
   });
 }
 
 function renderMemberPositions() {
   const wrap=$('memberPositions'); wrap.innerHTML='';
-  if (!S.totalPages) return;
+  if (!S.totalPages || S.totalPages <= 0) return;
   Object.entries(S.members).forEach(([,m])=>{
     if(!m?.page)return;
     const pct=((m.page-1)/Math.max(S.totalPages-1,1))*100;
@@ -447,39 +479,38 @@ function renderMemberPositions() {
 function setupDocLoader() {
   $('btnOpenDoc').addEventListener('click', ()=>{
     resetViewers(); show($('viewerEmpty'));
-    if(S.isHost&&firebaseReady&&S.room?.id){ dbRemove('rooms/'+S.room.id+'/sharedDoc'); dbRemove('rooms/'+S.room.id+'/hostPage'); S.sharedDocUrl=null; }
   });
   
   $('btnUploadFile').addEventListener('click', ()=>$('fileInput').click());
   
-  $('fileInput').addEventListener('change', async e => {
+  $('fileInput').addEventListener('change', async e=>{
     const file = e.target.files[0]; 
     if(!file) return; 
-    e.target.value = '';
+    e.target.value = ''; // لتمكين الرفع المتكرر لنفس الملف
 
-    // 🔴 حماية قاعدة البيانات: نمنع الملفات التي تزيد عن 3 ميجابايت
-    const MAX_SIZE = 10 * 1024 * 1024; // 3 MB
+    const MAX_SIZE = 3 * 1024 * 1024; // 3 MB
     if (file.size > MAX_SIZE) {
-      toast('حجم الملف كبير جداً! الحد الأقصى للرفع المباشر هو 10 ميجابايت. للكتب الكبيرة استخدم الرابط.', 'error', 5000);
+      toast('حجم الملف كبير جداً! الحد الأقصى هو 3 ميجابايت للرفع المباشر.', 'error', 5000);
       return;
     }
 
     resetViewers(); hide($('viewerEmpty'));
     toast('جاري تحضير الملف...', 'info');
 
-    // عرض الملف محلياً للشخص الذي رفعه
+    // تشغيل الملف محلياً للمستخدم أولاً
     await loadFile(file);
 
-    // تحويل الملف إلى Base64 وإرساله للقاعدة اللحظية
+    // رفع الملف كـ Base64
     const reader = new FileReader();
     reader.onload = async (ev) => {
       const base64Data = ev.target.result;
       if(firebaseReady && S.room?.id){ 
         dbSet('rooms/'+S.room.id+'/sharedDoc', {
-          type: 'base64', // نوع جديد للملفات المرفوعة
+          type: 'base64', 
           name: file.name,
-          data: base64Data, // الملف كنص
+          data: base64Data, 
           byName: S.user.name,
+          uid: S.user.id,
           time: Date.now()
         }); 
         S.sharedDocUrl = file.name; 
@@ -488,14 +519,13 @@ function setupDocLoader() {
     };
     reader.readAsDataURL(file);
   });
-
+  
   $('btnLoadUrl').addEventListener('click', ()=>{
     const raw=$('docUrlInput').value.trim(); if(!raw)return;
     const url=toDirectUrl(raw); resetViewers(); hide($('viewerEmpty'));
     loadFromUrl(url,raw);
-    if(firebaseReady&&S.room?.id){ dbSet('rooms/'+S.room.id+'/sharedDoc',{type:'url',url,originalUrl:raw,byName:S.user.name,time:Date.now()}); S.sharedDocUrl=url; }
+    if(firebaseReady&&S.room?.id){ dbSet('rooms/'+S.room.id+'/sharedDoc',{type:'url',url,originalUrl:raw,byName:S.user.name,uid:S.user.id,time:Date.now()}); S.sharedDocUrl=url; }
   });
-  
   $('docUrlInput').addEventListener('keydown', e=>{ if(e.key==='Enter')$('btnLoadUrl').click(); });
 }
 
@@ -504,23 +534,13 @@ function showDocSharedBanner(docInfo) {
   const b = document.createElement('div'); b.className = 'shared-doc-banner';
   
   if (docInfo.type === 'base64' && docInfo.data) {
-    // 🟢 إضافة خيار "عرض الآن" للملفات المرفوعة مباشرة
     b.innerHTML = `<span>📁 <strong>${docInfo.byName}</strong> شارك ملفاً: <em>${docInfo.name}</em></span><button class="btn-primary sm" id="btnAcceptDoc">عرض الآن</button><button class="btn-ghost sm" id="btnDismissBanner">✕</button>`;
     $('viewerArea').prepend(b);
-    $('btnAcceptDoc').onclick = () => { 
-      b.remove(); 
-      resetViewers(); 
-      loadFromBase64(docInfo.data, docInfo.name); 
-    };
+    $('btnAcceptDoc').onclick = () => { b.remove(); resetViewers(); loadFromBase64(docInfo.data, docInfo.name); };
   } else if (docInfo.type === 'url' && docInfo.url) {
-    // الروابط
     b.innerHTML = `<span>📖 <strong>${docInfo.byName}</strong> شارك مستنداً</span><button class="btn-primary sm" id="btnAcceptDoc">فتح</button><button class="btn-ghost sm" id="btnDismissBanner">✕</button>`;
     $('viewerArea').prepend(b);
     $('btnAcceptDoc').onclick = () => { b.remove(); resetViewers(); loadFromUrl(docInfo.url, docInfo.originalUrl||docInfo.url); };
-  } else {
-    // وضع التوافق مع الكود القديم إذا وجد
-    b.innerHTML = `<span>📁 <strong>${docInfo.byName}</strong> فتح: <em>${docInfo.name}</em></span><button class="btn-ghost sm" id="btnDismissBanner">✕</button>`;
-    $('viewerArea').prepend(b);
   }
   
   $('btnDismissBanner').onclick = () => b.remove();
@@ -534,35 +554,27 @@ function resetViewers() {
   S.doc=null;S.pdfDoc=null;S.epubBook=null;S.epubRendition=null;
   S.mangaImages=[];S.currentPage=1;S.totalPages=1;
   S.drawHistory=[];S.redoStack=[];
+  
+  // تصفير طابور معالجة الـ PDF
+  pdfPageRendering = false;
+  pdfPagePending = null;
+  updateProgress();
 }
 
 async function loadFromBase64(base64Str, fileName) {
-  toast('جاري تحميل الملف وبناءه...', 'info');
+  toast('جاري تحميل وبناء الملف...', 'info');
   try {
-    // تحويل Base64 مرة أخرى إلى Blob (ملف حقيقي في الذاكرة)
     const res = await fetch(base64Str);
     const blob = await res.blob();
-    
-    // إنشاء رابط محلي وهمي للملف
     const url = URL.createObjectURL(blob);
     const ext = fileName.split('.').pop().toLowerCase();
     
-    // توجيه الملف للقارئ المناسب بناءً على امتداده
-    if (ext === 'pdf') {
-      await loadPdf(url);
-    } else if (ext === 'epub') {
-      await loadEpub(await blob.arrayBuffer());
-    } else if (['cbz', 'zip'].includes(ext)) {
-      const fakeFile = new File([blob], fileName, { type: blob.type });
-      await loadCbz(fakeFile);
-    } else if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'].includes(ext)) {
-      await loadImages([url]);
-    } else if (ext === 'txt') {
-      const fakeFile = new File([blob], fileName, { type: blob.type });
-      await loadText(fakeFile);
-    } else {
-      toast('نوع الملف غير مدعوم', 'error'); show($('viewerEmpty'));
-    }
+    if (ext === 'pdf') { await loadPdf(url); } 
+    else if (ext === 'epub') { await loadEpub(await blob.arrayBuffer()); } 
+    else if (['cbz', 'zip'].includes(ext)) { await loadCbz(new File([blob], fileName, { type: blob.type })); } 
+    else if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'].includes(ext)) { await loadImages([url]); } 
+    else if (ext === 'txt') { await loadText(new File([blob], fileName, { type: blob.type })); } 
+    else { toast('نوع الملف غير مدعوم', 'error'); show($('viewerEmpty')); }
   } catch (e) {
     console.error(e);
     toast('تعذّر بناء الملف المرفوع', 'error'); show($('viewerEmpty'));
@@ -608,19 +620,46 @@ async function loadPdf(source) {
 }
 
 async function renderPdfPage(n) {
-  if(!S.pdfDoc)return;
-  S.currentPage=Math.max(1,Math.min(n,S.totalPages));
-  const page=await S.pdfDoc.getPage(S.currentPage);
-  const canvas=$('pdfCanvas'), ctx=canvas.getContext('2d');
-  const vp=page.getViewport({scale:1});
-  const aH=$('viewerArea').clientHeight-60, aW=$('viewerArea').clientWidth-120;
-  const scale=Math.min(aH/vp.height, aW/vp.width, 2);
-  const viewport=page.getViewport({scale});
-  canvas.height=viewport.height; canvas.width=viewport.width;
-  await page.render({canvasContext:ctx,viewport}).promise;
-  syncOverlaySize();
-  $('currentPageDisplay').textContent=toAr(S.currentPage);
-  $('totalPagesDisplay').textContent=toAr(S.totalPages);
+  if(!S.pdfDoc) return;
+  S.currentPage = Math.max(1, Math.min(n, S.totalPages));
+  
+  // نظام الطابور (Queue) لمنع تداخل الرسم وإيقاف الـ Canvas errors
+  if (pdfPageRendering) {
+    pdfPagePending = S.currentPage;
+    return;
+  }
+  
+  pdfPageRendering = true;
+  try {
+    const page = await S.pdfDoc.getPage(S.currentPage);
+    const canvas = $('pdfCanvas');
+    const ctx = canvas.getContext('2d');
+    const vp = page.getViewport({scale:1});
+    const aH = $('viewerArea').clientHeight - 60, aW = $('viewerArea').clientWidth - 120;
+    const scale = Math.min(aH / vp.height, aW / vp.width, 2);
+    const viewport = page.getViewport({scale});
+    
+    canvas.height = viewport.height; 
+    canvas.width = viewport.width;
+    
+    await page.render({canvasContext:ctx, viewport}).promise;
+  } catch (err) {
+    if(err.name !== 'RenderingCancelledException') {
+      console.error('PDF Render error:', err);
+    }
+  } finally {
+    pdfPageRendering = false;
+    if (pdfPagePending !== null) {
+      const pending = pdfPagePending;
+      pdfPagePending = null;
+      renderPdfPage(pending); // تشغيل المهمة التي كانت بالانتظار
+    } else {
+      syncOverlaySize();
+      $('currentPageDisplay').textContent = toAr(S.currentPage);
+      $('totalPagesDisplay').textContent = toAr(S.totalPages);
+      updateProgress();
+    }
+  }
 }
 
 // ── EPUB ────────────────────────────────────────────────
@@ -770,18 +809,18 @@ function afterPageChange(broadcast=true){
   if(!broadcast||!firebaseReady||!S.room?.id) return;
   
   dbUpdate('rooms/'+S.room.id+'/members/'+S.user.id,{page:S.currentPage});
-  
-  // إذا كانت المزامنة مفعلة، أي شخص يقلب الصفحة سيغير صفحة الغرفة كاملة!
-  if(S.syncMode) {
-    dbSet('rooms/'+S.room.id+'/hostPage', S.currentPage);
-  }
+  if(S.syncMode) dbSet('rooms/'+S.room.id+'/hostPage', S.currentPage);
 }
 
 function updateProgress(){
-  if(!S.totalPages)return;
+  if(!S.totalPages || S.totalPages <= 0){
+    $('progressFill').style.width = '0%';
+    $('progressLabel').textContent = '٠٪';
+    return;
+  }
   const pct=Math.round(((S.currentPage-1)/Math.max(S.totalPages-1,1))*100);
-  $('progressFill').style.width=pct+'%';
-  $('progressLabel').textContent=toAr(pct)+'٪';
+  $('progressFill').style.width = Math.min(Math.max(pct, 0), 100) + '%';
+  $('progressLabel').textContent = toAr(pct)+'٪';
   renderMemberPositions();
 }
 
@@ -1222,16 +1261,6 @@ function activateTab(name){
   document.querySelectorAll('.tab-content').forEach(c=>{ c.classList.toggle('hidden',c.dataset.tab!==name); c.classList.toggle('active',c.dataset.tab===name); });
 }
 
-function showFirebaseRulesHelp() {
-  document.querySelector('.rules-help-modal')?.remove();
-  const m=document.createElement('div'); m.className='rules-help-modal';
-  m.innerHTML=`<div class="rules-help-backdrop"></div><div class="rules-help-box"><h2>⚠ خطأ في صلاحيات Firebase</h2><p>افتح <a href="https://console.firebase.google.com" target="_blank">Firebase Console</a> ← مشروعك ← <strong>Realtime Database</strong> ← <strong>Rules</strong> والصق:</p><pre class="rules-code">{\n  "rules": {\n    ".read": true,\n    ".write": true\n  }\n}</pre><p class="rules-note">⚡ للتطوير فقط.</p><div class="rules-actions"><button class="btn-primary" id="btnCopyRules">نسخ</button><button class="btn-ghost" id="btnCloseRules">إغلاق</button></div></div>`;
-  document.body.appendChild(m);
-  m.querySelector('.rules-help-backdrop').onclick=()=>m.remove();
-  $('btnCloseRules').onclick=()=>m.remove();
-  $('btnCopyRules').onclick=()=>{ navigator.clipboard?.writeText('{\n  "rules": {\n    ".read": true,\n    ".write": true\n  }\n}'); toast('تم نسخ القواعد ✓','success'); };
-}
-
 // ══════════════════════════════════════════════════════════
 // BOOT
 // ══════════════════════════════════════════════════════════
@@ -1239,8 +1268,7 @@ async function boot() {
   await setupFirebase();
   initLobby();
   
-  // جلب الغرف الدائمة بمجرد تشغيل التطبيق
-  if (firebaseReady) listenToPublicRooms(); 
+  if (firebaseReady) listenToPublicRooms();
   
   window.addEventListener('resize', ()=>{ syncOverlaySize(); });
   
@@ -1253,4 +1281,5 @@ async function boot() {
     navigatePage(S.room?.readDir==='rtl'?(diff>0?-1:1):(diff>0?1:-1));
   },{passive:true});
 }
+
 boot();

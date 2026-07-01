@@ -17,7 +17,6 @@ const S = {
   isDrawing: false, drawStart: null, drawPath: [],
 };
 
-// Queue system لمنع انهيار الرسم Canvas
 let pdfPageRendering = false;
 let pdfPagePending = null;
 
@@ -293,7 +292,6 @@ function enterRoom() {
     }
   });
 
-  // زر إخفاء وإظهار الأدوات (لوضع القراءة الممتاز على الجوال)
   $('btnToggleTools').addEventListener('click', () => {
     $('room').classList.toggle('tools-hidden');
     updateDrawCursor();
@@ -486,7 +484,7 @@ function setupDocLoader() {
     const MAX_SIZE = 3 * 1024 * 1024;
     if (file.size > MAX_SIZE) {
       toast('حجم الملف كبير جداً! الحد الأقصى هو 3 ميجابايت للرفع المباشر.', 'error', 5000);
-      e.target.value = ''; // تفرغ الإدخال في حال الفشل
+      e.target.value = '';
       return;
     }
 
@@ -500,7 +498,6 @@ function setupDocLoader() {
       console.error(err);
     }
 
-    // الانتظار حتى تتم عملية الرفع بنجاح لكي لا نعيد التحميل
     const reader = new FileReader();
     reader.onload = async (ev) => {
       const base64Data = ev.target.result;
@@ -516,7 +513,7 @@ function setupDocLoader() {
         S.sharedDocUrl = file.name; 
         toast('تم رفع الملف ومشاركته للغرفة ✓', 'success');
       }
-      e.target.value = ''; // تم تفريغ الإدخال بأمان بعد الرفع
+      e.target.value = ''; 
     };
     reader.readAsDataURL(file);
   });
@@ -540,7 +537,7 @@ function showDocSharedBanner(docInfo) {
     $('btnAcceptDoc').onclick = () => { 
         b.remove(); 
         resetViewers(); 
-        hide($('viewerEmpty')); // الحل الجذري لمشكلة تداخل القوائم
+        hide($('viewerEmpty'));
         loadFromBase64(docInfo.data, docInfo.name); 
     };
   } else if (docInfo.type === 'url' && docInfo.url) {
@@ -549,7 +546,7 @@ function showDocSharedBanner(docInfo) {
     $('btnAcceptDoc').onclick = () => { 
         b.remove(); 
         resetViewers(); 
-        hide($('viewerEmpty')); // الحل الجذري هنا أيضاً
+        hide($('viewerEmpty'));
         loadFromUrl(docInfo.url, docInfo.originalUrl||docInfo.url); 
     };
   }
@@ -646,8 +643,16 @@ async function renderPdfPage(n) {
     const canvas = $('pdfCanvas');
     const ctx = canvas.getContext('2d');
     const vp = page.getViewport({scale:1});
-    const aH = $('viewerArea').clientHeight - 60, aW = $('viewerArea').clientWidth - 120;
-    const scale = Math.min(aH / vp.height, aW / vp.width, 2);
+    
+    // الحل هنا لحجم الجوال: تقليل الهوامش المطروحة من المساحة الكلية
+    const isMobile = window.innerWidth <= 700;
+    const paddingH = isMobile ? 10 : 60;
+    const paddingW = isMobile ? 10 : 120;
+    
+    const aH = $('viewerArea').clientHeight - paddingH;
+    const aW = $('viewerArea').clientWidth - paddingW;
+    
+    const scale = Math.min(aH / vp.height, aW / vp.width, 2.5);
     const viewport = page.getViewport({scale});
     
     canvas.height = viewport.height; 
@@ -954,7 +959,7 @@ function onTouchMove(e,cv){e.preventDefault();onDrawMove(e,cv);}
 function onTouchEnd(e,cv){e.preventDefault();onDrawEnd(e,cv);}
 
 function onDrawStart(e, cv) {
-  if ($('room').classList.contains('tools-hidden')) return; // حماية للموبايل
+  if ($('room').classList.contains('tools-hidden')) return;
   const clientX = e.touches ? e.touches[0].clientX : e.clientX;
   const clientY = e.touches ? e.touches[0].clientY : e.clientY;
   const {x, y, px, py} = canvasXY(e, cv);
@@ -1289,26 +1294,24 @@ async function boot() {
   
   if (firebaseReady) listenToPublicRooms();
   
-  // تحضير مكتبة PDF.js مبكراً لتفادي المشاكل أثناء الرفع
   if (window.pdfjsLib) {
       pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
   }
 
-  // وضع القراءة ممتاز للجوال افتراضياً
+  // وضع القراءة ممتاز للجوال افتراضياً وإخفاء القائمة الجانبية
   if (window.innerWidth <= 700) {
       $('room').classList.add('tools-hidden');
+      $('sidebar').classList.add('collapsed');
   }
   
   window.addEventListener('resize', ()=>{ syncOverlaySize(); });
   
-  // إيماءات التمرير الذكية (Swipe)
   let tx=0;
   $('viewerArea').addEventListener('touchstart', e=>{tx=e.touches[0].clientX;},{passive:true});
   $('viewerArea').addEventListener('touchend', e=>{
     const diff=tx-e.changedTouches[0].clientX;
     if(Math.abs(diff)<60)return;
     const isHidden = $('room').classList.contains('tools-hidden');
-    // السماح بالتمرير إذا كانت الأدوات مخفية أو إذا كانت أداة التحديد مفعلة
     if(!isHidden && S.tool!=='select') return;
     navigatePage(S.room?.readDir==='rtl'?(diff>0?-1:1):(diff>0?1:-1));
   },{passive:true});

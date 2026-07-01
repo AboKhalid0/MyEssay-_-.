@@ -279,7 +279,7 @@ kbd{background:var(--bg-3);border:1px solid var(--bord2);border-radius:3px;paddi
 #room.tools-hidden .draw-toolbar { display: none !important; }
 #room.tools-hidden .viewer-area { padding-bottom: 0 !important; }
 
-/* ══ MOBILE / DVH SUPPORT ═════════════════════════════════ */
+/* ══ MOBILE / DVH SUPPORT (إصلاحات الصورة والبي دي اف هنا) ════ */
 @media(max-width:700px){
   :root{--sidebar-w:100%}
   .reader-layout{flex-direction:column}
@@ -289,6 +289,29 @@ kbd{background:var(--bg-3);border:1px solid var(--bord2);border-radius:3px;paddi
   .shortcuts-hint{display:none!important}
   .dtb-slider{width:50px}
   .dtb-label{display:none}
+
+  /* === إصلاحات الجوال للملفات لتأخذ كامل الشاشة === */
+  .pdf-viewer, .epub-viewer { position: relative; gap: 0 !important; }
+  
+  #mangaPage { 
+      max-width: 100vw !important; 
+      max-height: calc(100dvh - var(--topbar-h) - var(--prog-h) - 10px) !important; 
+      object-fit: contain; 
+  }
+  
+  #pdfCanvas { 
+      max-width: 100vw !important; 
+  }
+  
+  #epubContainer { 
+      width: 100vw !important; 
+  }
+
+  /* جعل أزرار التقليب شفافة وتطفو فوق الملف لتوفير المساحة */
+  .page-nav { position: absolute; z-index: 10; background: rgba(13,15,20,0.6); border-color: transparent; }
+  .page-nav-right { right: 5px; }
+  .page-nav-left { left: 5px; }
+  .manga-nav-btn { background: rgba(13,15,20,0.6); border-color: transparent; }
 }
 
 @supports (height: 100dvh) {
